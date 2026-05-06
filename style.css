@@ -156,7 +156,7 @@ footer {
     font-size: 30px;
 }
 
-nav a {
+.navbar-porto a {
     text-decoration: none;
     font-weight: bold;
     cursor: pointer;
@@ -171,7 +171,7 @@ nav a {
     align-items: center;
     gap: 20px;
 }
-nav {
+.navbar-porto {
     display: flex;
     gap: 20px;
 }
@@ -208,5 +208,4 @@ nav a:hover {
     .gallery {
         grid-template-columns: 1fr;
     }
-
 }
