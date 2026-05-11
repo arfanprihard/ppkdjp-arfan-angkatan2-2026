@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="" method="post" onsubmit="Perhitungan(event)">
+        <label for="">Nilai 1</label>
+        <input type="number" id="nilai1"> <br>
+        <label for="">Nilai 2</label>
+        <input type="number" id="nilai2"> <br>
+        <button onclick="Perhitungan(event)" id="btn_jumlah"> Hasil Penjumlahan</button>
+        <button onclick="Perhitungan(event)" id="btn_kurang">Hasil Pengurangan</button>
+        <button onclick="Perhitungan(event)" id="btn_kali">Hasil Perkalian</button>
+        <button onclick="Perhitungan(event)" id="btn_bagi">Hasil Pembagian</button>
+    </form>
+    <h4 id="hasil">
+
+    </h4>
+</body>
+<script>
+    function Perhitungan(event) {
+        event.preventDefault();
+        const nilai1 = Number(document.querySelector("#nilai1").value);
+        const nilai2 = Number(document.querySelector("#nilai2").value);
+
+        if (event.target.id === "btn_jumlah") {
+            document.querySelector("#hasil").innerHTML = nilai1 + nilai2;
+        } else if (event.target.id === "btn_kurang") {
+            document.querySelector("#hasil").innerHTML = nilai1 - nilai2;
+        } else if (event.target.id === "btn_kali") {
+            document.querySelector("#hasil").innerHTML = nilai1 * nilai2;
+        } else if (event.target.id === "btn_bagi") {
+            document.querySelector("#hasil").innerHTML = nilai1 / nilai2;
+        }
+        console.log(event.target.id);
+    }
+
+    // function Penjumlahan() {
+    //     const nilai1 = Number(document.querySelector("#nilai1").value);
+    //     const nilai2 = Number(document.querySelector("#nilai2").value);
+
+    //     document.querySelector("#hasil").innerHTML = nilai1 + nilai2;
+    // }
+
+    // function Pengurangan() {
+    //     const nilai1 = Number(document.querySelector("#nilai1").value);
+    //     const nilai2 = Number(document.querySelector("#nilai2").value);
+    //     document.querySelector("#hasil").innerHTML = nilai1 - nilai2;
+    // }
+
+    // function Perkalian() {
+    //     const nilai1 = Number(document.querySelector("#nilai1").value);
+    //     const nilai2 = Number(document.querySelector("#nilai2").value);
+    //     document.querySelector("#hasil").innerHTML = nilai1 * nilai2;
+    // }
+
+    // function Pembagian() {
+    //     const nilai1 = Number(document.querySelector("#nilai1").value);
+    //     const nilai2 = Number(document.querySelector("#nilai2").value);
+    //     document.querySelector("#hasil").innerHTML = nilai1 / nilai2;
+    // }
+</script>
+
+</html>

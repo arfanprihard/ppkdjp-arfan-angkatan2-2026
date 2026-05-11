@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="src/output.css">
+</head>
+
+<body class="bg-gray-100">
+    <main class="min-h-screen flex items-center justify-center p-4">
+
+        <section class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-4xl">
+
+            <h1 class="text-center font-bold text-2xl mb-6">
+                Data Mahasiswa
+            </h1>
+
+            <!-- GRID 2 KOLOM -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- KIRI: FORM -->
+                <div>
+                    <form onsubmit="return false" class="flex flex-col gap-4">
+
+                        <!-- Nama -->
+                        <div>
+                            <label>Nama</label>
+                            <input type="text" id="nama" placeholder="Contoh: Arfan Prihardiansyah"
+                                class="w-full border border-gray-200 rounded-lg h-10 px-3 focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Teori -->
+                        <div>
+                            <label>Nilai Teori</label>
+                            <input type="number" id="nilai-teori"
+                                class="w-full border border-gray-200 rounded-lg h-10 px-3 focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Praktek -->
+                        <div>
+                            <label>Nilai Praktek</label>
+                            <input type="number" id="nilai-praktek"
+                                class="w-full border border-gray-200 rounded-lg h-10 px-3 focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Kehadiran -->
+                        <div>
+                            <label>Kehadiran</label>
+                            <div class="relative">
+                                <input type="number" id="kehadiran"
+                                    class="w-full border border-gray-200 rounded-lg h-10 px-3 pr-10 focus:ring-2 focus:ring-blue-500">
+
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                    %
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Pelanggaran -->
+                        <div>
+                            <label>Pelanggaran</label>
+                            <select id="pelanggaran"
+                                class="w-full border border-gray-200 rounded-lg h-10 px-3 focus:ring-2 focus:ring-blue-500">
+
+                                <option value="" disabled selected>Pilih</option>
+                                <option value="true">Ada</option>
+                                <option value="false">Tidak</option>
+
+                            </select>
+                        </div>
+
+                        <button onclick="ProcessData()" class="bg-blue-600 text-white py-2 rounded-xl hover:opacity-90">
+                            Submit
+                        </button>
+
+                    </form>
+                </div>
+
+                <!-- KANAN: HASIL / KETERANGAN -->
+                <div class="bg-gray-50 p-4 rounded-xl border">
+
+                    <h2 class="font-bold text-lg mb-4">Keterangan</h2>
+
+                    <!-- Nama + rata-rata -->
+                    <div class="space-y-2 mb-4 text-sm">
+                        <div class="flex justify-between">
+                            <span>Nama</span>
+                            <span id="nama-txt"></span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Rata-rata</span>
+                            <span id="rata2-txt"></span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Status</span>
+                            <span id="status-txt" class="font-semibold"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Detail status -->
+                    <div class="space-y-2 text-sm">
+
+                        <div class="flex justify-between bg-white p-2 rounded-lg">
+                            <span>Teori</span>
+                            <span id="status-teori"></span>
+                        </div>
+
+                        <div class="flex justify-between bg-white p-2 rounded-lg">
+                            <span>Praktek</span>
+                            <span id="status-praktek"></span>
+                        </div>
+
+                        <div class="flex justify-between bg-white p-2 rounded-lg">
+                            <span>Kehadiran</span>
+                            <span id="status-kehadiran"></span>
+                        </div>
+
+                        <div class="flex justify-between bg-white p-2 rounded-lg">
+                            <span>Pelanggaran</span>
+                            <span id="status-pelanggaran"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- <body class="bg-gray-100">
+
+        <div class="min-h-screen flex items-center justify-center">
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg w-full container">
+
+                <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+
+                <form class="">
+                    <div>
+                        <label class="block text-sm font-medium">Email</label>
+                        <input type="email"
+                            class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Masukkan email" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Password</label>
+                        <input type="password"
+                            class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Masukkan password" />
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                        Login
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </body> -->
+</body>
+<script>
+    function ProcessData() {
+        const nama = document.querySelector("#nama").value;
+        const nilaiTeori = Number(document.querySelector("#nilai-teori").value);
+        const nilaiPraktek = Number(document.querySelector("#nilai-praktek").value);
+        const kehadiran = Number(document.querySelector("#kehadiran").value);
+        const memilikiPelanggaran = document.querySelector("#pelanggaran").value;
+        const adaPelanggaran = memilikiPelanggaran == "true" ? true : false;
+        const rataRata = (nilaiTeori + nilaiPraktek) / 2;
+        document.querySelector("#nama-txt").innerHTML = nama;
+        document.querySelector("#rata2-txt").innerHTML = rataRata;
+        let status = false;
+        // if (rataRata > 90 && kehadiran >= 90 && !adaPelanggaran) {
+        //     status = "lulus dengan predikat sangat baik"
+        // } else if (rataRata > 85 && kehadiran >= 90 && !adaPelanggaran && nilaiTeori >= 75) {
+        //     status = "lulus dengan predikat baik"
+        // } else if (nilaiTeori >= 75 && nilaiPraktek >= 80 && kehadiran >= 90 && !adaPelanggaran) {
+        //     status = "Lulus"
+        // } else {
+        //     status = "Tidak Lulus"
+        // }
+
+        let statusKehadiran = "";
+
+        if (nilaiTeori < 75 || nilaiPraktek < 80 || kehadiran < 90 || adaPelanggaran) {
+            status = "Tidak Lulus"
+        } else if (rataRata > 90) {
+            status = "Lulus dengan Predikat Sangat Baik"
+        } else if (rataRata > 85) {
+            status = "Lulus dengan Predikat Baik"
+        } else {
+            status = "Lulus"
+        }
+
+        document.querySelector("#status-txt").innerHTML = status;
+        document.querySelector("#status-kehadiran").innerHTML = kehadiran < 90 ? "Kehadiran Kurang" : "Baik";
+        document.querySelector("#status-teori").innerHTML = nilaiTeori < 75 ? "Teori Kurang" : "Baik";
+        document.querySelector("#status-praktek").innerHTML = nilaiPraktek < 80 ? "Praktek Kurang" : "Baik";
+        document.querySelector("#status-pelanggaran").innerHTML = adaPelanggaran ? "Pelanggaran Disiplin" : "Baik";
+
+    }
+</script>
+
+</html>

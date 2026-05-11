@@ -9,11 +9,34 @@
 
 <body>
     <main>
-        <p id="pesan">
+        <form action="" method="post" onsubmit="JasaPengiriman(event)">
+            <label for="">Masukkan Nama Kota</label>
+            <input type="text" id="kota">
+            <button onclick="JasaPengiriman()">
+                Tes
+            </button>
+        </form>
+        <p id="hasil">
 
         </p>
     </main>
     <script>
+        function JasaPengiriman(e) {
+            e.preventDefault();
+            let kota = document.querySelector("#kota").value;
+            let berat = 10;
+            let tarif = 0;
+
+            if (kota === "Bogor") {
+                tarif = 2000;
+            } else if (kota === "Depok") {
+                tarif = 4000;
+            } else {
+                tarif = 6000;
+            }
+            const total = `Tarifnya adalah sebesar ${berat * tarif}`;
+            document.querySelector("#hasil").innerHTML = total;
+        }
         // variable = sebuah penampung nilai
         // const = nilainya tetap
         // var = nilainya bisa di ubah tapi bisa di buat sama variablenya
@@ -29,8 +52,7 @@
 
         let nama2 = "Arfan";
         // document.write(nama);
-
-        document.getElementById("pesan").innerHTML = nama2;
+        // document.getElementById("pesan").innerHTML = nama2;
     </script>
 </body>
 
