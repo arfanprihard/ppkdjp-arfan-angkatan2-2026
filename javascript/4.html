@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="inputNama" placeholder="Masukan nama anda">
+    <button id="btn-sapa">Sapa saya!</button>
+
+    <h2 id="teks-sapaan"></h2>
+    <br>
+    <ul id="daftar-belanja">
+        <li>
+            Apel
+        </li>
+        <li>
+            Jeruk
+        </li>
+        <li>
+            Nanas
+        </li>
+
+    </ul>
+    <button id="tambah-buah">
+        Tambah Belanja
+    </button>
+    <script>
+        //event handling + DOM
+        //#:id, class: . element/TAG: h1
+        const btnSapa = document.getElementById(`btn-sapa`);
+        const daftarBelanja = document.getElementById('daftar-belanja');
+
+        btnSapa.addEventListener(`click`, function () {
+            //mau melakukan apa
+            const inputNama = document.getElementById(`inputNama`).value;
+            console.log(inputNama);
+            const teksSapaan = document.getElementById(`teks-sapaan`);
+            teksSapaan.innerText = `Halo, selamat datang ${inputNama}`;
+        })
+        const tambahBuah = document.getElementById('tambah-buah');
+        tambahBuah.addEventListener('click', () => {
+            let liBaru = document.createElement('li');
+            liBaru.innerHTML = "Semangka";
+            daftarBelanja.innerHTML += "<li>Pisang</>"; // Dia akan menghancurkan terlebih dahulu lalu menambahkan
+            daftarBelanja.appendChild(liBaru); // Lebih efektif
+        });
+    </script>
+</body>
+
+</html>

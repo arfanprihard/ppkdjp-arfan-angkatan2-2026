@@ -1,11 +1,15 @@
-import Navbar from "../Layouts/Navbar"
+import PerformanceStats from '../Layouts/PerformanceStats';
+import Profile from '../Layouts/Profile';
+import SelectedWorks from '../Layouts/SelectedWorks';
 
 const Homes = () => {
-    return (
-        <div>
-            Halo
-        </div>
-    )
-}
+  return (
+    <div className="mt-10">
+      <Profile />
+      <PerformanceStats />
+      <SelectedWorks />
+    </div>
+  );
+};
 
-export default Homes
+export default Homes;
