@@ -1,6 +1,6 @@
 const PerformanceStats = () => {
   return (
-    <div className="flex justify-center border-y-2 border-gray-300 bg-gray-100">
+    <div className="flex justify-center border-y-2 border-gray-400/50 bg-gray-200">
       <div className="container">
         <div className="grid md:grid-cols-4 grid-cols-2 h-50">
           <div className="flex flex-col justify-center items-center">

@@ -6,7 +6,7 @@ const Profile = () => {
   return (
     <div className="flex justify-center mb-10">
       <div className="container">
-        <div className="flex md:flex-row flex-col gap-4 items-center">
+        <div className="flex md:flex-row flex-col gap-4 items-center px-4">
           <div className="lg:w-1/2">
             <PagesHeader
               eyebrow={'Syestem Architecture & Engineering'}

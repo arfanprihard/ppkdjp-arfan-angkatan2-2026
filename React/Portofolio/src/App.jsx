@@ -1,11 +1,11 @@
-import Navbar from './assets/components/Layouts/Navbar';
-import Homes from './assets/components/pages/Homes';
+import Experience from './assets/components/pages/Experience';
+import Home from './assets/components/pages/Home';
 
 function App() {
   return (
     <body>
-      <Navbar />
-      <Homes />
+      <Home />
+      <Experience />
     </body>
   );
 }

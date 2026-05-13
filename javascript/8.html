@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>
+                    Nama
+                </th>
+                <th>
+                    Umur
+                </th>
+                <th>
+                    Alamat
+                </th>
+                <th>
+                    Jenis Kelamin
+                </th>
+            </tr>
+        </thead>
+        <tbody id="table-siswa">
+
+        </tbody>
+    </table>
+    <script>
+        let daftarBuah = ["Apel", "Nanas", "Jeruk", "Semangka"];
+        let daftarHarga = [1000, 2000, 3000];
+        let mixHargaBuah = ["Nanas", 1000, "Semangka", 20000];
+
+        console.log(daftarBuah[1]);
+        console.log(daftarHarga[1]);
+
+        // Multidimensi
+        let peserta = [
+            [
+                "Budi",
+                "10",
+                "Bekasi",
+                "Pria"
+            ],
+            [
+                "Aril",
+                "20",
+                "Jakarta",
+                "Pria"
+            ],
+            [
+                "Sintia",
+                "21",
+                "Jakarta",
+                "Wanita"
+            ]
+        ];
+
+        let daftarPeserta = [
+            {
+                nama: "Arfan",
+                umur: "19",
+                alamat: "Jakarta",
+                jenisKelamin: "Pria"
+            },
+            {
+                nama: "Budi",
+                umur: "20",
+                alamat: "Bekasi",
+                jenisKelamin: "Pria"
+            },
+            {
+                nama: "Nala",
+                umur: "22",
+                alamat: "Jaksel",
+                jenisKelamin: "Wanita"
+            },
+
+        ];
+
+        let tbodySiswa = document.getElementById('table-siswa');
+
+        function getDataSiswa() {
+            tbodySiswa.innerHTML = "";
+
+            daftarPeserta.forEach((item, index) => {
+                let barisBaru = document.createElement('tr');
+
+                barisBaru.innerHTML = `
+                <td>${item.nama}</td>
+                <td>${item.umur}</td>
+                <td>${item.alamat}</td>
+                <td>${item.jenisKelamin}</td>
+                <td>
+                <button class="btn-hapus" data-index="${index}">
+                    Hapus
+                </button>
+            </td>
+            `;
+
+                tbodySiswa.appendChild(barisBaru);
+            });
+        }
+        getDataSiswa();
+
+        const btnTambah = document.getElementById("btn-tambah");
+        btnTambah.addEventListener('click', function ()){
+            // push(): memasukkan data ke dalam array
+            inputNama.value = "";
+        }
+
+        tbodySiswa.addEventListener('click', function (event) {
+            if (event.target.classList.contains('btn-hapus')) {
+                let indexData = event.target.getAttribute('data-index');
+                daftarPeserta.splice(indexData, 1);
+                getDataSiswa();
+            }
+        });
+
+    </script>
+</body>
+
+</html>
