@@ -2,7 +2,7 @@ import Button from '../Elements/Button';
 const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full bg-surface shadow z-50">
-      <div className="flex items-center justify-between container px-4 py-3 mx-auto">
+      <div className="flex items-center justify-between mx-auto max-w-7xl px-4 py-3">
         <div>
           <h1 className="font-bold text-primary text-xl">ArfanDev</h1>
         </div>

@@ -1,10 +1,13 @@
-import MainLayout from '../Layouts/MainLayout';
+import ResumeSection from "../Fragments/Experience/ResumeSection";
+import WorkHistorySection from "../Fragments/Experience/WorkHistorySection";
+import MainLayout from "../Layouts/MainLayout";
 
 const Experience = () => {
   return (
-    <div>
-      <MainLayout>Halo</MainLayout>
-    </div>
+    <MainLayout>
+      <WorkHistorySection />
+      <ResumeSection />
+    </MainLayout>
   );
 };
 

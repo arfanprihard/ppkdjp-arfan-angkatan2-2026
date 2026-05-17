@@ -1,6 +1,6 @@
-import PerformanceStats from '../Fragments/PerformanceStats';
-import Profile from '../Fragments/Profile';
-import SelectedWorks from '../Fragments/SelectedWorks';
+import PerformanceStats from '../Fragments/Home/PerformanceStats';
+import Profile from '../Fragments/Home/Profile';
+import SelectedWorks from '../Fragments//Home/SelectedWorks';
 import MainLayout from '../Layouts/MainLayout';
 
 const Home = () => {
