@@ -1,5 +1,8 @@
 <?php
 session_start();
+session_regenerate_id();
+ob_start();
+include 'config/koneksi.php';
 $name = "";
 if (!isset($_SESSION['NAMA'])) {
     header("location:index.php");
@@ -149,7 +152,12 @@ if (!isset($_SESSION['NAMA'])) {
                             <div data-i18n="Analytics">Dashboard</div>
                         </a>
                     </li>
-
+                    <li class="menu-item">
+                        <a href="?page=user" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-user"></i>
+                            <div data-i18n="Basic">User</div>
+                        </a>
+                    </li>
                     <!-- Layouts -->
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">

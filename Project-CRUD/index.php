@@ -1,18 +1,25 @@
 <?php
 session_start();
 session_regenerate_id();
+include 'config/koneksi.php';
 if (isset($_POST['login'])) {
   $email = $_POST['email'];
   $password = $_POST['password'];
-  $dataEmail = "budi@gmail.com";
-  $dataNama = "Budi Hartono";
-  $dataPassword = "12345678";
-  if ($email == $dataEmail && $password == $dataPassword) {
-    $_SESSION['NAMA'] = $dataNama;
-    header("location:main.php?page=dashboard");
+  $loginQuery= mysqli_query($koneksi,"SELECT * FROM users WHERE email='$email'");
+  $result= mysqli_fetch_assoc($loginQuery);
+  if (isset($result['email']) && $email == $result['email']) {
+    // Check password using password_verify (for hashed) or plain text (for existing/legacy passwords)
+    if (password_verify($password, $result['password']) || $password == $result['password']) {
+      $_SESSION['NAMA'] = $result['name'];
+      header("location:main.php?page=dashboard");
+      exit();
+    } else {
+      header("location:index.php");
+      exit();
+    }
   } else {
-
     header("location:index.php");
+    exit();
   }
 }
 
