@@ -1,21 +1,24 @@
 <?php
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $delete_id = mysqli_real_escape_string($koneksi, $_GET['id']);
-    if (mysqli_query($koneksi, "DELETE FROM users WHERE id = '$delete_id'")) {
-        $_SESSION['alert_success'] = "User berhasil dihapus!";
+    if (mysqli_query($koneksi, "DELETE FROM roles WHERE id = '$delete_id'")) {
+        $_SESSION['alert_success'] = "Role berhasil dihapus!";
     } else {
-        $_SESSION['alert_error'] = "Gagal menghapus user: " . mysqli_error($koneksi);
+        $_SESSION['alert_error'] = "Gagal menghapus role: " . mysqli_error($koneksi);
     }
-    header("Location: ?page=user");
+    header("Location: ?page=role");
     exit();
 }
 
-$selectUsers = mysqli_query($koneksi, "SELECT users.name, users.email, users.id FROM users");
-$rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
+$selectRoles = mysqli_query($koneksi, "SELECT * FROM roles ORDER BY id DESC");
+$rows = mysqli_fetch_all($selectRoles, MYSQLI_ASSOC);
 ?>
 <div class="card">
     <div class="card-header">
-        User Data
+        <h5>
+
+            Manage Roles
+        </h5>
     </div>
     <div class="card-body">
         <?php if (isset($_SESSION['alert_success'])): ?>
@@ -35,7 +38,7 @@ $rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
         <?php endif; ?>
 
         <div class="mb-2" align="right">
-            <a href="?page=user-create-edit" class="btn btn-primary">Create New User</a>
+            <a href="?page=create-role" class="btn btn-primary">Create New Roles</a>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -43,8 +46,8 @@ $rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
                     <tr>
                         <th>No</th>
                         <th>Nama</th>
-                        <th>Email</th>
-                        <th>Aksi</th>
+                        <th>Deskripsi</th>
+                        <th>Status</th>
 
                     </tr>
                 </thead>
@@ -55,10 +58,11 @@ $rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
                         <tr>
                             <td><?= $no++ ?></td>
                             <td><?= $row['name'] ?></td>
-                            <td><?= $row['email'] ?></td>
+                            <td><?= $row['description'] ?></td>
+                            <td><?= $row['is_active'] == "1" ? '<div class="text-primary">Active</div>' : '<div class="text-danger">Inactive</div>' ?></td>
                             <td>
-                                <a href="?page=user-create-edit&id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="?page=user&action=delete&id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">Delete</a>
+                                <a href="?page=create-role&id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
+                                <a href="?page=role&action=delete&id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus role ini?')">Delete</a>
                             </td>
                         </tr>
                     <?php }

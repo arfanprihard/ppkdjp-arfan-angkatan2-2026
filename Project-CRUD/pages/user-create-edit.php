@@ -1,5 +1,4 @@
 <?php
-// Initialize variables
 $id = isset($_GET['id']) ? mysqli_real_escape_string($koneksi, $_GET['id']) : '';
 $isEdit = !empty($id);
 
@@ -8,7 +7,6 @@ $emailVal = '';
 $passwordVal = '';
 $error = '';
 
-// If in edit mode, fetch the user data
 if ($isEdit) {
     $query = mysqli_query($koneksi, "SELECT * FROM users WHERE id = '$id'");
     $user = mysqli_fetch_assoc($query);
@@ -17,18 +15,15 @@ if ($isEdit) {
         $emailVal = $user['email'];
     } else {
         $error = "User tidak ditemukan.";
-        $isEdit = false; // Fallback to create mode
     }
 }
 
-// Process form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_POST['simpan_data'])) {
     $nameVal = mysqli_real_escape_string($koneksi, $_POST['name']);
     $emailVal = mysqli_real_escape_string($koneksi, $_POST['email']);
     $passwordVal = $_POST['password'];
     $confPassword = $_POST['conf-password'];
 
-    // Basic validation
     if (empty($nameVal) || empty($emailVal)) {
         $error = "Nama dan Email harus diisi!";
     } elseif (!$isEdit && empty($passwordVal)) {
@@ -37,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Password dan Confirm Password tidak cocok!";
     } else {
         if ($isEdit) {
-            // Update user (check if password is changed)
             if (!empty($passwordVal)) {
                 $passwordHash = password_hash($passwordVal, PASSWORD_DEFAULT);
                 $update = mysqli_query($koneksi, "UPDATE users SET name='$nameVal', email='$emailVal', password='$passwordHash' WHERE id='$id'");
@@ -53,12 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error = "Gagal mengupdate user: " . mysqli_error($koneksi);
             }
         } else {
-            // Check if email already exists
             $checkEmail = mysqli_query($koneksi, "SELECT * FROM users WHERE email='$emailVal'");
             if (mysqli_num_rows($checkEmail) > 0) {
                 $error = "Email sudah terdaftar!";
             } else {
-                // Create user
                 $passwordHash = password_hash($passwordVal, PASSWORD_DEFAULT);
                 $insert = mysqli_query($koneksi, "INSERT INTO users (name, email, password) VALUES ('$nameVal', '$emailVal', '$passwordHash')");
                 if ($insert) {
@@ -75,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <div class="card">
-    <div class="card-header text-center">
-        <h2 class="card-title"><?= $isEdit ? 'Edit User' : 'Create User' ?></h2>
+    <div class="card-header">
+        <h5 class="card-title"><?= $isEdit ? 'Edit User' : 'Create User' ?></h5>
     </div>
     <div class="card-body">
         <?php if (!empty($error)): ?>
@@ -104,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="password" name="conf-password" id="conf-password" class="form-control" <?= $isEdit ? '' : 'required' ?>>
             </div>
             <div class="mt-4">
-                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                <button type="submit" name="simpan_data" class="btn btn-primary me-2">Submit</button>
                 <a href="?page=user" class="btn btn-outline-secondary">Cancel</a>
             </div>
         </form>
