@@ -7,20 +7,9 @@ datasource db {
   provider = "mysql"
 }
 
-model post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String? @db.Text
-  published Boolean @default(false)
-  authorId  Int
-  user      user    @relation(fields: [authorId], references: [id], map: "Post_authorId_fkey")
 
-  @@index([authorId], map: "Post_authorId_fkey")
-}
-
-model user {
+model users {
   id    Int     @id @default(autoincrement())
   email String  @unique(map: "User_email_key")
   name  String?
-  post  post[]
 }
