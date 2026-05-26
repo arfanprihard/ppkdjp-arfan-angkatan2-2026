@@ -1,27 +1,24 @@
 <?php
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $delete_id = mysqli_real_escape_string($koneksi, $_GET['id']);
-    if (mysqli_query($koneksi, "DELETE FROM users WHERE id = '$delete_id'")) {
-        $_SESSION['alert_success'] = "User berhasil dihapus!";
+    if (mysqli_query($koneksi, "DELETE FROM categories WHERE id = '$delete_id'")) {
+        $_SESSION['alert_success'] = "Category berhasil dihapus!";
     } else {
-        $_SESSION['alert_error'] = "Gagal menghapus user: " . mysqli_error($koneksi);
+        $_SESSION['alert_error'] = "Gagal menghapus category: " . mysqli_error($koneksi);
     }
-    header("Location: ?page=user");
+    header("Location: ?page=category");
     exit();
 }
 
-$selectUsers = mysqli_query(
-    $koneksi,
-    "SELECT users.id, users.name, users.email, roles.name AS role_name
- FROM users
- LEFT JOIN roles ON users.role_id = roles.id
- ORDER BY users.id DESC"
-);
-$rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
+$selectCategories = mysqli_query($koneksi, "SELECT * FROM categories ORDER BY id DESC");
+$rows = mysqli_fetch_all($selectCategories, MYSQLI_ASSOC);
 ?>
 <div class="card">
     <div class="card-header">
-        User Data
+        <h5>
+
+            Manage Categories
+        </h5>
     </div>
     <div class="card-body">
         <?php if (isset($_SESSION['alert_success'])): ?>
@@ -41,18 +38,15 @@ $rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
         <?php endif; ?>
 
         <div class="mb-2" align="right">
-            <a href="?page=user-create-edit" class="btn btn-primary">Create New User</a>
+            <a href="?page=create-category" class="btn btn-primary">Create New Categories</a>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Aksi</th>
-
+                        <th>Category Name</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,11 +56,9 @@ $rows = mysqli_fetch_all($selectUsers, MYSQLI_ASSOC);
                         <tr>
                             <td><?= $no++ ?></td>
                             <td><?= $row['name'] ?></td>
-                            <td><?= $row['email'] ?></td>
-                            <td><?= $row['role_name'] ?></td>
                             <td>
-                                <a href="?page=user-create-edit&id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="?page=user&action=delete&id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">Delete</a>
+                                <a href="?page=create-category&id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
+                                <a href="?page=role&action=delete&id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus category ini?')">Delete</a>
                             </td>
                         </tr>
                     <?php }

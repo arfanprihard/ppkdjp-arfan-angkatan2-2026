@@ -1,9 +1,9 @@
-import express from "express";
-import dotenv from "dotenv";
-import { PrismaClient } from "../generated/prisma/client.ts";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import express from 'express';
+import dotenv from 'dotenv';
+import { PrismaClient } from '../generated/prisma/client.ts';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
-dotenv.config({ path: ".env.development" });
+dotenv.config({ path: '.env.development' });
 
 const app = express();
 const PORT = process.env.PORT;
@@ -23,15 +23,15 @@ const prisma = new PrismaClient({ adapter });
 app.use(express.json());
 
 // GET semua user
-app.get("/api/users", async (req, res) => {
+app.get('/api/users', async (req, res) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: "Gagal mengambil data user", error });
+    res.status(500).json({ message: 'Gagal mengambil data user', error });
   }
 });
 
 app.listen(PORT, () => {
-  console.log("Express API running in port: " + PORT);
+  console.log('Express API running in port: ' + PORT);
 });

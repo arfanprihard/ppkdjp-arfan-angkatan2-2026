@@ -5,6 +5,7 @@ $isEdit = !empty($id);
 $nameVal = '';
 $emailVal = '';
 $passwordVal = '';
+$roleIdVal = '';
 $error = '';
 
 if ($isEdit) {
@@ -13,6 +14,7 @@ if ($isEdit) {
     if ($user) {
         $nameVal = $user['name'];
         $emailVal = $user['email'];
+        $roleIdVal = $user['role_id'];
     } else {
         $error = "User tidak ditemukan.";
     }
@@ -23,9 +25,10 @@ if (isset($_POST['simpan_data'])) {
     $emailVal = mysqli_real_escape_string($koneksi, $_POST['email']);
     $passwordVal = $_POST['password'];
     $confPassword = $_POST['conf-password'];
+    $roleIdVal = mysqli_real_escape_string($koneksi, $_POST['role_id']);
 
-    if (empty($nameVal) || empty($emailVal)) {
-        $error = "Nama dan Email harus diisi!";
+    if (empty($nameVal) || empty($emailVal) || empty($roleIdVal)) {
+        $error = "Nama, Email, dan Role harus diisi!";
     } elseif (!$isEdit && empty($passwordVal)) {
         $error = "Password harus diisi!";
     } elseif (!empty($passwordVal) && $passwordVal !== $confPassword) {
@@ -34,9 +37,9 @@ if (isset($_POST['simpan_data'])) {
         if ($isEdit) {
             if (!empty($passwordVal)) {
                 $passwordHash = password_hash($passwordVal, PASSWORD_DEFAULT);
-                $update = mysqli_query($koneksi, "UPDATE users SET name='$nameVal', email='$emailVal', password='$passwordHash' WHERE id='$id'");
+                $update = mysqli_query($koneksi, "UPDATE users SET name='$nameVal', email='$emailVal', password='$passwordHash', role_id='$roleIdVal' WHERE id='$id'");
             } else {
-                $update = mysqli_query($koneksi, "UPDATE users SET name='$nameVal', email='$emailVal' WHERE id='$id'");
+                $update = mysqli_query($koneksi, "UPDATE users SET name='$nameVal', email='$emailVal', role_id='$roleIdVal' WHERE id='$id'");
             }
 
             if ($update) {
@@ -52,7 +55,7 @@ if (isset($_POST['simpan_data'])) {
                 $error = "Email sudah terdaftar!";
             } else {
                 $passwordHash = password_hash($passwordVal, PASSWORD_DEFAULT);
-                $insert = mysqli_query($koneksi, "INSERT INTO users (name, email, password) VALUES ('$nameVal', '$emailVal', '$passwordHash')");
+                $insert = mysqli_query($koneksi, "INSERT INTO users (name, email, password, role_id) VALUES ('$nameVal', '$emailVal', '$passwordHash', '$roleIdVal')");
                 if ($insert) {
                     $_SESSION['alert_success'] = "User berhasil ditambahkan!";
                     header("Location: ?page=user");
@@ -86,6 +89,20 @@ if (isset($_POST['simpan_data'])) {
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" name="email" id="email" class="form-control" value="<?= htmlspecialchars($emailVal) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="role_id" class="form-label">Role</label>
+                <select name="role_id" id="role_id" class="form-control" required>
+                    <option value="">-- Pilih Role --</option>
+                    <?php
+                    $roles = mysqli_query($koneksi, "SELECT * FROM roles WHERE is_active = '1' ORDER BY name ASC");
+                    while ($role = mysqli_fetch_assoc($roles)) {
+                    ?>
+                        <option value="<?= $role['id'] ?>" <?= $roleIdVal == $role['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($role['name']) ?>
+                        </option>
+                    <?php } ?>
+                </select>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password <?= $isEdit ? '<small class="text-muted">(Kosongkan jika tidak ingin mengubah)</small>' : '' ?></label>
