@@ -1,37 +1,31 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import { PrismaClient } from '../generated/prisma/client.ts';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+require('dotenv').config()
+const PORT = process.env.PORT || 5000;
+const express = require('express');
 
-dotenv.config({ path: '.env.development' });
+const usersRoutes = require('./routes/users');
+
+const middlewareLogRequest = require('./middleware/logs');
+const upload = require('./middleware/multer');
 
 const app = express();
-const PORT = process.env.PORT;
 
-// Setup adapter Prisma v7 (wajib untuk MySQL/MariaDB)
-const adapter = new PrismaMariaDb({
-  host: process.env.DATABASE_HOST,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  connectionLimit: 5,
-});
-
-const prisma = new PrismaClient({ adapter });
-
-// Middleware
+app.use(middlewareLogRequest);
 app.use(express.json());
+app.use('/assets', express.static('public/images'))
 
-// GET semua user
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await prisma.user.findMany();
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Gagal mengambil data user', error });
-  }
-});
+app.use('/users', usersRoutes);
+app.post('/upload',upload.single('photo'),(req, res) => {
+    res.json({
+        message: 'Upload berhasil'
+    })
+})
+
+app.use((err, req, res, next) => {
+    res.json({
+        message: err.message
+    })
+})
 
 app.listen(PORT, () => {
-  console.log('Express API running in port: ' + PORT);
-});
+    console.log(`Server berhasil di running di port ${PORT}`);
+})
