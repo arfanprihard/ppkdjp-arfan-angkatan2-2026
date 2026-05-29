@@ -1,0 +1,373 @@
+<?php
+$selectCategory = mysqli_query($koneksi, "SELECT * FROM categories ORDER BY id ASC");
+$categories = mysqli_fetch_all($selectCategory, MYSQLI_ASSOC);
+
+$selectProduct = mysqli_query($koneksi, "SELECT products.*, categories.name AS category_name FROM products LEFT JOIN categories ON products.category_id = categories.id WHERE products.is_active = 1 ORDER BY id DESC");
+$products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
+?>
+<div class="row">
+
+    <div class="col-lg-8 p-4">
+
+        <ul class="nav nav-tabs" role="tablist">
+            <?php
+            foreach ($categories as $key => $cat) {
+            ?>
+                <li class="nav-item">
+                    <button class="nav-link <?= $key === 0 ? 'active' : '' ?>"
+                        data-bs-toggle="tab"
+                        data-bs-target="#tab-pane-<?= $cat['id'] ?>">
+                        <?= $cat['name'] ?>
+                    </button>
+                </li>
+            <?php
+            }
+            ?>
+        </ul>
+
+        <div class="tab-content mt-3">
+
+            <?php
+            foreach ($categories as $key => $cat) {
+            ?>
+                <div class="tab-pane fade <?= $key === 0 ? 'show active' : '' ?>" id="tab-pane-<?= $cat['id'] ?>">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <div class="fw-semibold">
+                            <?php
+                            $count = 0;
+                            foreach ($products as $p) {
+                                if ($p['category_id'] == $cat['id']) {
+                                    $count++;
+                                }
+                                if ($key == 0) {
+                                    $count++;
+                                }
+                            }
+                            ?>
+                            <span class="fs-5"><?= $count ?></span> Products
+                        </div>
+
+                        <div class="flex-grow-1 mx-3">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3">
+
+                        <?php
+                        foreach ($products as $product) {
+                            if ($product['category_id'] == $cat['id'] || $key == 0) {
+                        ?>
+                                <div class="col-md-4">
+
+                                    <div class="card product-card h-100 shadow-sm">
+
+                                        <div class="p-3 text-center">
+
+                                            <h6 class="mb-1"><?= $product['name'] ?></h6>
+
+                                            <small class="text-muted">
+                                                <?= $product['category_name'] ?>
+                                            </small>
+
+                                            <div class="mt-2">
+                                                <img src="<?= $product['image'] ?>"
+                                                    class="img-fluid" style="max-height:150px; object-fit:cover;">
+                                            </div>
+
+                                        </div>
+
+                                        <div class="px-3 pb-3 text-center">
+
+                                            <h6 class="fw-bold">
+                                                Rp <?= $product['price'] ?>
+                                            </h6>
+
+                                            <p class="text-muted">
+                                                Ready Stock <?= $product['qty'] ?> <?= $product['unit'] ?>
+                                            </p>
+                                        </div>
+                                        <div class="px-3 pb-3 d-flex justify-content-center gap-2">
+                                            <button type="button" class="btn btn-success btn-sm btn-detail-book" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                                Detail Book
+                                            </button>
+
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                Add To Cart
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                        <?php
+
+                            }
+                        }
+                        ?>
+
+                    </div>
+
+                </div>
+            <?php
+            }
+            ?>
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-4 p-4">
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class="nav-link active">Order Details</button>
+            </li>
+        </ul>
+
+        <div class="card p-3 mt-3 shadow-sm">
+
+            <div class="d-flex align-items-center my-3">
+                <div class="avatar-circle me-3">
+                    U
+                </div>
+
+                <div>
+                    <small class="text-muted">Member</small>
+                    <div class="fw-semibold">
+                        Username
+                    </div>
+                </div>
+            </div>
+
+            <div id="order-items" style="max-height: 350px; overflow-y: auto;">
+
+                <div class="card p-2 mb-2 border-0 shadow-sm">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="d-flex align-items-center gap-3">
+                            <img class="rounded-circle" src="assets/img/default.jpg" width="45" height="45" style="object-fit: cover;">
+
+                            <div>
+                                <div class="fw-semibold">Title Book</div>
+                                <small class="text-muted">
+                                    Rp 0
+                                </small>
+                            </div>
+                        </div>
+
+                        <a href="#" class="btn btn-sm btn-outline-danger">
+                            X
+                        </a>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center my-3">
+
+                        <div class="d-flex align-items-center gap-1">
+                            <a href="#" class="btn btn-outline-primary btn-sm">-</a>
+
+                            <span class="fw-semibold px-2">0</span>
+
+                            <a href="#" class="btn btn-outline-primary btn-sm">+</a>
+                        </div>
+
+                        <div class="fw-bold">
+                            Rp 0
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="border-top pt-3 mt-3">
+
+                <div class="d-flex justify-content-between">
+                    <small>Subtotal</small>
+                    <small id="subtotal">Rp 0</small>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <small>Tax</small>
+                    <small id="tax">Rp 0</small>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <small>Discount</small>
+                    <small id="discount">Rp 0</small>
+                </div>
+
+                <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+                    <small>Total</small>
+                    <small id="total-bill">Rp 0</small>
+                </div>
+
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <button class="btn btn-success w-100" id="btn-payment" type="button" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                    Payment
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Detail Book</h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="row">
+
+                    <div class="col-md-5 text-center mb-3 mb-md-0">
+                        <img id="modalImage" src="assets/img/default.jpg" alt="Book Image" class="img-fluid rounded-4 shadow-sm" style="max-height: 300px; object-fit: cover;">
+                    </div>
+
+                    <div class="col-md-7">
+                        <h3 id="modalTitle" class="fw-bold text-dark mb-3">Judul Buku</h3>
+
+                        <div class="mb-2">
+                            <strong>Category:</strong> <span id="modalCategory"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Author:</strong> <span id="modalAuthor"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Publisher:</strong> <span id="modalPublisher"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Year:</strong> <span id="modalYear"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Price:</strong> <span id="modalPrice" class="text-success fw-bold"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Stock:</strong> <span id="modalStock"></span> pcs
+                        </div>
+
+                        <hr>
+
+                        <div>
+                            <strong>Description:</strong>
+                            <p id="modalDescription" class="text-muted mt-2 mb-0"></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary rounded-3" id="modalAddToCartBtn">
+                    Add To Cart
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="paymentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content rounded-4 shadow-lg border-0">
+
+            <div class="modal-header bg-success text-white rounded-top-4">
+                <h1 class="modal-title fs-5" id="paymentModalLabel">Payment Method</h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="" method="POST">
+                <div class="modal-body p-4">
+
+                    <h5 class="mb-3">Pilih Metode Pembayaran</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="w-100">
+                                <input type="radio" name="payment_method" value="COD" class="d-none payment-option" checked>
+                                <div class="card p-4 shadow-sm border payment-card h-100">
+                                    <h4 class="text-success">COD</h4>
+                                    <p class="text-muted mb-0">Bayar di tempat saat buku diterima.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="w-100">
+                                <input type="radio" name="payment_method" value="MIDTRANS" class="d-none payment-option">
+                                <div class="card p-4 shadow-sm border payment-card h-100">
+                                    <h4 class="text-primary">Midtrans</h4>
+                                    <p class="text-muted mb-0">Pembayaran online via payment gateway.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="border rounded-3 p-3 bg-light">
+                                <h6 class="fw-bold mb-3">Ringkasan Pembayaran</h6>
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal</span>
+                                    <span>Rp 0</span>
+                                </div>
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax</span>
+                                    <span>Rp 0</span>
+                                </div>
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Discount</span>
+                                    <span>- Rp 0</span>
+                                </div>
+
+                                <hr>
+
+                                <div class="d-flex justify-content-between fw-bold fs-5">
+                                    <span>Total</span>
+                                    <span>Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="alert alert-info rounded-3 mb-0">
+                                <strong>Catatan:</strong><br>
+                                - Jika memilih <b>COD</b>, pesanan akan langsung diproses.<br>
+                                - Jika memilih <b>Midtrans</b>, nanti bisa diarahkan ke payment gateway.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="process_payment" class="btn btn-success rounded-3 px-4">
+                        Bayar Sekarang
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
