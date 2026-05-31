@@ -9,7 +9,9 @@ const Content = () => {
       <main className="flex-1 h-screen overflow-y-auto">
         <div className="h-full">
           <Topbar />
-          <Outlet />
+          <div className="w-full p-7 max-w-500 mx-auto">
+            <Outlet />
+          </div>
         </div>
       </main>
     </div>

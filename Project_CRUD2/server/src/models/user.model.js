@@ -1,6 +1,8 @@
 import database from "../config/database.js";
 const getAllUsers = async () => {
-  const [rows] = await database.execute("SELECT * FROM users");
+  const [rows] = await database.execute(
+    "SELECT users.name, users.email, roles.name as role FROM users JOIN roles ON users.role_id = roles.id ORDER BY users.id DESC",
+  );
   return rows;
 };
 
@@ -11,25 +13,31 @@ const getUserById = async (id) => {
 
 const createUser = async (body) => {
   const [result] = await database.execute(
-    "INSERT Into users (name, email, password) VALUES (?, ?, ?)",
-    [body.name, body.email, body.password],
+    "INSERT Into users (name, email, password, role_id) VALUES (?, ?, ?, ?)",
+    [body.name, body.email, body.password, body.role_id],
   );
   return result;
 };
 
-const updateUser = async (body, id) => {
+const updateUserById = async (body, id) => {
   const [result] = await database.execute(
-    "UPDATE users SET name=?, email=?, password=? WHERE id=?",
-    [body.email, body.email, body.password, id],
+    "UPDATE users SET name=?, email=?, password=?, role_id=? WHERE id=?",
+    [body.name, body.email, body.password, body.role_id, id],
   );
   return result;
 };
 
-const deleteUser = async (id) => {
+const deleteUserById = async (id) => {
   const [result] = await database.execute("DELETE FROM users WHERE id = ?", [
     id,
   ]);
   return result;
 };
 
-export { getAllUsers, getUserById, createUser, deleteUser, updateUser };
+export default {
+  getAllUsers,
+  getUserById,
+  createUser,
+  deleteUserById,
+  updateUserById,
+};
