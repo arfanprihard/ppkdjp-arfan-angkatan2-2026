@@ -39,6 +39,7 @@ const createUser = async (req, res) => {
         message: "Data tidak sesuai!",
         data: null,
       });
+      return;
     }
     await userModel.createUser(body);
     res.status(201).json({

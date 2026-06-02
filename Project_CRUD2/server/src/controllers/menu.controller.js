@@ -17,7 +17,7 @@ const getAllMenus = async (req, res) => {
 
 const createMenu = async (req, res) => {
   try {
-    const { body } = req.body;
+    const { body } = req;
     await menuModel.createMenu();
     res.status(200).json({
       message: "Create menu success",
@@ -34,7 +34,7 @@ const createMenu = async (req, res) => {
 const updateMenuById = async (req, res) => {
   try {
     const { id } = req.params;
-    await menuModel.updateMenuById();
+    await menuModel.updateMenuById(id);
     res.status(200).json({
       message: "Update menu succes",
       id: id,
@@ -50,9 +50,10 @@ const updateMenuById = async (req, res) => {
 const deleteMenuById = async (req, res) => {
   try {
     const { id } = req.params;
-    await menuModel.deleteMenuById();
+    await menuModel.deleteMenuById(id);
     res.status(200).json({
       message: "Delete menu success",
+      id: id,
     });
   } catch (error) {
     res.status(500).json({

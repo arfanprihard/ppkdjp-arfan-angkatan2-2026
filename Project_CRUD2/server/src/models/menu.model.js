@@ -1,7 +1,9 @@
 import database from "../config/database.js";
 
 const getAllMenus = async () => {
-  const [rows] = await database.execute("SELECT * FROM menus ORDER BY id ASC");
+  const [rows] = await database.execute(
+    "SELECT menus.*, parent.name AS parent_name FROM menus LEFT JOIN menus AS parent ON parent.id = menus.id_parent ORDER BY menus.id ASC",
+  );
   return rows;
 };
 
@@ -33,10 +35,11 @@ const updateMenuById = async (body, id) => {
       id,
     ],
   );
+  return result;
 };
 
 const deleteMenuById = async (id) => {
-  const [result] = await database.execute("DELETE menus WHERE id=?", [id]);
+  const [result] = await database.execute("DELETE FROM menus WHERE id=?", [id]);
   return result;
 };
 
