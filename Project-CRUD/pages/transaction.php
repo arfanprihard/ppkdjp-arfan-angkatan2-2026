@@ -4,6 +4,82 @@ $categories = mysqli_fetch_all($selectCategory, MYSQLI_ASSOC);
 
 $selectProduct = mysqli_query($koneksi, "SELECT products.*, categories.name AS category_name FROM products LEFT JOIN categories ON products.category_id = categories.id WHERE products.is_active = 1 ORDER BY id DESC");
 $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
+
+if(isset($_POST['process_payment'])){
+    $customer_name = $_POST['customer_name'];
+    $payment_method = $_POST['payment_method'];
+    $cart_row = $_POST['cart-data'];
+    $cart_items = json_decode($cart_row, true);
+
+    if(!empty($cart_items)){
+        $subtotal = 0;
+        foreach($cart_items as $item){
+            $subtotal += $item['price'] * $item['qty'];
+        }
+        $tax = $subtotal * 0.1;
+        $discount = 0;
+        $total_bill = $subtotal + $tax - $discount;
+        $discount;
+        $order_number = 'ORD-' . date('Ymd') . '-' . rand(1000,9999);
+        if($payment_method === 'CASH'){
+            $payment_status = 'SUCCESS';
+            $insertOrder = mysqli_query($koneksi, "INSERT INTO `orders`(order_number, customer_name, payment_method, subtotal, tax, discount, total_bill, payment_status) 
+            VALUES ('$order_number','$customer_name','$payment_method','$subtotal','$tax','$discount','$total_bill','$payment_status')");
+            if ($insertOrder) {
+                $order_id = mysqli_insert_id($koneksi);
+                foreach($cart_items as $item){
+                    $product_id = $item['id'];
+                    $product_name = $item['name'];
+                    $price = $item['price'];
+                    $quantity = $item['qty'];
+                    $total_price = $price * $quantity;
+
+                    $insertOrdDetail = mysqli_query($koneksi, "INSERT INTO order_details (order_id, product_id, product_name, price, quantity, total_price) 
+                    VALUES ('$order_id','$product_id','$product_name','$price','$quantity','$total_price')");
+
+                    if($insertOrdDetail){
+                        mysqli_query($koneksi, "UPDATE products SET qty=qty-$quantity WHERE id='$product_id'");
+                    }
+                }
+                header("location:?page=transaction");
+                exit();
+            }
+        }else if($payment_method === 'MIDTRANS'){
+            require_once 'vendor/midtrans/midtrans-php/Midtrans.php';
+            \Midtrans\Config::$serverKey = 'Mid-server-tFLocuDVRwBStMnHtPKfvijd';
+            \Midtrans\Config::$isProduction = false;
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $order_number,
+                    'gross_amount' => (int)$total_bill
+                ],
+                'customer_details' => [
+                    'first_name' => $customer_name
+                ]
+            ];
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+            echo "
+            <script>
+            window.snapToken = '$snapToken';
+            window.midtransData = {
+                order_number: '$order_number',     
+                customer_name: '$customer_name',     
+                payment_method: 'MIDTRANS',     
+                subtotal: '$subtotal',     
+                tax: '$tax',     
+                discount: '$discount',     
+                total_bill: '$total_bill',     
+                'cart-data': '" . base64_encode($cart_row) . "',     
+            };
+            </script>
+            ";
+        }
+    }
+}
 ?>
 <div class="row">
 
@@ -38,7 +114,7 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
                             <?php
                             $count = 0;
                             foreach ($products as $p) {
-                                if ($p['category_id'] == $cat['id']) {
+                                if ($p['id'] == $cat['id']) {
                                     $count++;
                                 }
                                 if ($key == 0) {
@@ -59,7 +135,7 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
 
                         <?php
                         foreach ($products as $product) {
-                            if ($product['category_id'] == $cat['id'] || $key == 0) {
+                            if ($product['id'] == $cat['id'] || $key == 0) {
                         ?>
                                 <div class="col-md-4">
 
@@ -70,12 +146,12 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
                                             <h6 class="mb-1"><?= $product['name'] ?></h6>
 
                                             <small class="text-muted">
-                                                <?= $product['category_name'] ?>
+                                                <?= $product['name'] ?>
                                             </small>
 
                                             <div class="mt-2">
-                                                <img src="<?= $product['image'] ?>"
-                                                    class="img-fluid" style="max-height:150px; object-fit:cover;">
+                                                <img src="<?= $product['image'] ?>" 
+                                                class="img-fluid" style="max-height:150px; object-fit:cover;">
                                             </div>
 
                                         </div>
@@ -91,13 +167,14 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
                                             </p>
                                         </div>
                                         <div class="px-3 pb-3 d-flex justify-content-center gap-2">
-
+                                            
 
                                             <button type="button" class="btn btn-primary btn-sm btn-add-card"
                                                 data-id="<?= $product['id'] ?>"
                                                 data-name="<?= $product['name'] ?>"
                                                 data-price="<?= $product['price'] ?>"
-                                                data-image="<?= $product['image'] ?>">
+                                                data-image="<?= $product['image'] ?>"
+                                            >
                                                 Add To Cart
                                             </button>
                                         </div>
@@ -245,23 +322,27 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
             <form action="" method="POST">
                 <input type="text" name="cart-data" id="cart-data" class="form-control">
                 <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" name="customer_name" placeholder="Isi nama anda.." required>
+                    </div>
 
                     <h5 class="mb-3">Pilih Metode Pembayaran</h5>
 
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="w-100">
-                                <input type="radio" name="payment_method" value="COD" class="d-none payment-option" checked>
+                                <input type="radio" name="payment_method" value="CASH" class="payment-option" checked>
                                 <div class="card p-4 shadow-sm border payment-card h-100">
-                                    <h4 class="text-success">COD</h4>
-                                    <p class="text-muted mb-0">Bayar di tempat saat buku diterima.</p>
+                                    <h4 class="text-success">Cash</h4>
+                                    <p class="text-muted mb-0">Bayar di tempat.</p>
                                 </div>
                             </label>
                         </div>
 
                         <div class="col-md-6">
                             <label class="w-100">
-                                <input type="radio" name="payment_method" value="MIDTRANS" class="d-none payment-option">
+                                <input type="radio" name="payment_method" value="MIDTRANS" class="payment-option">
                                 <div class="card p-4 shadow-sm border payment-card h-100">
                                     <h4 class="text-primary">Midtrans</h4>
                                     <p class="text-muted mb-0">Pembayaran online via payment gateway.</p>
@@ -335,8 +416,8 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
 
     //event delegation
     let cart = [];
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('btn-add-card')) {
+    document.addEventListener('click', function(e){
+        if(e.target && e.target.classList.contains('btn-add-card')){
             const id = e.target.getAttribute('data-id');
             const name = e.target.getAttribute('data-name');
             const price = e.target.getAttribute('data-price');
@@ -345,9 +426,9 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
             //jika cart nya sama valuenya dengan yang dikiri dari button atau sudah ada
             //foreach(cart as item)
             const extProducts = cart.find(item => item.id === id);
-            if (extProducts) {
+            if(extProducts){
                 extProducts.qty += 1;
-            } else {
+            }else{
                 cart.push({
                     id,
                     name,
@@ -360,11 +441,11 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
         }
     })
 
-    function renderCart() {
+    function renderCart(){
         const containerCart = document.getElementById('order-items');
         containerCart.innerHTML = "";
 
-        if (cart.length === 0) {
+        if(cart.length === 0){
             containerCart.innerHTML = "<p class='text-muted text-center py-3'>Cart Empty</p>"
             updateCart();
             return;
@@ -417,29 +498,29 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
         updateCart();
     }
 
-    document.getElementById('order-items').addEventListener('click', function(e) {
+    document.getElementById('order-items').addEventListener('click', function(e){
         const id = e.target.getAttribute('data-id');
-        if (!id) return;
+        if(!id) return;
 
         const itemIndex = cart.findIndex(item => item.id === id);
-        if (e.target.classList.contains('btn-plus')) {
+        if(e.target.classList.contains('btn-plus')){
             cart[itemIndex].qty += 1;
-        } else if (e.target.classList.contains('btn-minus')) {
+        }else if(e.target.classList.contains('btn-minus')){
             //jika di cart qty cuma 1
-            if (cart[itemIndex].qty > 1) {
+            if (cart[itemIndex].qty > 1){
                 cart[itemIndex].qty -= 1;
-            } else {
+            }else{
                 //qty cuma 1 terus mau di minus lagi jadi maka hilang product di cart nya
                 //splice(index, 1)
                 cart.splice(itemIndex, 1)
             }
-        } else if (e.target.classList.contains('btn-delete')) {
+        } else if (e.target.classList.contains('btn-delete')){
             cart.splice(itemIndex, 1)
         }
         renderCart();
     })
 
-    function updateCart() {
+    function updateCart(){
         let subtotal = 0;
         let tax = 0;
         let discount = 0;
@@ -453,15 +534,15 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
         const formatRupiah = (number) => {
             return "Rp." + number.toLocaleString('id-ID');
         }
-
-        document.getElementById('subtotal').innerText = formatRupiah(subtotal);
-        document.getElementById('tax').innerText = formatRupiah(tax);
-        document.getElementById('discount').innerText = formatRupiah(discount);
-        document.getElementById('total-bill').innerText = formatRupiah(total);
+        
+        document.getElementById('subtotal').innerText  = formatRupiah(subtotal);
+        document.getElementById('tax').innerText  = formatRupiah(tax);
+        document.getElementById('discount').innerText  = formatRupiah(discount);
+        document.getElementById('total-bill').innerText  = formatRupiah(total);
 
         const cartModal = document.querySelector('#paymentModal .border.rounded-3');
         //jika cart modal terbuka
-        if (cartModal) {
+        if(cartModal){
             const spans = cartModal.querySelectorAll('span');
             if (spans.length >= 8) {
                 spans[1].innerText = formatRupiah(subtotal);
@@ -473,12 +554,57 @@ $products = mysqli_fetch_all($selectProduct, MYSQLI_ASSOC);
         document.getElementById('cart-data').value = JSON.stringify(cart);
     }
 
-    document.getElementById('btn-payment').addEventListener('click', () => {
-        if (cart.length === 0) {
+    document.getElementById('btn-payment').addEventListener('click', () =>{
+        if(cart.length === 0){
             alert('Cart is empty');
 
             //stopPropagation(); : modal tidak muncul
             e.stopPropagation();
         }
     })
+
+    // if (typeof window.snapToken !==) {}
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Trigger snap popup. @TODO: Replace TRANSACTION_TOKEN_HERE with your transaction token.
+      // Tutorial to create snap token - https://docs.midtrans.com/reference/backend-integration
+      // Also, use the embedId that you defined in the div above, here.
+      snap.pay(window.snapToken, {
+        onSuccess: function (result) {
+          /* You may add your own implementation here */
+          alert("payment success!");
+          fetch('simpan_transaksi_midtrans.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(window.midtransData)
+          }) 
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+                window.open('print_struk.php?order_id=' + data.order_id, '_blank');
+            } else {
+                alert("Pembayaran gagal");
+            }
+            window.location.href = '?page=transaction';
+          });
+        //   console.log(result);
+        },
+        onPending: function (result) {
+          /* You may add your own implementation here */
+          alert("wating your payment!"); 
+          console.log(result);
+        },
+        onError: function (result) {
+          /* You may add your own implementation here */
+          alert("payment failed!"); 
+          console.log(result);
+        },
+        onClose: function () {
+          /* You may add your own implementation here */
+          alert('you closed the popup without finishing the payment');
+        }
+      });
+    });
 </script>

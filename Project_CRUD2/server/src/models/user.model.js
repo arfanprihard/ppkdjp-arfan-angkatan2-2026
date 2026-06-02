@@ -1,7 +1,7 @@
 import database from "../config/database.js";
 const getAllUsers = async () => {
   const [rows] = await database.execute(
-    "SELECT users.name, users.email, roles.name as role FROM users JOIN roles ON users.role_id = roles.id ORDER BY users.id DESC",
+    "SELECT users.id, users.name, users.email, roles.name as role FROM users JOIN roles ON users.role_id = roles.id ORDER BY users.id DESC",
   );
   return rows;
 };
@@ -20,9 +20,21 @@ const createUser = async (body) => {
 };
 
 const updateUserById = async (body, id) => {
+  const fields = ["name=?", "email=?"];
+  const values = [body.name, body.email];
+
+  if (body.password) {
+    fields.push("password=?");
+    values.push(body.password);
+  }
+
+  fields.push("role_id=?");
+  values.push(body.role_id);
+  values.push(id);
+
   const [result] = await database.execute(
-    "UPDATE users SET name=?, email=?, password=?, role_id=? WHERE id=?",
-    [body.name, body.email, body.password, body.role_id, id],
+    `UPDATE users SET ${fields.join(", ")} WHERE id=?`,
+    values,
   );
   return result;
 };

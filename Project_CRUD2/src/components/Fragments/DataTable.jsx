@@ -1,16 +1,35 @@
 import { useState } from "react";
 import Pagination from "../Elements/Pagination";
-const DataTable = ({ columns, data, itemsPerPage = 10 }) => {
+
+const DataTable = ({ columns, data, itemsPerPage = 10, onEdit, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const actionColumn = {
     header: "Action",
     className: "text-center",
     cellClassName: "text-center text-xl",
-    render: () => (
+    render: (item) => (
       <div className="flex justify-center gap-2">
-        <i className="bx bx-edit cursor-pointer text-green-700 hover:scale-110"></i>
-        <i className="bx bx-trash cursor-pointer text-red-500 hover:scale-110"></i>
+        {onEdit && (
+          <i
+            className="bx bx-edit cursor-pointer text-green-700 hover:scale-110 transition-transform"
+            onClick={() => onEdit(item)}
+            title="Edit"
+          ></i>
+        )}
+        {onDelete && (
+          <i
+            className="bx bx-trash cursor-pointer text-red-500 hover:scale-110 transition-transform"
+            onClick={() => onDelete(item)}
+            title="Delete"
+          ></i>
+        )}
+        {!onEdit && !onDelete && (
+          <>
+            <i className="bx bx-edit cursor-pointer text-green-700 hover:scale-110"></i>
+            <i className="bx bx-trash cursor-pointer text-red-500 hover:scale-110"></i>
+          </>
+        )}
       </div>
     ),
   };

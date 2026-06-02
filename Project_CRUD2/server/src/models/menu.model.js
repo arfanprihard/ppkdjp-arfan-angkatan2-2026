@@ -7,6 +7,11 @@ const getAllMenus = async () => {
   return rows;
 };
 
+const getMenuById = async (id) => {
+  const [rows] = await database.execute("SELECT * FROM menus WHERE id=?", [id]);
+  return rows;
+};
+
 const createMenu = async (body) => {
   const [result] = await database.execute(
     "INSERT INTO menus (id_parent, name, url, icon, sort_order, is_active) VALUES (? , ?, ?, ?, ?, ?)",
@@ -43,4 +48,4 @@ const deleteMenuById = async (id) => {
   return result;
 };
 
-export default { getAllMenus, createMenu, updateMenuById, deleteMenuById };
+export default { getAllMenus, getMenuById, createMenu, updateMenuById, deleteMenuById };
