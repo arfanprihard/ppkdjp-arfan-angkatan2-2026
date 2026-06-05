@@ -31,7 +31,8 @@ const UserForm = () => {
         // Load user data if editing
         if (isEdit) {
           const userResult = await userService.getUserById(id);
-          const userData = userResult.id?.[0] || userResult.data?.[0] || userResult;
+          const userData =
+            userResult.id?.[0] || userResult.data?.[0] || userResult;
           setFormData({
             name: userData.name || "",
             email: userData.email || "",
@@ -95,7 +96,7 @@ const UserForm = () => {
     } catch (err) {
       setSubmitError(
         (isEdit ? "Gagal mengupdate user. " : "Gagal membuat user. ") +
-          (err.message || "")
+          (err.message || ""),
       );
     } finally {
       setLoading(false);
@@ -204,8 +205,7 @@ const UserForm = () => {
               htmlFor="input-password"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              Password{" "}
-              {!isEdit && <span className="text-red-500">*</span>}
+              Password {!isEdit && <span className="text-red-500">*</span>}
               {isEdit && (
                 <span className="text-gray-400 text-xs font-normal">
                   (Kosongkan jika tidak ingin mengubah)
@@ -288,12 +288,14 @@ const UserForm = () => {
               {loading && (
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
               )}
-              <i className={`bx ${isEdit ? "bx-check" : "bx-plus"} text-lg`}></i>
+              <i
+                className={`bx ${isEdit ? "bx-check" : "bx-plus"} text-lg`}
+              ></i>
               {loading
                 ? "Menyimpan..."
                 : isEdit
-                ? "Update User"
-                : "Simpan User"}
+                  ? "Update User"
+                  : "Simpan User"}
             </button>
             <button
               type="button"

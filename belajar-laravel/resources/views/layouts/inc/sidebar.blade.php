@@ -25,15 +25,21 @@
 
                 <li class="sidebar-item  has-sub">
                     <a href="#" class='sidebar-link'>
-                        <i class="bi bi-map-fill"></i>
-                        <span>Maps</span>
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>User Management</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
-                            <a href="ui-map-google-map.html">Google Map</a>
+                            <a href="{{ route('user.index') }}">Data User</a>
                         </li>
                         <li class="submenu-item ">
-                            <a href="ui-map-jsvectormap.html">JS Vector Map</a>
+                            <a href="#">Create User</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a href="{{ route('role.index') }}">Role</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a href="ui-map-jsvectormap.html">Create Role</a>
                         </li>
                     </ul>
                 </li>

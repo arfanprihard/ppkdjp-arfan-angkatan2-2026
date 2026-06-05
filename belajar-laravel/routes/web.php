@@ -3,6 +3,8 @@
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -25,7 +27,7 @@ Route::get('/profile', [ProfileController::class, 'index']);
 //     return view('profile.index');
 // });
 
-//Login
+// Login
 Route::get('/', [LoginController::class, 'index'])->name('login');
 
 //
@@ -33,6 +35,11 @@ Route::get('/', [LoginController::class, 'index'])->name('login');
 Route::post('action-login', [LoginController::class, 'actionLogin'])->name('action-login');
 Route::post('action-logout', [LoginController::class, 'actionLogout'])->name('action-logout');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->middleware('auth');
+Route::middleware(['auth', 'prevent-back'])->group(function () {
+    Route::get('dashboard', function () {
+        return view('dashboard.index');
+    });
+    Route::resource('user', UserController::class);
+});
+
+Route::resource('role', RoleController::class);

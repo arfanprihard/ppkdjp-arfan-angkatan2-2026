@@ -19,6 +19,7 @@
 </head>
 
 <body>
+    @include('sweetalert::alert')
     <div id="app">
         @include('layouts.inc.sidebar')
 
@@ -34,7 +35,7 @@
             </div>
             <div class="page-content">
                 <section class="row">
-                    <div class="col-12 col-lg-9">
+                    <div class="col-12">
                         @yield('content')
                     </div>
                 </section>
@@ -60,6 +61,7 @@
     <script src="{{ asset('template/dist/assets/js/pages/dashboard.js')}}"></script>
 
     <script src="{{ asset('template/dist/assets/js/main.js')}}"></script>
+    @include('sweetalert::alert', ['cdn' => "https://cdn.jsdelivr.net/npm/sweetalert2@9"])
 </body>
 
 </html>
