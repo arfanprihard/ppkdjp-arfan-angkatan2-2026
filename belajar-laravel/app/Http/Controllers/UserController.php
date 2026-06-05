@@ -84,6 +84,7 @@ class UserController extends Controller
             $data['password'] = $request->password;
         }
         User::find($id)->update($data);
+        Alert::success('Berhasil', 'User berhasil diedit');
         return redirect()->to('user');
     }
 

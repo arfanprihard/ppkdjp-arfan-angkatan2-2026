@@ -12,18 +12,21 @@
         @method('PUT')
         <div class="mb-3">
             <label for="">Name *</label>
-            <input type="text" class="form-control" placeholder="Enter your name" name="name" required>
+            <input type="text" class="form-control" placeholder="Enter your name" name="name" required
+                value="{{ $edit->name }}">
         </div>
         <div class="mb-3">
             <label>Status *</label>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="is_active" value="1" required>
+                <input class="form-check-input" type="radio" name="is_active" value="1" required {{ $edit->is_active ==
+                1 ? 'checked':''}}>
                 <label class="form-check-label">Active</label>
             </div>
 
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="is_active" value="0">
+                <input class="form-check-input" type="radio" name="is_active" value="0" {{ $edit->is_active ==
+                0 ? 'checked':''}}>
                 <label class="form-check-label">Inactive</label>
             </div>
         </div>

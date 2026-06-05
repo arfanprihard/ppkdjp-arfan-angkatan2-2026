@@ -39,7 +39,7 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
     Route::get('dashboard', function () {
         return view('dashboard.index');
     });
-    Route::resource('user', UserController::class);
 });
 
+Route::resource('user', UserController::class);
 Route::resource('role', RoleController::class);

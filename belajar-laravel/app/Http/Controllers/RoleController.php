@@ -38,10 +38,12 @@ class RoleController extends Controller
     {
         $request->validate([
             'name'     => 'required|string|max:255',
+            'is_active' => 'required|in:0,1',
         ]);
 
         Role::create([
             'name'     => $request->name,
+            'is_active' => $request->is_active,
         ]);
         Alert::success('Berhasil', 'Role berhasil ditambahkan!');
 
@@ -74,12 +76,10 @@ class RoleController extends Controller
     {
         $data = [
             'name' => $request->name,
-            'email' => $request->email
+            'is_active' => $request->is_active
         ];
-        if (filled($request->password)) {
-            $data['password'] = $request->password;
-        }
         Role::find($id)->update($data);
+        Alert::success('Berhasil', 'Role berhasil diedit');
         return redirect()->to('role');
     }
 
