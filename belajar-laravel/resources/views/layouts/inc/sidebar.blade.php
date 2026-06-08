@@ -15,35 +15,42 @@
             <ul class="menu">
                 <li class="sidebar-title">Menu</li>
 
-                <li class="sidebar-item active ">
-                    <a href="index.html" class='sidebar-link'>
+                <li class="sidebar-item {{ request()->is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ url('dashboard') }}" class='sidebar-link'>
                         <i class="bi bi-grid-fill"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
 
-
-                <li class="sidebar-item  has-sub">
+                <li class="sidebar-item has-sub {{ request()->is('user*') || request()->is('role*') ? 'active' : '' }}">
                     <a href="#" class='sidebar-link'>
                         <i class="bi bi-person-badge-fill"></i>
                         <span>User Management</span>
                     </a>
-                    <ul class="submenu ">
-                        <li class="submenu-item ">
+                    <ul class="submenu {{ request()->is('user*') || request()->is('role*') ? 'submenu-open' : '' }}">
+                        <li class="submenu-item {{ request()->is('user*') ? 'active' : '' }}">
                             <a href="{{ route('user.index') }}">Data User</a>
                         </li>
-                        <li class="submenu-item ">
-                            <a href="#">Create User</a>
+                        <li class="submenu-item {{ request()->is('user/create') ? 'active' : '' }}">
+                            <a href="{{ route('user.create') }}">Create User</a>
                         </li>
-                        <li class="submenu-item ">
+                        <li class="submenu-item {{ request()->is('role') ? 'active' : '' }}">
                             <a href="{{ route('role.index') }}">Role</a>
                         </li>
-                        <li class="submenu-item ">
-                            <a href="ui-map-jsvectormap.html">Create Role</a>
+                        <li class="submenu-item {{ request()->is('role/create') ? 'active' : '' }}">
+                            <a href="{{ route('role.create') }}">Create Role</a>
                         </li>
                     </ul>
                 </li>
-                <li class="sidebar-item  ">
+
+                <li class="sidebar-item {{ request()->is('locker*') ? 'active' : '' }}">
+                    <a href="{{ route('locker.index') }}" class='sidebar-link'>
+                        <i class="bi bi-lock-fill"></i>
+                        <span>Locker</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
                     <form action="{{ route('action-logout') }}" method="post">
                         @csrf
                         <button type="submit" class="btn btn-danger">
@@ -51,7 +58,6 @@
                         </button>
                     </form>
                 </li>
-
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

@@ -22,15 +22,20 @@
                     event.preventDefault();
                     Swal.fire({!! Session::pull('alert.delete') !!}).then(function(result) {
                         if (result.isConfirmed) {
-                            var form = document.createElement('form');
-                            form.action = confirmDeleteElement.href;
-                            form.method = 'POST';
-                            form.innerHTML = `
-                            @csrf
-                            @method('DELETE')
-                        `;
-                            document.body.appendChild(form);
-                            form.submit();
+                            var existingForm = confirmDeleteElement.closest('form');
+                            if (existingForm) {
+                                existingForm.submit();
+                            } else {
+                                var form = document.createElement('form');
+                                form.action = confirmDeleteElement.href;
+                                form.method = 'POST';
+                                form.innerHTML = `
+                                @csrf
+                                @method('DELETE')
+                            `;
+                                document.body.appendChild(form);
+                                form.submit();
+                            }
                         }
                     });
                 }

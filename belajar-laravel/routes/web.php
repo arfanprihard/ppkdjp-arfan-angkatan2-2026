@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LatihanController;
+use App\Http\Controllers\LockerController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -43,3 +44,4 @@ Route::middleware(['auth', 'prevent-back'])->group(function () {
 
 Route::resource('user', UserController::class);
 Route::resource('role', RoleController::class);
+Route::resource('locker', LockerController::class);

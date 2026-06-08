@@ -14,11 +14,12 @@ class RoleController extends Controller
     public function index()
     {
         $title = 'Delete Role!';
-        $text = "Are you sure you want to delete?";
+        $text = 'Are you sure you want to delete?';
         confirmDelete($title, $text);
 
         $roles = Role::orderByDesc('id')->get();
         $title = 'Role Management';
+
         return view('role.index', compact('roles', 'title'));
     }
 
@@ -28,6 +29,7 @@ class RoleController extends Controller
     public function create()
     {
         $title = 'Create New Role';
+
         return view('role.create', compact('title'));
     }
 
@@ -37,12 +39,12 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'is_active' => 'required|in:0,1',
         ]);
 
         Role::create([
-            'name'     => $request->name,
+            'name' => $request->name,
             'is_active' => $request->is_active,
         ]);
         Alert::success('Berhasil', 'Role berhasil ditambahkan!');
@@ -65,6 +67,7 @@ class RoleController extends Controller
     {
         $title = 'Edit Role';
         $edit = Role::find($id);
+
         // $edit = Role::findOrFail($id);
         return view('role.edit', compact('title', 'edit'));
     }
@@ -76,11 +79,12 @@ class RoleController extends Controller
     {
         $data = [
             'name' => $request->name,
-            'is_active' => $request->is_active
+            'is_active' => $request->is_active,
         ];
         Role::find($id)->update($data);
         Alert::success('Berhasil', 'Role berhasil diedit');
-        return redirect()->to('role');
+
+        return redirect()->route('role.index');
     }
 
     /**
@@ -90,6 +94,7 @@ class RoleController extends Controller
     {
         Role::find($id)->delete();
         Alert::success('Berhasil', 'Role berhasil dihapus');
-        return redirect()->to('role');
+
+        return redirect()->route('role.index');
     }
 }

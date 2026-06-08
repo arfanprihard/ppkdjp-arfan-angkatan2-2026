@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    @include('sweetalert::alert')
+
     <div id="app">
         @include('layouts.inc.sidebar')
 
