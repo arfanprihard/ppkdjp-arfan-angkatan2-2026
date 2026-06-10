@@ -19,9 +19,9 @@ class LoginController extends Controller
         ]);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect('dashboard');
+            return redirect('/dashboard');
         }
-        return back();
+        return back()->with('loginError', 'Login Failed!');
     }
     public function actionLogout(Request $request)
     {
