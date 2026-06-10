@@ -32,6 +32,7 @@ class AuthController extends Controller
                 'message' => 'Your account has been disabled.'
             ], 403);
         }
+        $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
