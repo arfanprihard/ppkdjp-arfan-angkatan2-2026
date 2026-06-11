@@ -6,10 +6,16 @@ use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Facades\Schema;
+
 class RoomSeeder extends Seeder
 {
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
+        Room::truncate();
+        Schema::enableForeignKeyConstraints();
+
         // Ambil ID tipe kamar agar relasinya tepat
         $typeIds = RoomType::pluck('id', 'code')->toArray();
 

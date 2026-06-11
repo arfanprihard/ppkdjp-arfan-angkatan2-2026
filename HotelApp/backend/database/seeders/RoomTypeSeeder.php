@@ -5,10 +5,16 @@ namespace Database\Seeders;
 use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Facades\Schema;
+
 class RoomTypeSeeder extends Seeder
 {
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
+        RoomType::truncate();
+        Schema::enableForeignKeyConstraints();
+
         $types = [
             ['code' => 'CON', 'name' => 'Connecting Room', 'default_capacity' => 4, 'base_price' => 1200000],
             ['code' => 'ADJ', 'name' => 'Adjoining Room', 'default_capacity' => 4, 'base_price' => 1000000],

@@ -4,6 +4,7 @@ import Content from "./components/layout/Content";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
+import RoomsPage from "./pages/RoomsPage";
 
 // Komponen sementara (placeholder) agar halaman tidak crash saat diakses dari menu sidebar
 const Placeholder = ({ name }) => (
@@ -71,7 +72,7 @@ function App() {
                 allowedRoles={["admin", "receptionist", "housekeeping"]}
               >
                 <Content>
-                  <Placeholder name="Status Kamar" />
+                  <RoomsPage />
                 </Content>
               </ProtectedRoute>
             }

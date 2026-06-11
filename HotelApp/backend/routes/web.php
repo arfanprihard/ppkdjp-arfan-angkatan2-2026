@@ -9,4 +9,5 @@ Route::get('/', function () {
         'status' => 'success',
         'message' => 'HotelOps API is running'
     ]);
-});
+})->name('home');
+
