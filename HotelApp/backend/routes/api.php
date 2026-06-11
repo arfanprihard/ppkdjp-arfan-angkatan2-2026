@@ -1,0 +1,105 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\GuestController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\CheckInController;
+use App\Http\Controllers\CheckOutController;
+use App\Http\Controllers\FolioController;
+use App\Http\Controllers\HousekeepingController;
+use App\Http\Controllers\LaundryController;
+use App\Http\Controllers\FnbOrderController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
+
+// ==========================================
+// Rute Publik (Tanpa Token)
+// ==========================================
+Route::post('/login', [AuthController::class, 'login']);
+
+// ==========================================
+// Rute Terproteksi (Wajib Login & Membawa Token Sanctum)
+// ==========================================
+Route::middleware('auth:sanctum')->group(function () {
+
+    // 1. RUTE GLOBAL (Dapat diakses oleh ALL ROLES staf yang sudah login)
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']); // DashboardController akan membedakan data stats di tingkat query
+
+
+    // 2. RUTE KAMAR / ROOMS (Dapat diakses oleh Admin, Resepsionis, & Housekeeping)
+    Route::middleware('role:admin,receptionist,housekeeping')->group(function () {
+        Route::get('/rooms', [RoomController::class, 'index']);
+        Route::get('/rooms/{id}', [RoomController::class, 'show']);
+        Route::put('/rooms/{id}/status', [RoomController::class, 'updateStatus']); // Untuk checkout (FO) & membersihkan kamar (HK)
+    });
+
+
+    // 3. RUTE FRONT OFFICE - Reservasi, Check-in/out, Tamu, Billing (Dapat diakses oleh Admin & Resepsionis)
+    Route::middleware('role:admin,receptionist')->group(function () {
+        // Tamu (Guests)
+        Route::get('/guests', [GuestController::class, 'index']);
+        Route::post('/guests', [GuestController::class, 'store']);
+        Route::get('/guests/{id}', [GuestController::class, 'show']);
+        Route::put('/guests/{id}', [GuestController::class, 'update']);
+
+        // Reservasi
+        Route::get('/reservations', [ReservationController::class, 'index']);
+        Route::post('/reservations', [ReservationController::class, 'store']);
+        Route::get('/reservations/{id}', [ReservationController::class, 'show']);
+        Route::put('/reservations/{id}', [ReservationController::class, 'update']);
+        Route::patch('/reservations/{id}/cancel', [ReservationController::class, 'cancel']);
+
+        // Check-in & Check-out
+        Route::get('/checkins/today', [CheckInController::class, 'expectedArrivals']);
+        Route::post('/checkins', [CheckInController::class, 'store']);
+        Route::get('/checkouts/today', [CheckOutController::class, 'expectedDepartures']);
+        Route::post('/checkouts', [CheckOutController::class, 'store']);
+
+        // Billing / Guest Folio
+        Route::get('/folios/{checkInId}', [FolioController::class, 'show']);
+        Route::post('/folios/{id}/charges', [FolioController::class, 'addCharge']);
+        Route::post('/folios/{id}/settle', [FolioController::class, 'settle']);
+    });
+
+
+    // 4. RUTE HOUSEKEEPING - Kebersihan & Laundry (Dapat diakses oleh Admin & Housekeeping)
+    Route::middleware('role:admin,housekeeping')->group(function () {
+        // Housekeeping Tasks
+        Route::get('/housekeeping/tasks', [HousekeepingController::class, 'index']);
+        Route::post('/housekeeping/tasks', [HousekeepingController::class, 'store']);
+        Route::patch('/housekeeping/tasks/{id}', [HousekeepingController::class, 'updateStatus']);
+        Route::get('/housekeeping/room-board', [HousekeepingController::class, 'roomBoard']);
+
+        // Laundry Requests
+        Route::get('/laundry', [LaundryController::class, 'index']);
+        Route::post('/laundry', [LaundryController::class, 'store']);
+        Route::patch('/laundry/{id}', [LaundryController::class, 'updateStatus']);
+    });
+
+
+    // 5. RUTE FOOD & BEVERAGE ORDERS
+    // Membuat Order (Bisa diakses oleh Admin, F&B, dan Resepsionis khusus untuk membuat Room Service)
+    Route::post('/fnb/orders', [FnbOrderController::class, 'store'])->middleware('role:admin,fnb,receptionist');
+
+    // Mengelola Order (Hanya Admin & F&B Service)
+    Route::middleware('role:admin,fnb')->group(function () {
+        Route::get('/fnb/orders', [FnbOrderController::class, 'index']);
+        Route::patch('/fnb/orders/{id}/status', [FnbOrderController::class, 'updateStatus']);
+    });
+
+
+    // 6. RUTE KHUSUS ADMINISTRATOR (Hanya Admin)
+    Route::middleware('role:admin')->group(function () {
+        // Laporan Keuangan & Okupansi
+        Route::get('/reports/occupancy', [ReportController::class, 'occupancy']);
+        Route::get('/reports/revenue', [ReportController::class, 'revenue']);
+
+        // Manajemen Akun Staf (CRUD)
+        Route::apiResource('users', UserController::class);
+    });
+});
