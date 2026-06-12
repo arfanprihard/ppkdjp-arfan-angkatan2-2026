@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/rooms', [RoomController::class, 'index']);
         Route::get('/rooms/{id}', [RoomController::class, 'show']);
         Route::put('/rooms/{id}/status', [RoomController::class, 'updateStatus']); // Untuk checkout (FO) & membersihkan kamar (HK)
+        Route::get('/room-types', [RoomController::class, 'getRoomTypes']);
     });
 
 
@@ -101,5 +102,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Manajemen Akun Staf (CRUD)
         Route::apiResource('users', UserController::class);
+
+        // Manajemen Kamar (CRUD)
+        Route::post('/rooms', [RoomController::class, 'store']);
+        Route::put('/rooms/{id}', [RoomController::class, 'update']);
+        Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
     });
 });

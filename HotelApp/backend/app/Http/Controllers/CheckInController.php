@@ -87,7 +87,7 @@ class CheckInController extends Controller
             ]);
 
             // 6. Buat Guest Folio otomatis
-            $folioNumber = 'FOLIO-' . $room->room_number . '-' . Carbon::now()->format('YmdHis');
+            $folioNumber = 'FL-' . $room->room_number . '-' . Carbon::now()->format('mdHis');
             $folio = GuestFolio::create([
                 'check_in_id' => $checkIn->id,
                 'guest_id' => $reservation->guest_id,

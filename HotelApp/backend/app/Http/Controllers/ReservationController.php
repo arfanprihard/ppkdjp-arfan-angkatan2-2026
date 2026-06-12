@@ -14,7 +14,7 @@ class ReservationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Reservation::with(['guest', 'roomType', 'room']);
+        $query = Reservation::with(['guest', 'roomType', 'room', 'checkIn']);
 
         // Filter berdasarkan status
         if ($request->has('status')) {
@@ -31,7 +31,12 @@ class ReservationController extends Controller
             $query->whereDate('check_in_date', $request->check_in_date);
         }
 
-        $reservations = $query->latest()->paginate(15);
+        if ($request->has('all') && $request->all == 1) {
+            $reservations = $query->latest()->get();
+        } else {
+            $perPage = $request->get('per_page', 15);
+            $reservations = $query->latest()->paginate($perPage);
+        }
 
         return response()->json([
             'success' => true,
@@ -88,7 +93,7 @@ class ReservationController extends Controller
      */
     public function show(int $id)
     {
-        $reservation = Reservation::with(['guest', 'roomType', 'room', 'creator'])->find($id);
+        $reservation = Reservation::with(['guest', 'roomType', 'room', 'creator', 'checkIn'])->find($id);
 
         if (!$reservation) {
             return response()->json([

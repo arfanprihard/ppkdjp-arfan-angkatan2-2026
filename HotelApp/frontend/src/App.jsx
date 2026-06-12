@@ -5,6 +5,8 @@ import ProtectedRoute from "./components/layout/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import RoomsPage from "./pages/RoomsPage";
+import ReservationsPage from "./pages/ReservationsPage";
+import GuestsPage from "./pages/GuestsPage";
 
 // Komponen sementara (placeholder) agar halaman tidak crash saat diakses dari menu sidebar
 const Placeholder = ({ name }) => (
@@ -46,7 +48,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin", "receptionist"]}>
                 <Content>
-                  <Placeholder name="Reservasi Tamu" />
+                  <ReservationsPage />
                 </Content>
               </ProtectedRoute>
             }
@@ -58,7 +60,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin", "receptionist"]}>
                 <Content>
-                  <Placeholder name="Daftar Tamu" />
+                  <GuestsPage />
                 </Content>
               </ProtectedRoute>
             }

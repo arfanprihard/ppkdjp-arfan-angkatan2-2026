@@ -49,4 +49,10 @@ class Reservation extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    // Relasi ke CheckIn
+    public function checkIn()
+    {
+        return $this->hasOne(CheckIn::class);
+    }
 }
