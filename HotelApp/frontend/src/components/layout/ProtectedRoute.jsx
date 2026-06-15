@@ -7,9 +7,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // Tampilkan loading spinner saat sedang cek sesi ke server
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#FDFDFC] dark:bg-[#0a0a0a]">
+      <div className="flex items-center justify-center min-h-screen bg-[#090a0f]">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 border-3 border-zinc-300 dark:border-zinc-700 border-t-black dark:border-t-white rounded-full animate-spin" />
+          <div className="h-8 w-8 border-3 border-zinc-800 border-t-white rounded-full animate-spin" />
           <p className="text-xs text-zinc-400 font-medium tracking-wide uppercase">
             Memverifikasi sesi...
           </p>

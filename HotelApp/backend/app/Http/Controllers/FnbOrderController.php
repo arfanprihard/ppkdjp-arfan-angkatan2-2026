@@ -39,7 +39,7 @@ class FnbOrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'outlet' => 'required|in:resto,lounge,room_service',
+            'outlet' => 'required|in:resto,room_service',
             'guest_id' => 'nullable|exists:guests,id',
             'room_id' => 'nullable|exists:rooms,id',
             'charge_to' => 'required|in:room,cash,card',
@@ -70,7 +70,7 @@ class FnbOrderController extends Controller
                 'guest_id' => $request->guest_id,
                 'room_id' => $request->room_id,
                 'charge_to' => $request->charge_to,
-                'status' => 'pending',
+                'status' => 'proses',
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total' => $total,
@@ -129,12 +129,12 @@ class FnbOrderController extends Controller
     }
 
     /**
-     * Update status order (pending -> preparing -> served -> closed -> cancelled).
+     * Update status order (proses -> selesai).
      */
     public function updateStatus(Request $request, int $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,preparing,served,closed,cancelled'
+            'status' => 'required|in:proses,selesai'
         ]);
 
         $order = FnbOrder::find($id);

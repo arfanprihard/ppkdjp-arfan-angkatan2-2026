@@ -47,15 +47,24 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
 
-  const fetchStats = async () => {
+  const fetchStats = async (year) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get("/api/dashboard/stats");
+      const yr = year || selectedYear;
+      let url = "/api/dashboard/stats";
+      if (yr) {
+        url += `?year=${yr}`;
+      }
+      const res = await api.get(url);
       if (res.data.success) {
         setData(res.data.data);
         setLastUpdated(new Date());
+        if (res.data.data.selected_year) {
+          setSelectedYear(res.data.data.selected_year);
+        }
       } else {
         setError("Gagal mengambil data dashboard.");
       }
@@ -136,7 +145,7 @@ const DashboardPage = () => {
 
       {/* Role-based Dashboard */}
       {role === "admin" && (
-        <AdminDashboard data={data} loading={loading} />
+        <AdminDashboard data={data} loading={loading} onYearChange={fetchStats} />
       )}
       {role === "receptionist" && (
         <ReceptionistDashboard data={data} loading={loading} />

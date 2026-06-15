@@ -27,6 +27,33 @@ class DashboardController extends Controller
                 $revenueToday = FolioCharge::whereDate('charge_date', $today)->sum('amount');
                 $newReservations = Reservation::whereDate('created_at', $today)->count();
 
+                // Dapatkan tahun terpilih atau default ke tahun saat ini
+                $selectedYear = $request->query('year', Carbon::today()->year);
+
+                // Dapatkan daftar tahun unik yang memiliki transaksi
+                $availableYears = FolioCharge::selectRaw("DISTINCT YEAR(charge_date) as year")
+                    ->orderBy('year', 'desc')
+                    ->pluck('year')
+                    ->toArray();
+
+                if (empty($availableYears)) {
+                    $availableYears = [(int)Carbon::today()->year];
+                }
+
+                // Pendapatan bulanan (12 bulan penuh untuk tahun terpilih)
+                $monthlyRevenue = [];
+                for ($m = 1; $m <= 12; $m++) {
+                    $monthStart = Carbon::create($selectedYear, $m, 1)->startOfMonth();
+                    $monthEnd = Carbon::create($selectedYear, $m, 1)->endOfMonth();
+                    $monthLabel = $monthStart->format('M');
+                    
+                    $total = FolioCharge::whereBetween('charge_date', [$monthStart, $monthEnd])->sum('amount');
+                    $monthlyRevenue[] = [
+                        'month' => $monthLabel . ' ' . $selectedYear,
+                        'total' => (float)$total
+                    ];
+                }
+
                 return response()->json([
                     'success' => true,
                     'role' => $role,
@@ -35,7 +62,10 @@ class DashboardController extends Controller
                         'occupied_rooms' => $occupiedRooms,
                         'occupancy_rate' => $occupancyRate,
                         'revenue_today' => (float)$revenueToday,
-                        'new_reservations_today' => $newReservations
+                        'new_reservations_today' => $newReservations,
+                        'monthly_revenue' => $monthlyRevenue,
+                        'available_years' => $availableYears,
+                        'selected_year' => (int)$selectedYear
                     ]
                 ]);
 
@@ -72,6 +102,7 @@ class DashboardController extends Controller
                         'oc_rooms' => $statusSummary['oc'] ?? 0,
                         'od_rooms' => $statusSummary['od'] ?? 0,
                         'ooo_rooms' => $statusSummary['ooo'] ?? 0,
+                        'oos_rooms' => $statusSummary['oos'] ?? 0,
                         'pending_tasks' => $pendingTasks,
                         'my_active_tasks' => $myActiveTasks
                     ]
@@ -79,8 +110,8 @@ class DashboardController extends Controller
 
             case 'fnb':
                 // Order F&B aktif hari ini, Total Pendapatan F&B hari ini
-                $activeOrders = FnbOrder::whereIn('status', ['pending', 'preparing', 'served'])->count();
-                $fnbRevenueToday = FnbOrder::whereDate('created_at', $today)->where('status', 'closed')->sum('total');
+                $activeOrders = FnbOrder::where('status', 'proses')->count();
+                $fnbRevenueToday = FnbOrder::whereDate('created_at', $today)->where('status', 'selesai')->sum('total');
 
                 return response()->json([
                     'success' => true,

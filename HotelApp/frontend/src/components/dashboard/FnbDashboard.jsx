@@ -82,7 +82,7 @@ const FnbDashboard = ({ data, loading }) => {
                 </p>
                 <p className="text-xs text-zinc-600 mt-0.5">
                   {hasActiveOrders
-                    ? "Sedang dalam antrian / disiapkan / disajikan"
+                    ? "Sedang dalam proses pembuatan / penyiapan"
                     : "Tidak ada pesanan aktif saat ini"}
                 </p>
               </>
@@ -96,7 +96,7 @@ const FnbDashboard = ({ data, loading }) => {
         icon={TrendingUp}
         label="Pendapatan F&B Hari Ini"
         value={loading ? null : formatRupiah(data?.fnb_revenue_today)}
-        sub="Dari pesanan yang sudah closed"
+        sub="Dari pesanan yang sudah selesai"
         iconBg="from-emerald-400 to-teal-500"
         loading={loading}
       />

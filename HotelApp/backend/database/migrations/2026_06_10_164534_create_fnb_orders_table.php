@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('fnb_orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_number', 20)->unique(); // Contoh: FNB-20260609-001
-            $table->enum('outlet', ['resto', 'lounge', 'room_service']);
+            $table->string('order_number', 30)->unique(); // Contoh: FNB-20260609-001
+            $table->enum('outlet', ['resto', 'room_service']);
             $table->foreignId('guest_id')->nullable()->constrained('guests')->onDelete('set null');
             $table->foreignId('room_id')->nullable()->constrained('rooms')->onDelete('set null');
             $table->enum('charge_to', ['room', 'cash', 'card'])->default('cash');
-            $table->enum('status', ['pending', 'preparing', 'served', 'closed', 'cancelled'])->default('pending');
+            $table->enum('status', ['proses', 'selesai'])->default('proses');
             $table->decimal('subtotal', 12, 2)->default(0);
             $table->decimal('tax', 12, 2)->default(0);
             $table->decimal('total', 12, 2)->default(0);

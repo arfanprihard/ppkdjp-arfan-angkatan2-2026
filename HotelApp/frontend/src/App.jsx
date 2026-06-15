@@ -7,6 +7,10 @@ import DashboardPage from "./pages/DashboardPage";
 import RoomsPage from "./pages/RoomsPage";
 import ReservationsPage from "./pages/ReservationsPage";
 import GuestsPage from "./pages/GuestsPage";
+import HousekeepingPage from "./pages/HousekeepingPage";
+import FnbPage from "./pages/FnbPage";
+import UsersPage from "./pages/UsersPage";
+
 
 // Komponen sementara (placeholder) agar halaman tidak crash saat diakses dari menu sidebar
 const Placeholder = ({ name }) => (
@@ -86,7 +90,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin", "housekeeping"]}>
                 <Content>
-                  <Placeholder name="Housekeeping & Laundry" />
+                  <HousekeepingPage />
                 </Content>
               </ProtectedRoute>
             }
@@ -98,7 +102,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin", "fnb", "receptionist"]}>
                 <Content>
-                  <Placeholder name="Layanan Food & Beverage" />
+                  <FnbPage />
                 </Content>
               </ProtectedRoute>
             }
@@ -110,7 +114,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <Content>
-                  <Placeholder name="Kelola Staf" />
+                  <UsersPage />
                 </Content>
               </ProtectedRoute>
             }

@@ -223,7 +223,7 @@ class DemoDataSeeder extends Seeder
                 'guest_id' => $guest->id,
                 'room_id' => $room->id,
                 'charge_to' => 'room',
-                'status' => 'served',
+                'status' => 'selesai',
                 'subtotal' => 150000.00,
                 'tax' => 15000.00,
                 'total' => 165000.00,

@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import StatCard from "./StatCard";
-import { ClipboardList, Loader2, Layers, WashingMachine, CheckSquare } from "lucide-react";
+import { ClipboardList, Clock, Layers, CheckSquare } from "lucide-react";
 
-// Room status definition
+// Room status definition (supporting OOS - Out of Service)
 const ROOM_STATUSES = [
   { key: "vc", label: "VC", desc: "Vacant Clean", color: "bg-emerald-400", textColor: "text-emerald-400", dot: "bg-emerald-400" },
   { key: "vd", label: "VD", desc: "Vacant Dirty", color: "bg-amber-400", textColor: "text-amber-400", dot: "bg-amber-400" },
   { key: "oc", label: "OC", desc: "Occupied Clean", color: "bg-sky-400", textColor: "text-sky-400", dot: "bg-sky-400" },
   { key: "od", label: "OD", desc: "Occupied Dirty", color: "bg-orange-500", textColor: "text-orange-400", dot: "bg-orange-500" },
   { key: "ooo", label: "OOO", desc: "Out of Order", color: "bg-zinc-600", textColor: "text-zinc-400", dot: "bg-zinc-600" },
+  { key: "oos", label: "OOS", desc: "Out of Service", color: "bg-zinc-500", textColor: "text-zinc-500/80", dot: "bg-zinc-500" },
 ];
 
 // Stacked bar for room status
@@ -18,7 +19,8 @@ const RoomStatusBar = ({ data }) => {
     (data?.vd_rooms ?? 0) +
     (data?.oc_rooms ?? 0) +
     (data?.od_rooms ?? 0) +
-    (data?.ooo_rooms ?? 0);
+    (data?.ooo_rooms ?? 0) +
+    (data?.oos_rooms ?? 0);
 
   const values = {
     vc: data?.vc_rooms ?? 0,
@@ -26,6 +28,7 @@ const RoomStatusBar = ({ data }) => {
     oc: data?.oc_rooms ?? 0,
     od: data?.od_rooms ?? 0,
     ooo: data?.ooo_rooms ?? 0,
+    oos: data?.oos_rooms ?? 0,
   };
 
   return (
@@ -50,7 +53,7 @@ const RoomStatusBar = ({ data }) => {
       </div>
 
       {/* Legend */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {ROOM_STATUSES.map((s) => (
           <div key={s.key} className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5">
@@ -62,7 +65,7 @@ const RoomStatusBar = ({ data }) => {
             <p className={`text-xl font-extrabold ${s.textColor} leading-none`}>
               {values[s.key]}
             </p>
-            <p className="text-[10px] text-zinc-600 leading-tight">{s.desc}</p>
+            <p className="text-[10px] text-zinc-500 leading-tight">{s.desc}</p>
           </div>
         ))}
       </div>
@@ -86,12 +89,6 @@ const HousekeepingDashboard = ({ data, loading }) => {
       path: "/housekeeping",
       color: "hover:border-emerald-500/40 hover:text-emerald-400",
     },
-    {
-      label: "Daftar Laundry",
-      icon: WashingMachine,
-      path: "/housekeeping",
-      color: "hover:border-violet-500/40 hover:text-violet-400",
-    },
   ];
 
   return (
@@ -110,8 +107,8 @@ const HousekeepingDashboard = ({ data, loading }) => {
         <div className="bg-zinc-900/60 border border-zinc-800/50 rounded-2xl p-5 animate-pulse">
           <div className="h-4 w-32 bg-zinc-800 rounded mb-4" />
           <div className="h-4 bg-zinc-800 rounded-full mb-5" />
-          <div className="grid grid-cols-5 gap-3">
-            {[...Array(5)].map((_, i) => (
+          <div className="grid grid-cols-6 gap-3">
+            {[...Array(6)].map((_, i) => (
               <div key={i} className="space-y-2">
                 <div className="h-3 w-8 bg-zinc-800 rounded" />
                 <div className="h-6 w-10 bg-zinc-700 rounded" />
@@ -134,7 +131,7 @@ const HousekeepingDashboard = ({ data, loading }) => {
           loading={loading}
         />
         <StatCard
-          icon={Loader2}
+          icon={Clock}
           label="Tugas Saya"
           value={loading ? null : data?.my_active_tasks ?? 0}
           sub="Sedang saya kerjakan"

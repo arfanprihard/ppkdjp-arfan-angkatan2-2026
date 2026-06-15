@@ -57,6 +57,14 @@ class CheckInController extends Controller
                 ], 400);
             }
 
+            // Validasi Pelunasan Penuh (Tidak boleh DP/Down Payment)
+            if (abs(floatval($request->deposit_amount) - floatval($reservation->total_amount)) > 0.01) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pembayaran harus dilunasi secara penuh sebesar Rp ' . number_format($reservation->total_amount, 0, ',', '.') . ' saat check-in.'
+                ], 400);
+            }
+
             // 2. Validasi Kamar (Harus Vacant Clean / VC)
             $room = Room::find($request->room_id);
             if ($room->status !== 'vc') {

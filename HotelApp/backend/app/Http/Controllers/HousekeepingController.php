@@ -84,6 +84,11 @@ class HousekeepingController extends Controller
 
         $task->status = $request->status;
 
+        // Otomatis tugaskan ke akun yang sedang login jika status diubah ke in_progress atau completed
+        if (in_array($request->status, ['in_progress', 'completed'])) {
+            $task->assigned_to = $request->user()->id;
+        }
+
         if ($request->status === 'completed') {
             $task->completed_at = Carbon::now();
 

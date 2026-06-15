@@ -1,0 +1,254 @@
+import { useState, useEffect, useCallback } from "react";
+import api from "../api/axios";
+import {
+  RefreshCw,
+  AlertTriangle,
+  Search,
+  X,
+  Plus,
+  Users,
+  Shield,
+  Filter,
+  ChevronDown,
+} from "lucide-react";
+
+import { ROLES } from "../components/users/helpers";
+import UserCard from "../components/users/UserCard";
+import UserFormModal from "../components/users/UserFormModal";
+import UserSkeleton from "../components/users/UserSkeleton";
+
+const UsersPage = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Filter & Search states
+  const [search, setSearch] = useState("");
+  const [filterRole, setFilterRole] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all"); // 'all' | 'active' | 'inactive'
+
+  // Modals state
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+
+  // Fetch Users
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.get("/api/users");
+      if (res.data.success) {
+        setUsers(res.data.data || []);
+      } else {
+        setError("Gagal memuat data staf.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Tidak dapat terhubung ke server backend.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // Soft Delete / Toggle Active status
+  const handleToggleActive = async (user) => {
+    const actionText = user.is_active ? "menonaktifkan" : "mengaktifkan";
+    const confirmMessage = `Apakah Anda yakin ingin ${actionText} akun staf ${user.name}?`;
+    if (!window.confirm(confirmMessage)) return;
+
+    try {
+      if (user.is_active) {
+        // DELETE /api/users/{id} to deactivate
+        const res = await api.delete(`/api/users/${user.id}`);
+        if (res.data.success) {
+          fetchUsers();
+        }
+      } else {
+        // PUT /api/users/{id} with is_active = true to reactivate
+        const res = await api.put(`/api/users/${user.id}`, { is_active: true });
+        if (res.data.success) {
+          fetchUsers();
+        }
+      }
+    } catch (err) {
+      console.error("Gagal mengubah status keaktifan:", err);
+      alert(err.response?.data?.message || "Gagal mengubah status staf.");
+    }
+  };
+
+  // Filtered Users
+  const filteredUsers = users.filter((u) => {
+    const matchSearch =
+      search === "" ||
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase());
+
+    const matchRole = filterRole === "all" || u.role === filterRole;
+
+    const matchStatus =
+      filterStatus === "all" ||
+      (filterStatus === "active" && u.is_active) ||
+      (filterStatus === "inactive" && !u.is_active);
+
+    return matchSearch && matchRole && matchStatus;
+  });
+
+  const hasActiveFilters =
+    search !== "" || filterRole !== "all" || filterStatus !== "all";
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+          <div>
+            <h2 className="text-base font-bold text-white">Kelola Akun Staf</h2>
+            <p className="text-[11px] text-zinc-500">
+              {loading ? "Memuat..." : `${users.length} total akun staf · ${filteredUsers.length} ditampilkan`}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={fetchUsers}
+            disabled={loading}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-medium cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+            Segarkan
+          </button>
+          
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-xs font-bold transition-all cursor-pointer shadow-lg shadow-amber-500/10"
+          >
+            <Plus className="h-4 w-4" /> Tambah Staf
+          </button>
+        </div>
+      </div>
+
+      {/* Filter and Search Bar */}
+      <div className="flex flex-wrap gap-3">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+          <input
+            type="text"
+            placeholder="Cari staf berdasarkan nama atau email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-200 placeholder-zinc-500 outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Role Filter */}
+        <div className="relative">
+          <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+          <select
+            value={filterRole}
+            onChange={(e) => setFilterRole(e.target.value)}
+            className="pl-8 pr-8 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-400 outline-none focus:border-amber-500/40 appearance-none cursor-pointer"
+          >
+            <option value="all">Semua Jabatan</option>
+            {Object.entries(ROLES).map(([key, val]) => (
+              <option key={key} value={key}>
+                {val.label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+        </div>
+
+        {/* Status Filter */}
+        <div className="relative">
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="pl-8 pr-8 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-400 outline-none focus:border-amber-500/40 appearance-none cursor-pointer"
+          >
+            <option value="all">Semua Status</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Nonaktif</option>
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+        </div>
+
+        {/* Reset Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={() => {
+              setSearch("");
+              setFilterRole("all");
+              setFilterStatus("all");
+            }}
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:text-rose-450 hover:border-rose-500/30 text-xs font-medium transition-all cursor-pointer"
+          >
+            <X className="h-3.5 w-3.5" /> Reset Filter
+          </button>
+        )}
+      </div>
+
+      {/* Main Grid List */}
+      {error && !loading && (
+        <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-5 py-4 text-sm text-rose-400">
+          <AlertTriangle className="h-5 w-5 shrink-0" />
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <UserSkeleton />
+      ) : filteredUsers.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center text-zinc-500 bg-zinc-900/10 border border-zinc-800/40 rounded-2xl">
+          <Users className="h-10 w-10 mb-3 text-zinc-500" />
+          <p className="font-semibold text-zinc-400">Tidak ada data staf ditemukan</p>
+          <p className="text-xs mt-1 text-zinc-600">Sesuaikan filter atau tambah akun staf baru.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredUsers.map((user) => (
+            <UserCard
+              key={user.id}
+              user={user}
+              onEdit={setEditingUser}
+              onToggleActive={handleToggleActive}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Staff Form Modal (Register or Edit) */}
+      {(showAddForm || editingUser) && (
+        <UserFormModal
+          user={editingUser}
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingUser(null);
+          }}
+          onSaved={() => {
+            setShowAddForm(false);
+            setEditingUser(null);
+            fetchUsers();
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default UsersPage;
