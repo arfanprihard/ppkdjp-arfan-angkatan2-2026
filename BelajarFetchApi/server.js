@@ -113,6 +113,24 @@ app.get('/api/profile', (req, res) => {
   });
 });
 
+// ==========================================
+// 3. ENDPOINT NEWS (Public / Bebas Akses Tanpa Token)
+// ==========================================
+app.get('/api/news', (req, res) => {
+  console.log(`[Server] Menerima request ke /api/news (Public)`);
+  
+  const mockNews = [
+    { id: 1, title: "Belajar Axios Interceptor", category: "Edukasi", date: "17 Juni 2026" },
+    { id: 2, title: "Mengapa Perusahaan Menggunakan JWT?", category: "Teknologi", date: "16 Juni 2026" },
+    { id: 3, title: "Tips Menulis Kode Bersih (Clean Code)", category: "Karir", date: "15 Juni 2026" }
+  ];
+
+  return res.status(200).json({
+    message: "Berita berhasil diambil secara publik!",
+    news: mockNews
+  });
+});
+
 // Menjalankan server
 app.listen(PORT, () => {
   console.log(`===================================================`);

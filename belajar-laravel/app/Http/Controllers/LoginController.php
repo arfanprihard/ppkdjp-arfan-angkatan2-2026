@@ -21,7 +21,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
             return redirect('/dashboard');
         }
-        return back()->with('loginError', 'Login Failed!');
+        return back()->withErrors(['email' => 'Email atau password yang Anda masukkan salah.'])->onlyInput('email');
     }
     public function actionLogout(Request $request)
     {

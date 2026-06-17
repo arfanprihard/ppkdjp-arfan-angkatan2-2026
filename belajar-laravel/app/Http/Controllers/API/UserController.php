@@ -20,7 +20,7 @@ class UserController extends Controller
                 'success' => true,
                 'message' => 'Users retrieved successfully.',
                 'data' => $users
-            ], 400);
+            ], 200);
         } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

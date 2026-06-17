@@ -3,72 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Belajar Fetch API Dasar</title>
+    <title>Enterprise API Client - Axios Interceptors</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 28, 45, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+            --danger-gradient: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success-color: #10b981;
+            --error-color: #f43f5e;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b 0%, var(--bg-color) 60%);
+            background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
-            padding: 40px;
-            color: #333;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .container {
-            max-width: 800px;
-            background: #fff;
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                grid-template-columns: 1.2fr 1fr;
+            }
+            .header-section {
+                grid-column: 1 / span 2;
+            }
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .header-section h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            background: linear-gradient(to right, #818cf8, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin: 0 auto;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        p {
-            font-size: 1.1em;
-            line-height: 1.6;
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .instruction {
-            background-color: #e8f4fd;
-            border-left: 5px solid #3498db;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 20px 0;
+
+        .badge-inactive {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(244, 63, 94, 0.2);
         }
+
+        .badge-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Buttons */
         .btn {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
+            width: 100%;
+            padding: 12px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
             cursor: pointer;
-            font-size: 1em;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn:hover {
-            background-color: #2980b9;
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Profile details card */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-field {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+
+        .profile-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .profile-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Console logger */
+        .console-card {
+            grid-column: 1 / -1;
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .console-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #818cf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .console-clear {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        .console-clear:hover {
+            color: var(--text-main);
+        }
+
+        .console-body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            max-height: 250px;
+            overflow-y: auto;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-entry {
+            border-left: 3px solid #6366f1;
+            padding-left: 10px;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .log-entry.request {
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .log-entry.response {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .log-entry.error {
+            border-color: #f43f5e;
+            color: #f43f5e;
+        }
+
+        .log-entry.info {
+            border-color: #94a3b8;
+            color: #cbd5e1;
         }
     </style>
+
+    <!-- Import Map for Axios ESM inside Browser -->
+    <script type="importmap">
+        {
+            "imports": {
+                "axios": "https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/esm/axios.min.js"
+            }
+        }
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Belajar Fetch API (Dasar)</h1>
-        <p>Halaman ini terhubung dengan file script <code>step1_fetch_basic.js</code>.</p>
+    <div class="app-container">
         
-        <div class="instruction">
-            <strong>Cara Melihat Output:</strong>
-            <ol>
-                <li>Tekan tombol <strong>F12</strong> di keyboard Anda (atau Klik Kanan -> Inspeksi / Inspect).</li>
-                <li>Pilih tab <strong>Console</strong> pada jendela developer tools yang muncul.</li>
-                <li>Refresh halaman ini (F5) untuk melihat proses fetch berjalan secara langsung!</li>
-            </ol>
+        <!-- Header -->
+        <div class="header-section">
+            <h1>Enterprise API Client</h1>
+            <p>Implementasi Axios Interceptor, JWT LocalStorage & Repository Pattern</p>
         </div>
 
-        <button class="btn" onclick="location.reload()">Jalankan Ulang Fetch</button>
+        <!-- Card: Public News (Tanpa Token) -->
+        <div class="card" id="newsCard">
+            <div>
+                <h2 class="card-title">
+                    📰 Berita Publik
+                    <span class="badge" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2);">Public API</span>
+                </h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: -10px; margin-bottom: 20px;">
+                    Mengambil berita via <code>publicClient</code> (tanpa interceptor otentikasi).
+                </p>
+                
+                <div id="noNewsMsg" style="text-align: center; padding: 20px 0; color: var(--text-muted);">
+                    Klik tombol di bawah untuk memuat berita publik tanpa memerlukan token.
+                </div>
+
+                <!-- News List Container -->
+                <div id="newsList" class="profile-container" style="display: none; max-height: 180px; overflow-y: auto;">
+                    <!-- Items will be injected here -->
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button type="button" class="btn btn-primary" id="fetchNewsBtn" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);">Ambil Berita Publik</button>
+            </div>
+        </div>
+
+        <!-- Card 1: Auth (Login) -->
+        <div class="card" id="loginCard">
+            <div>
+                <h2 class="card-title">
+                    🔑 Otentikasi
+                    <span class="badge badge-inactive" id="statusBadge">Logged Out</span>
+                </h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" class="form-control" placeholder="Masukkan username" required value="arfan">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Masukkan password" required value="password123">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="loginBtn">Masuk Aplikasi</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Card 2: Protected Area / Profile -->
+        <div class="card" id="profileCard">
+            <div>
+                <h2 class="card-title">👤 Data Profil (Protected)</h2>
+                
+                <!-- Display when not logged in / profile empty -->
+                <div id="noProfileMsg" style="text-align: center; padding: 20px 0; color: var(--text-muted);">
+                    Silakan login terlebih dahulu untuk mengakses area profil terproteksi ini.
+                </div>
+
+                <!-- Profile details -->
+                <div id="profileDetails" class="profile-container" style="display: none;">
+                    <div class="profile-field">
+                        <div class="profile-label">Nama Lengkap</div>
+                        <div class="profile-value" id="profileFullName">-</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Username</div>
+                        <div class="profile-value" id="profileUsername">-</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Role Pekerjaan</div>
+                        <div class="profile-value" id="profileRole">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn btn-primary" id="fetchProfileBtn">Ambil Data Profil</button>
+                <button type="button" class="btn btn-danger" id="logoutBtn" style="display: none;">Keluar (Logout)</button>
+            </div>
+        </div>
+
+        <!-- Card 3: Visual Logger Console -->
+        <div class="console-card">
+            <div class="console-header">
+                <div class="console-title">💻 Live Interceptor & API Logs</div>
+                <button class="console-clear" id="clearConsoleBtn">Clear Logs</button>
+            </div>
+            <div class="console-body" id="consoleLogs">
+                <p class="log-entry info">[System] Menunggu interaksi Anda. Coba klik 'Ambil Data Profil' tanpa login terlebih dahulu untuk melihat Interceptor Response menangkap error 401 secara global.</p>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Menghubungkan ke file script JS -->
-    <script src="step1_fetch_basic.js"></script>
+    <!-- Script Utama Modul JS -->
+    <script type="module" src="src/main.js"></script>
 </body>
 </html>

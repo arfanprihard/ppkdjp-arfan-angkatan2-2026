@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="row justify-content-center align-items-center login-wrapper">
+                <div class="col-md-5">
+                    <div class="card login-card">
+                        <div class="card-body p-5">
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                                    <div id="email-error" class="invalid-feedback"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password"
+                                        placeholder="Enter your password">
+                                    <div id="password-error" class="invalid-feedback"></div>
+                                </div>
+                                <button class="btn btn-primary w-100" type="submit" id="btnLogin">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script>
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const btn = document.getElementById('btnLogin');
+            btn.disabled = true; // Disable the button to prevent multiple submissions
+            btn.innerText = 'Logging...'; // Change button text to indicate loading
+
+            try {
+                const endpoint = 'http://localhost:8000/api/login'; // Replace with your actual API endpoint
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                document.getElementById('email').classList.remove('is-invalid');
+                document.getElementById('password').classList.remove('is-invalid');
+                document.getElementById('email-error').innerText = "";
+                document.getElementById('password-error').innerText = "";
+                if (response.status === 422) {
+                    if (data.errors.email) {
+                        document.getElementById('email').classList.add('is-invalid');
+                        document.getElementById('email-error').innerText = data.errors.email[0];
+                    }
+                    if (data.errors.password) {
+                        document.getElementById('password').classList.add('is-invalid');
+                        document.getElementById('password-error').innerText = data.errors.password[0];
+                    }
+                    return;
+                } else
+                    if (response.ok) {
+                        localStorage.setItem('token', data.token); // Store the token in localStorage
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html'; // Redirect to dashboard after successful login
+                        }, 1000);
+                        alert('Login successful!');
+                    } else {
+                        // Handle login error
+                        alert(data.message || 'Login failed. Please check your credentials.');
+                    }
+                console.log('Login response:', data);
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert('An error occurred during login. Please try again.');
+                btn.disabled = false; // Re-enable the button in case of error
+                btn.innerText = 'Login'; // Reset button text
+            }
+            finally {
+                btn.disabled = false; // Re-enable the button after the request is complete
+                btn.innerText = 'Login'; // Reset button text       
+            }
+        });
+    </script>
+</body>
+
+</html>
