@@ -1,0 +1,3 @@
+/api/*  https://api-hotelppkd.up.railway.app/api/:splat  200
+/sanctum/*  https://api-hotelppkd.up.railway.app/sanctum/:splat  200
+/*  /index.html  200
