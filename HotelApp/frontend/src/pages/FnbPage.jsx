@@ -213,9 +213,9 @@ const FnbPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+          <div className="h-8 w-1 rounded-full bg-blue-600" />
           <div>
-            <h2 className="text-base font-bold text-white">Layanan Food & Beverage (F&B)</h2>
+            <h2 className="text-base font-bold text-zinc-900">Layanan Food & Beverage (F&B)</h2>
             <p className="text-[11px] text-zinc-500">
               Input Point of Sale (POS) pesanan dan pantau papan antrean dapur hotel.
             </p>
@@ -223,11 +223,11 @@ const FnbPage = () => {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex bg-zinc-950 border border-zinc-800 p-0.5 rounded-xl">
+        <div className="flex bg-slate-100 border border-zinc-200 p-0.5 rounded-xl">
           <button
             onClick={() => setActiveTab("pos")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeTab === "pos" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent ${
+              activeTab === "pos" ? "bg-white text-blue-600 shadow-xs border-zinc-200/50" : "text-zinc-550 hover:text-zinc-800"
             }`}
           >
             <span className="flex items-center gap-1.5">
@@ -240,15 +240,15 @@ const FnbPage = () => {
             <>
               <button
                 onClick={() => setActiveTab("kitchen")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer relative ${
-                  activeTab === "kitchen" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent relative ${
+                  activeTab === "kitchen" ? "bg-white text-blue-600 shadow-xs border-zinc-200/50" : "text-zinc-550 hover:text-zinc-800"
                 }`}
               >
                 <span className="flex items-center gap-1.5">
                   <ClipboardList className="h-3.5 w-3.5" />
                   Antrean Dapur
                   {kitchenOrdersCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500 text-black animate-pulse">
+                    <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-600 text-white animate-pulse">
                       {kitchenOrdersCount}
                     </span>
                   )}
@@ -257,8 +257,8 @@ const FnbPage = () => {
 
               <button
                 onClick={() => setActiveTab("history")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === "history" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent ${
+                  activeTab === "history" ? "bg-white text-blue-600 shadow-xs border-zinc-200/50" : "text-zinc-550 hover:text-zinc-800"
                 }`}
               >
                 <span className="flex items-center gap-1.5">
@@ -272,14 +272,14 @@ const FnbPage = () => {
       </div>
 
       {successMessage && (
-        <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-xs animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-xs animate-in fade-in slide-in-from-top-4 duration-300">
           <CheckCircle className="h-4 w-4 shrink-0" />
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 text-xs">
+        <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-xs">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {error}
         </div>

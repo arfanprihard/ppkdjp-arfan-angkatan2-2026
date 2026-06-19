@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('room_number', 10)->unique(); // Contoh: '101', '102', '201'
             $table->integer('floor');                    // Lokasi lantai kamar
-            $table->foreignId('room_type_id')->constrained('room_types')->onDelete('cascade'); // Relasi ke tipe kamar
+            $table->foreignId('room_type_id')->constrained('room_types')->onDelete('restrict'); // Relasi ke tipe kamar
 
             // Status kamar sesuai standar hotel (default: vc / kosong bersih)
-            $table->enum('status', ['vc', 'vd', 'oc', 'od', 'ooo', 'oos'])->default('vc');
+            $table->enum('status', ['vc', 'vd', 'oc', 'od', 'ooo', 'oos'])->default('vc')->index();
             // Keterangan status:
             // vc = Vacant Clean (Kosong bersih - siap pakai)
             // vd = Vacant Dirty (Kosong kotor - perlu dibersihkan)

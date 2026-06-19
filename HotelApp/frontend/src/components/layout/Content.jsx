@@ -3,7 +3,7 @@ import Topbar from "./Topbar";
 
 const DashboardLayout = ({ children }) => {
   return (
-    <div className="flex min-h-screen bg-[#090a0f] text-zinc-100 transition-colors duration-200">
+    <div className="flex min-h-screen bg-slate-50 text-zinc-800 transition-colors duration-200">
       {/* Sidebar Navigasi Kiri */}
       <Sidebar />
 

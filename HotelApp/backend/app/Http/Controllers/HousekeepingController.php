@@ -46,7 +46,7 @@ class HousekeepingController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
             'task_type' => 'required|in:room_cleaning,turndown,deep_clean,pool,public_area',
             'priority' => 'required|in:low,medium,high,urgent',
@@ -54,7 +54,7 @@ class HousekeepingController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $task = HousekeepingTask::create($request->all());
+        $task = HousekeepingTask::create($validated);
 
         return response()->json([
             'success' => true,

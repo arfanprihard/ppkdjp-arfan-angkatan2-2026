@@ -122,6 +122,7 @@ class CheckInController extends Controller
 
             // 8. Hitung ulang total biaya dan balance pada Folio
             $folio->increment('total_charges', $roomChargeAmount);
+            $folio->refresh();
             $folio->update([
                 'balance' => $folio->total_charges - $folio->total_payments
             ]);

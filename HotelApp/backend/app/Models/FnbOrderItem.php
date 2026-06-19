@@ -20,6 +20,6 @@ class FnbOrderItem extends Model
 
     public function order()
     {
-        return $this->belongsTo(FnbOrder::class);
+        return $this->belongsTo(FnbOrder::class, 'order_id');
     }
 }

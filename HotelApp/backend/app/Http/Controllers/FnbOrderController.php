@@ -91,33 +91,51 @@ class FnbOrderController extends Controller
             }
 
             // 4. Jika Pembayaran dibebankan ke kamar, masukkan ke Folio Tagihan
-            if ($request->charge_to === 'room' && $request->room_id) {
+            if ($request->charge_to === 'room') {
+                if (!$request->room_id) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Harap sertakan ID kamar untuk membebankan tagihan ke kamar.'
+                    ], 400);
+                }
+
                 $checkIn = CheckIn::where('room_id', $request->room_id)
                     ->whereHas('reservation', function($q) {
                         $q->where('status', 'checked_in');
                     })->first();
 
-                if ($checkIn) {
-                    $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
-                    if ($folio) {
-                        FolioCharge::create([
-                            'folio_id' => $folio->id,
-                            'charge_type' => 'fnb',
-                            'description' => 'F&B Order (' . ucfirst($request->outlet) . ') - #' . $order->order_number,
-                            'amount' => $total,
-                            'quantity' => 1,
-                            'charge_date' => Carbon::today(),
-                            'reference_id' => $order->id,
-                            'reference_type' => FnbOrder::class,
-                            'created_by' => $request->user()->id,
-                        ]);
-
-                        $folio->increment('total_charges', $total);
-                        $folio->update([
-                            'balance' => $folio->total_charges - $folio->total_payments
-                        ]);
-                    }
+                if (!$checkIn) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Kamar tidak memiliki check-in aktif untuk pembebanan biaya.'
+                    ], 400);
                 }
+
+                $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+                if (!$folio) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Guest Folio tidak ditemukan atau sudah ditutup untuk kamar ini.'
+                    ], 400);
+                }
+
+                FolioCharge::create([
+                    'folio_id' => $folio->id,
+                    'charge_type' => 'fnb',
+                    'description' => 'F&B Order (' . ucfirst($request->outlet) . ') - #' . $order->order_number,
+                    'amount' => $total,
+                    'quantity' => 1,
+                    'charge_date' => Carbon::today(),
+                    'reference_id' => $order->id,
+                    'reference_type' => FnbOrder::class,
+                    'created_by' => $request->user()->id,
+                ]);
+
+                $folio->increment('total_charges', $total);
+                $folio->refresh();
+                $folio->update([
+                    'balance' => $folio->total_charges - $folio->total_payments
+                ]);
             }
 
             return response()->json([
@@ -144,6 +162,14 @@ class FnbOrderController extends Controller
                 'success' => false,
                 'message' => 'Pesanan F&B tidak ditemukan.'
             ], 404);
+        }
+
+        // Batasi perubahan status agar hanya bisa maju (proses -> selesai)
+        if ($order->status === 'selesai' && $request->status === 'proses') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan yang sudah selesai tidak dapat diubah kembali ke status proses.'
+            ], 400);
         }
 
         $order->update(['status' => $request->status]);

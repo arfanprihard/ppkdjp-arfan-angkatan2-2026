@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('id_type', ['ktp', 'passport', 'sim'])->default('ktp');
-            $table->string('id_number', 50)->nullable();
+            $table->string('id_number', 50)->nullable()->unique();
             $table->string('phone', 20)->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->nullable()->unique();
             $table->text('address')->nullable();
             $table->string('nationality', 100)->default('Indonesia');
             $table->timestamps();

@@ -14,8 +14,8 @@ import UsersPage from "./pages/UsersPage";
 
 // Komponen sementara (placeholder) agar halaman tidak crash saat diakses dari menu sidebar
 const Placeholder = ({ name }) => (
-  <div className="p-6 bg-white dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800/50 rounded-xl">
-    <h2 className="text-lg font-bold text-zinc-800 dark:text-white">
+  <div className="p-6 bg-white border border-zinc-100 rounded-xl">
+    <h2 className="text-lg font-bold text-zinc-800">
       Modul {name}
     </h2>
     <p className="text-sm text-zinc-500 mt-1">

@@ -7,7 +7,7 @@ const RoomCard = ({ room, canEdit, onSelect }) => {
   return (
     <button
       onClick={() => onSelect(room)}
-      className={`relative w-full text-left rounded-2xl border p-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/30 active:scale-[0.98] cursor-pointer ${s.color} ${canEdit ? "hover:ring-2 " + s.ring : ""}`}
+      className={`relative w-full text-left rounded-2xl border p-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] cursor-pointer ${s.color} ${canEdit ? "hover:ring-2 " + s.ring : ""}`}
     >
       <div className="flex items-start justify-between mb-3">
         <div>

@@ -45,7 +45,30 @@ class CheckOutController extends Controller
 
         return DB::transaction(function () use ($request) {
             $checkIn = CheckIn::find($request->check_in_id);
+            if (!$checkIn) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Check-in tidak ditemukan.'
+                ], 404);
+            }
+
+            // Cegah double checkout
+            $alreadyCheckedOut = CheckOut::where('check_in_id', $checkIn->id)->exists();
+            if ($alreadyCheckedOut) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tamu sudah melakukan checkout sebelumnya.'
+                ], 400);
+            }
+
             $reservation = Reservation::find($checkIn->reservation_id);
+            if (!$reservation || $reservation->status !== 'checked_in') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Reservasi ini tidak aktif atau tidak sedang checked-in.'
+                ], 400);
+            }
+
             $room = Room::find($checkIn->room_id);
             $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
 

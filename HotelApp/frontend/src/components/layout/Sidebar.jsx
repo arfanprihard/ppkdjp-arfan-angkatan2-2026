@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return localStorage.getItem("sidebar_collapsed") === "true";
+  });
   const location = useLocation();
   const { user } = useAuth();
 
@@ -72,14 +74,14 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`bg-zinc-950 text-zinc-300 border-r border-zinc-800/50 min-h-screen flex flex-col transition-all duration-300 ease-in-out relative ${
+      className={`bg-white text-zinc-600 border-r border-zinc-200 min-h-screen flex flex-col transition-all duration-300 ease-in-out relative ${
         isCollapsed ? "w-[72px]" : "w-64"
       }`}
     >
       {/* Header Logo */}
-      <div className="h-16 flex items-center px-5 border-b border-zinc-800/50">
+      <div className="h-16 flex items-center px-5 border-b border-zinc-200">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
+          <div className="h-9 w-9 rounded-lg bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10">
             <Hotel className="h-5 w-5" />
           </div>
           <div
@@ -87,7 +89,7 @@ const Sidebar = () => {
               isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
             }`}
           >
-            <span className="font-bold text-lg tracking-tight text-white whitespace-nowrap">
+            <span className="font-bold text-lg tracking-tight text-zinc-900 whitespace-nowrap">
               HotelOps
             </span>
           </div>
@@ -97,7 +99,7 @@ const Sidebar = () => {
       {/* Menu Label */}
       <div className="px-5 pt-6 pb-2">
         {!isCollapsed && (
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
             Menu Utama
           </p>
         )}
@@ -115,20 +117,20 @@ const Sidebar = () => {
               to={item.path}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative ${
                 isActive
-                  ? "bg-gradient-to-r from-amber-500/15 to-orange-500/10 text-amber-400 font-semibold"
-                  : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                  ? "bg-blue-50 text-blue-600 font-semibold"
+                  : "text-zinc-600 hover:bg-slate-50 hover:text-zinc-950"
               } ${isCollapsed ? "justify-center" : ""}`}
               title={isCollapsed ? item.label : ""}
             >
               {/* Active indicator bar */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-amber-400 rounded-r-full" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-blue-600 rounded-r-full" />
               )}
               <Icon
                 className={`h-[18px] w-[18px] shrink-0 transition-colors duration-200 ${
                   isActive
-                    ? "text-amber-400"
-                    : "text-zinc-500 group-hover:text-zinc-300"
+                    ? "text-blue-600"
+                    : "text-zinc-400 group-hover:text-zinc-600"
                 }`}
               />
               <span
@@ -145,13 +147,13 @@ const Sidebar = () => {
 
       {/* User info at bottom */}
       {user && (
-        <div className="border-t border-zinc-800/50 p-3">
+        <div className="border-t border-zinc-200 p-3">
           <div
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg bg-zinc-900/50 ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-50 border border-zinc-200/60 ${
               isCollapsed ? "justify-center" : ""
             }`}
           >
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 uppercase">
+            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0 uppercase">
               {user.name?.charAt(0) || "?"}
             </div>
             <div
@@ -159,10 +161,10 @@ const Sidebar = () => {
                 isCollapsed ? "hidden" : "block"
               }`}
             >
-              <p className="text-xs font-semibold text-zinc-200 truncate">
+              <p className="text-xs font-semibold text-zinc-800 truncate">
                 {user.name}
               </p>
-              <p className="text-[10px] text-zinc-500 capitalize">{user.role}</p>
+              <p className="text-[10px] text-zinc-400 capitalize">{user.role}</p>
             </div>
           </div>
         </div>
@@ -170,8 +172,12 @@ const Sidebar = () => {
 
       {/* Collapse Toggle Button */}
       <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute top-[18px] -right-3 h-6 w-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-700 cursor-pointer shadow-lg transition-all duration-200"
+        onClick={() => {
+          const nextState = !isCollapsed;
+          setIsCollapsed(nextState);
+          localStorage.setItem("sidebar_collapsed", String(nextState));
+        }}
+        className="absolute top-[18px] -right-3 h-6 w-6 rounded-full bg-white border border-zinc-300 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-slate-50 cursor-pointer shadow-sm transition-all duration-200"
       >
         {isCollapsed ? (
           <ChevronRight className="h-3.5 w-3.5" />

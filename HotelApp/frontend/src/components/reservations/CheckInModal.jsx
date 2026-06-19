@@ -48,31 +48,31 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-xs">
+      <div className="w-full max-w-lg bg-white border border-zinc-200 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="p-5 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <h3 className="text-base font-bold text-white">Proses Check-In Tamu</h3>
+            <h3 className="text-base font-bold text-zinc-900">Proses Check-In Tamu</h3>
           </div>
-          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer border-0 bg-transparent">
+          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer border-0 bg-transparent">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-xs">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {error}
             </div>
           )}
 
-          <div className="bg-zinc-950/40 border border-zinc-800 p-3 rounded-xl text-xs space-y-1.5 text-zinc-300">
-            <p><strong className="text-white">Kode Booking:</strong> {reservation.reservation_code}</p>
-            <p><strong className="text-white">Nama Tamu:</strong> {reservation.guest?.name}</p>
-            <p><strong className="text-white">Tipe Kamar:</strong> {reservation.room_type?.name || reservation.roomType?.name}</p>
-            <p><strong className="text-white">Masa Stay:</strong> {reservation.check_in_date} s/d {reservation.check_out_date} ({getNights(reservation.check_in_date, reservation.check_out_date)} malam)</p>
+          <div className="bg-slate-50 border border-zinc-200 p-3 rounded-xl text-xs space-y-1.5 text-zinc-600">
+            <p><strong className="text-zinc-800">Kode Booking:</strong> {reservation.reservation_code}</p>
+            <p><strong className="text-zinc-800">Nama Tamu:</strong> {reservation.guest?.name}</p>
+            <p><strong className="text-zinc-800">Tipe Kamar:</strong> {reservation.room_type?.name || reservation.roomType?.name}</p>
+            <p><strong className="text-zinc-800">Masa Stay:</strong> {reservation.check_in_date} s/d {reservation.check_out_date} ({getNights(reservation.check_in_date, reservation.check_out_date)} malam)</p>
           </div>
 
           <div className="space-y-1">
@@ -81,7 +81,7 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
               required
               value={roomId}
               onChange={(e) => setRoomId(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-850 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
             >
               <option value="">-- Pilih Kamar Bersih (VC) --</option>
               {availableRooms.map((r) => (
@@ -91,8 +91,8 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
               ))}
             </select>
             {availableRooms.length === 0 && (
-              <p className="text-[11px] text-amber-500/80 mt-1 flex items-start gap-1">
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+              <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 p-2.5 rounded-xl mt-1 flex items-start gap-1">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
                 Peringatan: Tidak ada kamar bersih (VC) bertipe ini yang tersedia. Silakan bersihkan kamar terlebih dahulu.
               </p>
             )}
@@ -105,7 +105,7 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
                 type="text"
                 disabled
                 value={formatRupiah(depositAmount)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-950/80 text-zinc-400 cursor-not-allowed outline-none font-semibold"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-zinc-100 text-zinc-500 cursor-not-allowed outline-none font-semibold"
               />
             </div>
             <div className="space-y-1">
@@ -113,7 +113,7 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
               <select
                 value={depositMethod}
                 onChange={(e) => setDepositMethod(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-700 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
               >
                 <option value="cash">Cash / Tunai</option>
                 <option value="credit_card">Kartu Kredit</option>
@@ -130,22 +130,22 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Catatan penyerahan kunci, request extra..."
-              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-white outline-none focus:border-amber-500/40 resize-none"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 resize-none"
             />
           </div>
 
-          <div className="pt-3 border-t border-zinc-800 flex gap-3">
+          <div className="pt-3 border-t border-zinc-200 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-zinc-800 cursor-pointer bg-transparent"
+              className="flex-1 py-2.5 rounded-xl border border-zinc-300 text-zinc-600 text-sm font-medium hover:bg-zinc-50 cursor-pointer bg-transparent"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={saving || !roomId}
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5 border-0"
+              className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5 border-0 shadow-sm"
             >
               {saving ? (
                 <>

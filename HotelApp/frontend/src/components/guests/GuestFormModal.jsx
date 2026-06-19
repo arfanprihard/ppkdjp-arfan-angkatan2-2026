@@ -56,17 +56,17 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-xs overflow-y-auto">
+      <div className="w-full max-w-lg bg-white border border-zinc-200 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between">
+        <div className="p-5 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-amber-500" />
-            <h3 className="text-base font-bold text-white">
+            <User className="h-5 w-5 text-blue-600" />
+            <h3 className="text-base font-bold text-zinc-900">
               {guest ? "Ubah Data Tamu" : "Daftarkan Tamu Baru"}
             </h3>
           </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer">
+          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -74,7 +74,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
         {/* Body Form */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-xs">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {error}
             </div>
@@ -89,7 +89,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Budi Santoso"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
             />
           </div>
 
@@ -100,7 +100,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
               <select
                 value={idType}
                 onChange={(e) => setIdType(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-300 focus:border-amber-500/40 outline-none cursor-pointer"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700 focus:border-blue-600 outline-none cursor-pointer"
               >
                 <option value="ktp">KTP</option>
                 <option value="passport">Paspor</option>
@@ -115,7 +115,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
                 value={idNumber}
                 onChange={(e) => setIdNumber(e.target.value)}
                 placeholder="Contoh: 31710XXXXXXXXXXX"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
               />
             </div>
           </div>
@@ -129,7 +129,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="0812XXXXXXXX"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
               />
             </div>
             <div className="space-y-1">
@@ -139,7 +139,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="budi@example.com"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
               />
             </div>
           </div>
@@ -152,7 +152,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
               value={nationality}
               onChange={(e) => setNationality(e.target.value)}
               placeholder="Contoh: Indonesia, Malaysia, Australia..."
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
             />
           </div>
 
@@ -164,23 +164,23 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Jl. Merdeka No. 12, Jakarta Pusat"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none resize-none"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none resize-none"
             />
           </div>
 
           {/* Buttons */}
-          <div className="pt-3 border-t border-zinc-800 flex gap-3">
+          <div className="pt-3 border-t border-zinc-200 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-zinc-800 cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl border border-zinc-300 text-zinc-600 text-sm font-medium hover:bg-zinc-50 cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5"
             >
               {saving ? (
                 <>

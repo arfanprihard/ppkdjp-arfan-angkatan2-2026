@@ -18,13 +18,13 @@ const FnbDashboard = ({ data, loading }) => {
       label: "Pesanan Baru",
       icon: PlusCircle,
       path: "/fnb",
-      color: "hover:border-amber-500/40 hover:text-amber-400",
+      color: "hover:border-blue-300 hover:text-blue-600",
     },
     {
       label: "Update Status Pesanan",
       icon: RefreshCw,
       path: "/fnb",
-      color: "hover:border-emerald-500/40 hover:text-emerald-400",
+      color: "hover:border-emerald-300 hover:text-emerald-600",
     },
   ];
 
@@ -35,52 +35,48 @@ const FnbDashboard = ({ data, loading }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="h-8 w-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+        <div className="h-8 w-1 rounded-full bg-blue-600" />
         <div>
-          <h2 className="text-base font-bold text-white">Food & Beverage Overview</h2>
+          <h2 className="text-base font-bold text-zinc-800">Food & Beverage Overview</h2>
           <p className="text-[11px] text-zinc-500">Antrian pesanan & pendapatan F&B hari ini</p>
         </div>
       </div>
 
       {/* Active orders highlight card */}
       <div
-        className={`relative bg-zinc-900/60 border rounded-2xl p-6 overflow-hidden transition-all duration-300 ${
+        className={`relative bg-white border rounded-2xl p-6 overflow-hidden transition-all duration-300 shadow-sm ${
           hasActiveOrders
-            ? "border-amber-500/30 hover:border-amber-500/50"
-            : "border-zinc-800/50 hover:border-zinc-700/60"
+            ? "border-blue-200 hover:border-blue-300"
+            : "border-zinc-200 hover:border-blue-200"
         }`}
       >
-        {/* Glow blob */}
-        {hasActiveOrders && (
-          <div className="absolute -top-6 -right-6 h-24 w-24 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
-        )}
         <div className="flex items-center gap-5">
           <div
-            className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${
+            className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${
               hasActiveOrders
-                ? "bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/25"
-                : "bg-zinc-800"
+                ? "bg-blue-600 shadow-lg shadow-blue-500/10"
+                : "bg-slate-100"
             }`}
           >
             <ShoppingBag
-              className={`h-7 w-7 ${hasActiveOrders ? "text-white" : "text-zinc-500"}`}
+              className={`h-7 w-7 ${hasActiveOrders ? "text-white" : "text-zinc-400"}`}
             />
           </div>
           <div>
             {loading ? (
               <div className="animate-pulse space-y-2">
-                <div className="h-8 w-16 bg-zinc-800 rounded" />
-                <div className="h-3 w-32 bg-zinc-700 rounded" />
+                <div className="h-8 w-16 bg-slate-100 rounded" />
+                <div className="h-3 w-32 bg-slate-100 rounded" />
               </div>
             ) : (
               <>
-                <p className="text-4xl font-extrabold text-white leading-none">
+                <p className="text-4xl font-extrabold text-zinc-800 leading-none">
                   {data?.active_orders ?? 0}
                 </p>
                 <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mt-1.5">
                   Pesanan Aktif
                 </p>
-                <p className="text-xs text-zinc-600 mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   {hasActiveOrders
                     ? "Sedang dalam proses pembuatan / penyiapan"
                     : "Tidak ada pesanan aktif saat ini"}
@@ -97,13 +93,14 @@ const FnbDashboard = ({ data, loading }) => {
         label="Pendapatan F&B Hari Ini"
         value={loading ? null : formatRupiah(data?.fnb_revenue_today)}
         sub="Dari pesanan yang sudah selesai"
-        iconBg="from-emerald-400 to-teal-500"
+        iconBg="bg-emerald-50"
+        iconColor="text-emerald-600"
         loading={loading}
       />
 
       {/* Quick Actions */}
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
           Tindakan Cepat
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -113,9 +110,9 @@ const FnbDashboard = ({ data, loading }) => {
               <button
                 key={action.label}
                 onClick={() => navigate(action.path)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border border-zinc-800 bg-zinc-900/40 text-zinc-400 text-sm font-medium transition-all duration-200 cursor-pointer ${action.color} hover:bg-zinc-800/40`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border border-zinc-200 bg-white text-zinc-600 text-sm font-medium transition-all duration-200 cursor-pointer ${action.color} hover:bg-slate-50 shadow-xs`}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon className="h-4 w-4 shrink-0 text-zinc-400" />
                 {action.label}
               </button>
             );

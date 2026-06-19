@@ -78,10 +78,19 @@ class UserController extends Controller
             'is_active' => 'sometimes|required|boolean'
         ]);
 
+        if ($request->has('is_active')) {
+            if ($request->is_active == false && $request->user()->id === $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak bisa menonaktifkan akun sendiri.'
+                ], 400);
+            }
+            $user->is_active = $request->is_active;
+        }
+
         if ($request->has('name')) $user->name = $request->name;
         if ($request->has('email')) $user->email = $request->email;
         if ($request->has('role')) $user->role = $request->role;
-        if ($request->has('is_active')) $user->is_active = $request->is_active;
         if ($request->filled('password')) $user->password = Hash::make($request->password);
 
         $user->save();
@@ -93,7 +102,7 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
         $user = User::find($id);
 
@@ -102,6 +111,13 @@ class UserController extends Controller
                 'success' => false,
                 'message' => 'Staff tidak ditemukan.'
             ], 404);
+        }
+
+        if ($request->user()->id === $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak bisa menonaktifkan akun sendiri.'
+            ], 400);
         }
 
         // Hapus soft/aktifkan status nonaktif

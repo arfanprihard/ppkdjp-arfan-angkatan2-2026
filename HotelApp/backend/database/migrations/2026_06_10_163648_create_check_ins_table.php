@@ -15,7 +15,7 @@ return new class extends Migration
             $table->dateTime('check_in_time');
             $table->decimal('deposit_amount', 12, 2)->default(0);
             $table->enum('deposit_method', ['cash', 'credit_card', 'debit', 'transfer'])->default('cash');
-            $table->foreignId('processed_by')->constrained('users')->onDelete('cascade'); // Staff FO
+            $table->foreignId('processed_by')->constrained('users')->onDelete('restrict'); // Staff FO
             $table->text('notes')->nullable();
             $table->timestamps();
         });

@@ -47,32 +47,29 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-zinc-200 p-6">
-      {/* Background subtle pattern */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black" />
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 text-zinc-800 p-6">
+      {/* Background */}
+      <div className="fixed inset-0 bg-slate-50" />
 
       <div className="relative w-full max-w-[400px]">
-        {/* Glow effect behind card */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-2xl blur-xl opacity-60" />
-
         {/* Card */}
-        <div className="relative bg-zinc-900/80 border border-zinc-800 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
+        <div className="relative bg-white border border-zinc-200 rounded-2xl p-8 shadow-xl">
           {/* Header Logo */}
           <div className="text-center mb-8">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25 mb-4">
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/10 mb-4">
               <Hotel className="h-7 w-7" />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-white">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-900">
               Login Staff HotelOps
             </h2>
-            <p className="text-[11px] text-zinc-500 mt-1.5 uppercase tracking-widest font-semibold">
+            <p className="text-[11px] text-zinc-400 mt-1.5 uppercase tracking-widest font-semibold">
               Sistem Manajemen Hotel
             </p>
           </div>
 
           {/* Alert Error */}
           {error && (
-            <div className="mb-6 rounded-lg bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-rose-400 flex items-center gap-2.5">
+            <div className="mb-6 rounded-lg bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-600 flex items-center gap-2.5">
               <span className="text-base">⚠️</span>
               <span className="font-semibold">{error}</span>
             </div>
@@ -81,7 +78,7 @@ const LoginPage = () => {
           {/* Form Login */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">
+              <label htmlFor="email-input" className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">
                 Email Staf
               </label>
               <input
@@ -90,14 +87,14 @@ const LoginPage = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-800 placeholder-zinc-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 transition-all duration-200"
                 placeholder="nama@hotelops.com"
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">
+              <label htmlFor="password-input" className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -107,14 +104,14 @@ const LoginPage = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-4 py-3 pr-11 text-sm text-white placeholder-zinc-600 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+                  className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 pr-11 text-sm text-zinc-800 placeholder-zinc-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 transition-all duration-200"
                   placeholder="••••••••"
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer"
                   tabIndex={-1}
                 >
                   {showPassword ? (
@@ -130,7 +127,7 @@ const LoginPage = () => {
               id="login-button"
               type="submit"
               disabled={loading}
-              className="w-full mt-1 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white py-3 text-sm font-bold transition-all duration-200 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
+              className="w-full mt-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white py-3 text-sm font-bold transition-all duration-200 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-blue-500/10"
             >
               {loading ? (
                 <>
@@ -144,7 +141,7 @@ const LoginPage = () => {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-[10px] text-zinc-600 mt-6">
+          <p className="text-center text-[10px] text-zinc-400 mt-6">
             © 2026 HotelOps • Internal Staff Portal
           </p>
         </div>

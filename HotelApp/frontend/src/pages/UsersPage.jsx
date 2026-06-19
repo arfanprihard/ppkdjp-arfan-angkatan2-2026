@@ -105,9 +105,9 @@ const UsersPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+          <div className="h-8 w-1 rounded-full bg-blue-600" />
           <div>
-            <h2 className="text-base font-bold text-white">Kelola Akun Staf</h2>
+            <h2 className="text-base font-bold text-zinc-900">Kelola Akun Staf</h2>
             <p className="text-[11px] text-zinc-500">
               {loading ? "Memuat..." : `${users.length} total akun staf · ${filteredUsers.length} ditampilkan`}
             </p>
@@ -118,7 +118,7 @@ const UsersPage = () => {
           <button
             onClick={fetchUsers}
             disabled={loading}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-medium cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-zinc-300 text-zinc-650 hover:text-zinc-900 hover:bg-zinc-50 transition-all text-xs font-medium cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             Segarkan
@@ -126,7 +126,7 @@ const UsersPage = () => {
           
           <button
             onClick={() => setShowAddForm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-xs font-bold transition-all cursor-pointer shadow-lg shadow-amber-500/10"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs"
           >
             <Plus className="h-4 w-4" /> Tambah Staf
           </button>
@@ -137,18 +137,18 @@ const UsersPage = () => {
       <div className="flex flex-wrap gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <input
             type="text"
             placeholder="Cari staf berdasarkan nama atau email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-200 placeholder-zinc-500 outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all"
+            className="w-full pl-9 pr-8 py-2.5 rounded-xl border border-zinc-300 bg-white text-sm text-zinc-800 placeholder-zinc-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -157,11 +157,11 @@ const UsersPage = () => {
 
         {/* Role Filter */}
         <div className="relative">
-          <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+          <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="pl-8 pr-8 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-400 outline-none focus:border-amber-500/40 appearance-none cursor-pointer"
+            className="pl-8 pr-8 py-2.5 rounded-xl border border-zinc-300 bg-white text-sm text-zinc-700 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 appearance-none cursor-pointer"
           >
             <option value="all">Semua Jabatan</option>
             {Object.entries(ROLES).map(([key, val]) => (
@@ -170,22 +170,22 @@ const UsersPage = () => {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
         </div>
 
         {/* Status Filter */}
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="pl-8 pr-8 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-400 outline-none focus:border-amber-500/40 appearance-none cursor-pointer"
+            className="pl-8 pr-8 py-2.5 rounded-xl border border-zinc-300 bg-white text-sm text-zinc-700 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 appearance-none cursor-pointer"
           >
             <option value="all">Semua Status</option>
             <option value="active">Aktif</option>
             <option value="inactive">Nonaktif</option>
           </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 pointer-events-none" />
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
         </div>
 
         {/* Reset Button */}
@@ -196,7 +196,7 @@ const UsersPage = () => {
               setFilterRole("all");
               setFilterStatus("all");
             }}
-            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:text-rose-450 hover:border-rose-500/30 text-xs font-medium transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-300 bg-white text-zinc-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/30 text-xs font-semibold transition-all cursor-pointer"
           >
             <X className="h-3.5 w-3.5" /> Reset Filter
           </button>
@@ -205,7 +205,7 @@ const UsersPage = () => {
 
       {/* Main Grid List */}
       {error && !loading && (
-        <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-5 py-4 text-sm text-rose-400">
+        <div className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-2xl px-5 py-4 text-sm text-rose-600">
           <AlertTriangle className="h-5 w-5 shrink-0" />
           {error}
         </div>
@@ -214,10 +214,10 @@ const UsersPage = () => {
       {loading ? (
         <UserSkeleton />
       ) : filteredUsers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center text-zinc-500 bg-zinc-900/10 border border-zinc-800/40 rounded-2xl">
-          <Users className="h-10 w-10 mb-3 text-zinc-500" />
-          <p className="font-semibold text-zinc-400">Tidak ada data staf ditemukan</p>
-          <p className="text-xs mt-1 text-zinc-600">Sesuaikan filter atau tambah akun staf baru.</p>
+        <div className="flex flex-col items-center justify-center py-20 text-center text-zinc-550 bg-white border border-zinc-200 rounded-2xl shadow-xs">
+          <Users className="h-10 w-10 mb-3 text-zinc-400" />
+          <p className="font-bold text-zinc-850">Tidak ada data staf ditemukan</p>
+          <p className="text-xs mt-1 text-zinc-500 font-medium">Sesuaikan filter atau tambah akun staf baru.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

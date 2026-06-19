@@ -27,7 +27,7 @@ class LaundryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'guest_id' => 'required|exists:guests,id',
             'room_id' => 'required|exists:rooms,id',
             'items_description' => 'required|string',
@@ -35,9 +35,9 @@ class LaundryController extends Controller
             'total_charge' => 'required|numeric|min:0',
         ]);
 
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request, $validated) {
             // 1. Buat Laundry Request
-            $laundry = LaundryRequest::create(array_merge($request->all(), [
+            $laundry = LaundryRequest::create(array_merge($validated, [
                 'status' => 'received',
                 'received_at' => Carbon::now()
             ]));
@@ -48,30 +48,40 @@ class LaundryController extends Controller
                     $q->where('status', 'checked_in');
                 })->first();
 
-            if ($checkIn) {
-                $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
-
-                if ($folio) {
-                    // 3. Masukkan biaya laundry ke Folio
-                    FolioCharge::create([
-                        'folio_id' => $folio->id,
-                        'charge_type' => 'laundry',
-                        'description' => 'Layanan Laundry - ' . $request->item_count . ' Pcs (' . $request->items_description . ')',
-                        'amount' => $request->total_charge,
-                        'quantity' => 1,
-                        'charge_date' => Carbon::today(),
-                        'reference_id' => $laundry->id,
-                        'reference_type' => LaundryRequest::class,
-                        'created_by' => $request->user()->id,
-                    ]);
-
-                    // Update saldo folio
-                    $folio->increment('total_charges', $request->total_charge);
-                    $folio->update([
-                        'balance' => $folio->total_charges - $folio->total_payments
-                    ]);
-                }
+            if (!$checkIn) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kamar tidak memiliki check-in aktif untuk pembebanan biaya laundry.'
+                ], 400);
             }
+
+            $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+            if (!$folio) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Guest Folio aktif tidak ditemukan untuk kamar ini.'
+                ], 400);
+            }
+
+            // 3. Masukkan biaya laundry ke Folio
+            FolioCharge::create([
+                'folio_id' => $folio->id,
+                'charge_type' => 'laundry',
+                'description' => 'Layanan Laundry - ' . $request->item_count . ' Pcs (' . $request->items_description . ')',
+                'amount' => $request->total_charge,
+                'quantity' => 1,
+                'charge_date' => Carbon::today(),
+                'reference_id' => $laundry->id,
+                'reference_type' => LaundryRequest::class,
+                'created_by' => $request->user()->id,
+            ]);
+
+            // Update saldo folio
+            $folio->increment('total_charges', $request->total_charge);
+            $folio->refresh();
+            $folio->update([
+                'balance' => $folio->total_charges - $folio->total_payments
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -97,6 +107,24 @@ class LaundryController extends Controller
                 'success' => false,
                 'message' => 'Data Laundry tidak ditemukan.'
             ], 404);
+        }
+
+        // Batasi agar status hanya bisa maju (received -> processing -> done -> delivered)
+        $statusOrder = [
+            'received' => 1,
+            'processing' => 2,
+            'done' => 3,
+            'delivered' => 4,
+        ];
+
+        $currentVal = $statusOrder[$laundry->status] ?? 0;
+        $newVal = $statusOrder[$request->status] ?? 0;
+
+        if ($newVal < $currentVal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status laundry tidak boleh diubah kembali ke tahap sebelumnya.'
+            ], 400);
         }
 
         $laundry->status = $request->status;

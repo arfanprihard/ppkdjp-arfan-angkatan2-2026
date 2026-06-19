@@ -31,15 +31,15 @@ const GuestDetailModal = ({ guestId, onClose }) => {
   }, [fetchDetail]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-xs overflow-y-auto">
+      <div className="w-full max-w-2xl bg-white border border-zinc-200 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between">
+        <div className="p-5 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-amber-500" />
-            <h3 className="text-base font-bold text-white">Profil Tamu Lengkap</h3>
+            <User className="h-5 w-5 text-blue-600" />
+            <h3 className="text-base font-bold text-zinc-900">Profil Tamu Lengkap</h3>
           </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer">
+          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -47,7 +47,7 @@ const GuestDetailModal = ({ guestId, onClose }) => {
         {/* Body */}
         <div className="p-5 space-y-5">
           {error && (
-            <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-xs">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {error}
             </div>
@@ -55,37 +55,37 @@ const GuestDetailModal = ({ guestId, onClose }) => {
 
           {loading ? (
             <div className="space-y-4 py-8 animate-pulse">
-              <div className="h-8 bg-zinc-800 rounded-xl w-1/3" />
-              <div className="h-24 bg-zinc-800 rounded-xl" />
-              <div className="h-40 bg-zinc-800 rounded-xl" />
+              <div className="h-8 bg-zinc-100 rounded-xl w-1/3" />
+              <div className="h-24 bg-zinc-100 rounded-xl" />
+              <div className="h-40 bg-zinc-100 rounded-xl" />
             </div>
           ) : (
             guest && (
               <>
                 {/* Profile Detail Grid */}
-                <div className="bg-zinc-950/40 p-4 rounded-2xl border border-zinc-800/60 space-y-3">
+                <div className="bg-slate-50 p-4 rounded-2xl border border-zinc-200 space-y-3">
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h4 className="text-lg font-extrabold text-white">{guest.name}</h4>
-                    <span className="text-[10px] bg-zinc-800 text-zinc-400 border border-zinc-700 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider">
+                    <h4 className="text-lg font-extrabold text-zinc-900">{guest.name}</h4>
+                    <span className="text-[10px] bg-white text-zinc-600 border border-zinc-200 px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider shadow-xs">
                       {guest.id_type?.toUpperCase()}: {guest.id_number}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-sm text-zinc-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-sm text-zinc-700">
                     <div className="flex items-center gap-2.5">
-                      <Phone className="h-4 w-4 text-zinc-500 shrink-0" />
+                      <Phone className="h-4 w-4 text-zinc-400 shrink-0" />
                       <span>{guest.phone || "— (Belum diisi)"}</span>
                     </div>
                     <div className="flex items-center gap-2.5">
-                      <Mail className="h-4 w-4 text-zinc-500 shrink-0" />
+                      <Mail className="h-4 w-4 text-zinc-400 shrink-0" />
                       <span>{guest.email || "— (Belum diisi)"}</span>
                     </div>
                     <div className="flex items-center gap-2.5">
-                      <MapPin className="h-4 w-4 text-zinc-500 shrink-0" />
+                      <MapPin className="h-4 w-4 text-zinc-400 shrink-0" />
                       <span>{guest.nationality || "Indonesia"}</span>
                     </div>
                     <div className="flex items-start gap-2.5 md:col-span-2">
-                      <MapPin className="h-4 w-4 text-zinc-500 shrink-0 mt-0.5" />
+                      <MapPin className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
                       <span className="leading-tight">{guest.address || "— (Alamat belum diisi)"}</span>
                     </div>
                   </div>
@@ -94,17 +94,17 @@ const GuestDetailModal = ({ guestId, onClose }) => {
                 {/* History Reservasi */}
                 <div className="space-y-3">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
-                    <History className="h-3.5 w-3.5 text-amber-500" /> Riwayat Reservasi Tamu
+                    <History className="h-3.5 w-3.5 text-blue-600" /> Riwayat Reservasi Tamu
                   </p>
 
                   {!guest.reservations || guest.reservations.length === 0 ? (
-                    <div className="text-center py-8 text-xs text-zinc-500 bg-zinc-950/20 border border-zinc-800 rounded-xl">
+                    <div className="text-center py-8 text-xs text-zinc-500 bg-white border border-zinc-200 rounded-xl shadow-xs">
                       Belum ada riwayat reservasi untuk tamu ini.
                     </div>
                   ) : (
-                    <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-950/20 max-h-56 overflow-y-auto">
-                      <table className="w-full border-collapse text-left text-xs text-zinc-300">
-                        <thead className="bg-zinc-950 text-[9px] font-bold uppercase tracking-widest text-zinc-500 border-b border-zinc-800 sticky top-0">
+                    <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-xs max-h-56 overflow-y-auto">
+                      <table className="w-full border-collapse text-left text-xs text-zinc-600">
+                        <thead className="bg-zinc-50 text-[9px] font-bold uppercase tracking-widest text-zinc-500 border-b border-zinc-200 sticky top-0">
                           <tr>
                             <th className="p-3">Kode Booking</th>
                             <th className="p-3">Kamar</th>
@@ -113,20 +113,20 @@ const GuestDetailModal = ({ guestId, onClose }) => {
                             <th className="p-3">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-800">
+                        <tbody className="divide-y divide-zinc-200">
                           {guest.reservations.map((res) => (
-                            <tr key={res.id} className="hover:bg-zinc-900/30">
-                              <td className="p-3 font-bold text-white">{res.reservation_code}</td>
-                              <td className="p-3 text-zinc-300">
+                            <tr key={res.id} className="hover:bg-slate-50">
+                              <td className="p-3 font-bold text-zinc-900">{res.reservation_code}</td>
+                              <td className="p-3 text-zinc-700">
                                 {res.room ? `No. ${res.room.room_number}` : "Belum ditentukan"}
                               </td>
-                              <td className="p-3 text-zinc-400">
+                              <td className="p-3 text-zinc-500">
                                 {res.check_in_date}
-                                <span className="block text-[10px] text-zinc-500 mt-0.5">
+                                <span className="block text-[10px] text-zinc-400 mt-0.5">
                                   {getNights(res.check_in_date, res.check_out_date)} malam
                                 </span>
                               </td>
-                              <td className="p-3 font-semibold text-zinc-200">{formatRupiah(res.total_amount)}</td>
+                              <td className="p-3 font-semibold text-zinc-800">{formatRupiah(res.total_amount)}</td>
                               <td className="p-3">
                                 <span className={`inline-flex px-2 py-0.5 rounded border text-[9px] font-bold uppercase tracking-widest ${getResStatusBadge(res.status)}`}>
                                   {res.status.replace("_", " ")}
@@ -141,10 +141,10 @@ const GuestDetailModal = ({ guestId, onClose }) => {
                 </div>
 
                 {/* Footer */}
-                <div className="pt-2 border-t border-zinc-800 flex justify-end">
+                <div className="pt-2 border-t border-zinc-200 flex justify-end">
                   <button
                     onClick={onClose}
-                    className="py-2 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-xs font-bold transition-all cursor-pointer"
+                    className="py-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
                   >
                     Tutup
                   </button>

@@ -53,11 +53,11 @@ const MenuGrid = ({
   const getCategoryIcon = (category) => {
     switch (category) {
       case "makanan":
-        return <Utensils className="h-4 w-4 text-emerald-400" />;
+        return <Utensils className="h-4 w-4 text-emerald-600" />;
       case "minuman":
-        return <Coffee className="h-4 w-4 text-sky-400" />;
+        return <Coffee className="h-4 w-4 text-blue-600" />;
       case "dessert":
-        return <IceCream className="h-4 w-4 text-purple-400" />;
+        return <IceCream className="h-4 w-4 text-purple-600" />;
       default:
         return <Utensils className="h-4 w-4" />;
     }
@@ -69,26 +69,26 @@ const MenuGrid = ({
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <input
             type="text"
             placeholder="Cari makanan, minuman, dessert..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none focus:border-amber-500/40"
+            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
           />
         </div>
 
         {/* Categories */}
-        <div className="flex bg-zinc-950 border border-zinc-800 p-0.5 rounded-xl overflow-x-auto shrink-0 scrollbar-none">
+        <div className="flex bg-slate-100 border border-zinc-200 p-0.5 rounded-xl overflow-x-auto shrink-0 scrollbar-none">
           {Object.entries(CATEGORIES).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setSelectedCategory(key)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap border border-transparent ${
                 selectedCategory === key
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  ? "bg-white text-blue-600 shadow-xs border-zinc-200/50"
+                  : "text-zinc-550 hover:text-zinc-800"
               }`}
             >
               {label}
@@ -103,7 +103,7 @@ const MenuGrid = ({
           <div
             key={item.id}
             onClick={() => onAddToCart(item)}
-            className="group relative bg-zinc-900/45 hover:bg-zinc-900 border border-zinc-800/60 hover:border-zinc-700/60 rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
+            className="group relative bg-white hover:bg-slate-50/50 border border-zinc-200 hover:border-zinc-300/80 rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md"
           >
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
@@ -111,19 +111,19 @@ const MenuGrid = ({
                   {getCategoryIcon(item.category)}
                   {item.category}
                 </span>
-                <span className="h-6 w-6 rounded-lg bg-zinc-800 group-hover:bg-amber-500 group-hover:text-black flex items-center justify-center text-zinc-400 transition-all duration-200">
+                <span className="h-6 w-6 rounded-lg bg-slate-100 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center text-zinc-500 transition-all duration-200">
                   <Plus className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <h4 className="text-sm font-bold text-zinc-100 group-hover:text-white transition-colors">
+              <h4 className="text-sm font-bold text-zinc-800 group-hover:text-zinc-950 transition-colors">
                 {item.name}
               </h4>
               <p className="text-[11px] text-zinc-500 line-clamp-2 leading-relaxed">
                 {item.desc}
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-zinc-800/50 flex items-center justify-between">
-              <span className="text-xs font-black text-amber-400 group-hover:text-amber-300">
+            <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between">
+              <span className="text-xs font-black text-blue-600 group-hover:text-blue-700">
                 {formatRupiah(item.price)}
               </span>
             </div>
@@ -131,7 +131,7 @@ const MenuGrid = ({
         ))}
 
         {filteredMenuItems.length === 0 && (
-          <div className="md:col-span-2 py-12 text-center border border-dashed border-zinc-800 rounded-2xl bg-zinc-950/20">
+          <div className="md:col-span-2 py-12 text-center border border-dashed border-zinc-200 rounded-2xl bg-white shadow-xs">
             <p className="text-zinc-500 text-xs">Tidak ada menu yang cocok dengan pencarian Anda.</p>
           </div>
         )}

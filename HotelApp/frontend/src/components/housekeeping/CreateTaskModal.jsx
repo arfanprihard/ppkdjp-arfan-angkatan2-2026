@@ -40,21 +40,21 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-xs">
+      <div className="w-full max-w-md bg-white border border-zinc-200 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="p-5 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-amber-500" />
-            <h3 className="text-base font-bold text-white">Buat Tugas Housekeeping</h3>
+            <Sparkles className="h-4 w-4 text-blue-600" />
+            <h3 className="text-base font-bold text-zinc-900">Buat Tugas Housekeeping</h3>
           </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer">
+          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-650 rounded-lg hover:bg-zinc-100 cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2 text-xs">
+            <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-xs">
               <AlertTriangle className="h-4 w-4 shrink-0" />
               {error}
             </div>
@@ -66,7 +66,7 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
               required
               value={roomId}
               onChange={(e) => setRoomId(e.target.value)}
-              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
             >
               <option value="">-- Pilih Kamar --</option>
               {rooms.map((r) => (
@@ -83,7 +83,7 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
               >
                 {Object.entries(TASK_TYPES).map(([key, val]) => (
                   <option key={key} value={key}>{val.label}</option>
@@ -95,7 +95,7 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
               >
                 {Object.entries(PRIORITIES).map(([key, val]) => (
                   <option key={key} value={key}>{val.label}</option>
@@ -111,22 +111,22 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Instruksi tambahan, detail request tamu..."
-              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-white outline-none focus:border-amber-500/40 resize-none"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 resize-none"
             />
           </div>
 
-          <div className="pt-3 border-t border-zinc-800 flex gap-3">
+          <div className="pt-3 border-t border-zinc-200 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-zinc-800 cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl border border-zinc-300 text-zinc-600 text-sm font-medium hover:bg-zinc-50 cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-750 text-white text-sm font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
             >
               {saving ? (
                 <>

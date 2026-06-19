@@ -67,6 +67,7 @@ class FolioController extends Controller
 
         // Rekalkulasi Folio
         $folio->increment('total_charges', $totalCharge);
+        $folio->refresh();
         $folio->update([
             'balance' => $folio->total_charges - $folio->total_payments
         ]);
@@ -99,6 +100,7 @@ class FolioController extends Controller
 
         // Catat pembayaran
         $folio->increment('total_payments', $request->amount);
+        $folio->refresh();
         $folio->update([
             'balance' => $folio->total_charges - $folio->total_payments
         ]);

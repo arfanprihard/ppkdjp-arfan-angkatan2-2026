@@ -1,9 +1,9 @@
 import { ShoppingBag, Minus, Plus, Trash2, RefreshCw, Check } from "lucide-react";
 
 const PAYMENT_METHODS = {
-  room: { label: "Charge ke Kamar", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-  cash: { label: "Cash / Tunai", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-  card: { label: "Kartu Debit/Kredit", color: "bg-purple-500/10 text-purple-400 border-purple-500/20" }
+  room: { label: "Charge ke Kamar", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  cash: { label: "Cash / Tunai", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  card: { label: "Kartu Debit/Kredit", color: "bg-purple-50 text-purple-700 border-purple-200" }
 };
 
 const formatRupiah = (amount) =>
@@ -37,17 +37,17 @@ const CartPanel = ({
   const total = subtotal + tax;
 
   return (
-    <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 space-y-5 shadow-xl backdrop-blur-sm">
-      <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-        <h3 className="text-sm font-bold text-white flex items-center gap-2">
-          <ShoppingBag className="h-4 w-4 text-amber-500" />
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 space-y-5 shadow-sm">
+      <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+        <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+          <ShoppingBag className="h-4 w-4 text-blue-600" />
           Keranjang Pesanan
         </h3>
         {cart.length > 0 && (
           <button
             type="button"
             onClick={clearCart}
-            className="text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:text-rose-350 cursor-pointer border-0 bg-transparent"
+            className="text-[10px] font-bold uppercase tracking-wider text-rose-600 hover:text-rose-700 cursor-pointer border-0 bg-transparent"
           >
             Bersihkan
           </button>
@@ -60,11 +60,11 @@ const CartPanel = ({
           {cart.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-zinc-800 bg-zinc-950/30"
+              className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-zinc-200 bg-slate-50/50"
             >
               <div className="min-w-0 flex-1">
-                <h5 className="text-xs font-bold text-zinc-200 truncate">{item.name}</h5>
-                <span className="text-[10px] font-medium text-zinc-500">
+                <h5 className="text-xs font-bold text-zinc-800 truncate">{item.name}</h5>
+                <span className="text-[10px] font-medium text-zinc-550">
                   {formatRupiah(item.price)}
                 </span>
               </div>
@@ -74,17 +74,17 @@ const CartPanel = ({
                 <button
                   type="button"
                   onClick={() => updateCartQty(item.id, -1)}
-                  className="p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white cursor-pointer border-0"
+                  className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-zinc-650 hover:text-zinc-900 cursor-pointer border-0"
                 >
                   <Minus className="h-3 w-3" />
                 </button>
-                <span className="text-xs font-bold text-white w-4 text-center">
+                <span className="text-xs font-bold text-zinc-800 w-4 text-center">
                   {item.quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => updateCartQty(item.id, 1)}
-                  className="p-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white cursor-pointer border-0"
+                  className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-zinc-650 hover:text-zinc-900 cursor-pointer border-0"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
@@ -92,7 +92,7 @@ const CartPanel = ({
                 <button
                   type="button"
                   onClick={() => removeFromCart(item.id)}
-                  className="p-1 rounded hover:bg-rose-500/10 text-zinc-600 hover:text-rose-400 ml-1 cursor-pointer transition-colors border-0 bg-transparent"
+                  className="p-1 rounded hover:bg-rose-50 text-zinc-400 hover:text-rose-600 ml-1 cursor-pointer transition-colors border-0 bg-transparent"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -101,22 +101,22 @@ const CartPanel = ({
           ))}
         </div>
       ) : (
-        <div className="py-8 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-950/10">
-          <p className="text-[11px] text-zinc-400">Keranjang belanja Anda masih kosong.</p>
-          <p className="text-[9px] text-zinc-600 mt-0.5">Pilih menu di sebelah kiri untuk menambahkan.</p>
+        <div className="py-8 text-center border border-dashed border-zinc-200 rounded-xl bg-slate-50/50">
+          <p className="text-[11px] text-zinc-500 font-medium">Keranjang belanja Anda masih kosong.</p>
+          <p className="text-[9px] text-zinc-400 mt-0.5">Pilih menu di sebelah kiri untuk menambahkan.</p>
         </div>
       )}
 
       {/* Billing Details & Settings Form */}
-      <form onSubmit={onSubmitOrder} className="space-y-4 border-t border-zinc-800 pt-4">
+      <form onSubmit={onSubmitOrder} className="space-y-4 border-t border-zinc-200 pt-4">
         <div className="space-y-3">
           {/* Outlet */}
           <div className="space-y-1">
-            <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 font-bold block">Outlet F&B *</label>
+            <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 block">Outlet F&B *</label>
             <select
               value={outlet}
               onChange={(e) => setOutlet(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
             >
               <option value="resto">Restoran</option>
               <option value="room_service">Room Service (Kamar)</option>
@@ -127,12 +127,12 @@ const CartPanel = ({
           {outlet === "room_service" && (
             <>
               <div className="space-y-1">
-                <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 font-bold block">Pilih Kamar Tamu *</label>
+                <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 block">Pilih Kamar Tamu *</label>
                 <select
                   required
                   value={selectedReservationId}
                   onChange={(e) => onRoomSelection(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
                 >
                   <option value="">-- Pilih Kamar --</option>
                   {activeCheckins.map((resv) => (
@@ -144,13 +144,13 @@ const CartPanel = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 font-bold block">Nama Tamu</label>
+                <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 block">Nama Tamu</label>
                 <input
                   type="text"
                   disabled
                   value={guestName}
                   placeholder="Otomatis terisi..."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-800 bg-zinc-950/60 text-zinc-400 outline-none"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 outline-none"
                 />
               </div>
             </>
@@ -158,11 +158,11 @@ const CartPanel = ({
 
           {/* Metode Pembayaran */}
           <div className="space-y-1">
-            <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 font-bold block">Metode Pembayaran *</label>
+            <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 block">Metode Pembayaran *</label>
             <select
               value={chargeTo}
               onChange={(e) => setChargeTo(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
             >
               {outlet === "room_service" && (
                 <option value="room">Charge ke Kamar (Room Folio)</option>
@@ -174,30 +174,30 @@ const CartPanel = ({
 
           {/* Catatan Memasak */}
           <div className="space-y-1">
-            <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 font-bold block">Catatan Pesanan</label>
+            <label className="text-[9px] font-extrabold uppercase tracking-widest text-zinc-500 block">Catatan Pesanan</label>
             <textarea
               rows={2}
               placeholder="Contoh: Nasi goreng pedas, es teh tanpa es..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-800 bg-zinc-950 text-white outline-none focus:border-amber-500/40 resize-none"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 resize-none"
             />
           </div>
         </div>
 
         {/* Subtotal, Pajak, Total */}
-        <div className="border-t border-zinc-800 pt-3 space-y-1.5 text-xs">
-          <div className="flex justify-between text-zinc-500">
+        <div className="border-t border-zinc-200 pt-3 space-y-1.5 text-xs">
+          <div className="flex justify-between text-zinc-500 font-medium">
             <span>Subtotal</span>
             <span>{formatRupiah(subtotal)}</span>
           </div>
-          <div className="flex justify-between text-zinc-500">
+          <div className="flex justify-between text-zinc-500 font-medium">
             <span>Pajak Resto (10%)</span>
             <span>{formatRupiah(tax)}</span>
           </div>
-          <div className="flex justify-between text-white font-bold text-sm pt-1 border-t border-zinc-800/50">
+          <div className="flex justify-between text-zinc-800 font-bold text-sm pt-1 border-t border-zinc-150">
             <span>Total Tagihan</span>
-            <span className="text-amber-400">{formatRupiah(total)}</span>
+            <span className="text-blue-600">{formatRupiah(total)}</span>
           </div>
         </div>
 
@@ -205,7 +205,7 @@ const CartPanel = ({
         <button
           type="submit"
           disabled={submittingOrder || cart.length === 0}
-          className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5 border-0"
+          className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5 border-0"
         >
           {submittingOrder ? (
             <>

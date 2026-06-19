@@ -1,14 +1,14 @@
 export const RESERVATION_STATUSES = [
-  { key: "pending", label: "Pending", badge: "bg-amber-400/10 text-amber-400 border-amber-400/20" },
-  { key: "confirmed", label: "Confirmed", badge: "bg-sky-400/10 text-sky-400 border-sky-400/20" },
-  { key: "checked_in", label: "Checked In", badge: "bg-emerald-400/10 text-emerald-400 border-emerald-400/20" },
-  { key: "checked_out", label: "Checked Out", badge: "bg-zinc-700/30 text-zinc-400 border-zinc-600/30" },
-  { key: "cancelled", label: "Cancelled", badge: "bg-rose-400/10 text-rose-400 border-rose-400/20" },
-  { key: "no_show", label: "No Show", badge: "bg-purple-400/10 text-purple-400 border-purple-400/20" },
+  { key: "pending", label: "Pending", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+  { key: "confirmed", label: "Confirmed", badge: "bg-sky-50 text-sky-700 border-sky-200" },
+  { key: "checked_in", label: "Checked In", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { key: "checked_out", label: "Checked Out", badge: "bg-zinc-100 text-zinc-600 border-zinc-200" },
+  { key: "cancelled", label: "Cancelled", badge: "bg-rose-50 text-rose-700 border-rose-200" },
+  { key: "no_show", label: "No Show", badge: "bg-purple-50 text-purple-700 border-purple-200" },
 ];
 
 export const getResStatusBadge = (key) =>
-  RESERVATION_STATUSES.find((s) => s.key === key)?.badge ?? "bg-zinc-800 text-zinc-400 border-zinc-700/30";
+  RESERVATION_STATUSES.find((s) => s.key === key)?.badge ?? "bg-zinc-100 text-zinc-600 border-zinc-200";
 
 export const formatRupiah = (amount) =>
   new Intl.NumberFormat("id-ID", {

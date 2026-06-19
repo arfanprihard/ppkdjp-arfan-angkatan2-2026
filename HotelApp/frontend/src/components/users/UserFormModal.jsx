@@ -65,17 +65,17 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-xs overflow-y-auto">
+      <div className="w-full max-w-md bg-white border border-zinc-200 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between">
+        <div className="p-5 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-amber-500" />
-            <h3 className="text-base font-bold text-white">
+            <User className="h-5 w-5 text-blue-600" />
+            <h3 className="text-base font-bold text-zinc-900">
               {user ? `Ubah Profil: ${user.name}` : "Daftarkan Staf Baru"}
             </h3>
           </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer">
+          <button onClick={onClose} className="p-1 text-zinc-500 hover:text-zinc-950 rounded-lg hover:bg-zinc-100 cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -83,7 +83,7 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2.5 text-xs">
+            <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2.5 text-xs">
               <AlertTriangle className="h-4 w-4 shrink-0" />
               {error}
             </div>
@@ -98,7 +98,7 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Alex Pratama"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
             />
           </div>
 
@@ -111,7 +111,7 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="alex@hotelops.com"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-3 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
             />
           </div>
 
@@ -129,12 +129,12 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={user ? "••••••••" : "Minimal 6 karakter"}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 pl-3 pr-10 py-2 text-sm text-white focus:border-amber-500/40 outline-none"
+                className="w-full rounded-xl border border-zinc-300 bg-white pl-3 pr-10 py-2 text-sm text-zinc-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 cursor-pointer animate-none bg-transparent border-none"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -147,7 +147,7 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-3 py-2 text-sm text-zinc-300 focus:border-amber-500/40 outline-none cursor-pointer"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none cursor-pointer"
             >
               {Object.entries(ROLES).map(([key, val]) => (
                 <option key={key} value={key}>
@@ -159,16 +159,16 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
 
           {/* Status Keaktifan (hanya jika edit mode) */}
           {user && (
-            <div className="flex items-center justify-between p-3 bg-zinc-950/30 rounded-xl border border-zinc-800">
+            <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-zinc-200">
               <div>
-                <p className="text-xs font-bold text-white">Status Akun</p>
+                <p className="text-xs font-bold text-zinc-800">Status Akun</p>
                 <p className="text-[10px] text-zinc-500 mt-0.5">Aktifkan atau nonaktifkan login staf</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsActive(!isActive)}
-                className={`w-12 h-6.5 rounded-full p-1 transition-all duration-200 cursor-pointer flex items-center ${
-                  isActive ? "bg-emerald-500 justify-end" : "bg-zinc-800 justify-start"
+                className={`w-12 h-6.5 rounded-full p-1 transition-all duration-200 cursor-pointer flex items-center border-0 ${
+                  isActive ? "bg-emerald-500 justify-end" : "bg-zinc-300 justify-start"
                 }`}
               >
                 <span className="w-4.5 h-4.5 rounded-full bg-white shadow-md" />
@@ -177,18 +177,18 @@ const UserFormModal = ({ user, onClose, onSaved }) => {
           )}
 
           {/* Buttons */}
-          <div className="pt-3 border-t border-zinc-800 flex gap-3">
+          <div className="pt-3 border-t border-zinc-200 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-zinc-800 cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl border border-zinc-300 text-zinc-600 text-sm font-semibold hover:bg-zinc-50 transition-colors cursor-pointer bg-white"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5 border-0"
             >
               {saving ? (
                 <>

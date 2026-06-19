@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 // ==========================================
 // Rute Publik (Tanpa Token)
 // ==========================================
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // ==========================================
 // Rute Terproteksi (Wajib Login & Membawa Token Sanctum)
@@ -86,12 +86,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // 5. RUTE FOOD & BEVERAGE ORDERS
     // Membuat Order (Bisa diakses oleh Admin, F&B, dan Resepsionis khusus untuk membuat Room Service)
     Route::post('/fnb/orders', [FnbOrderController::class, 'store'])->middleware('role:admin,fnb,receptionist');
+    
+    // Lihat Order (Bisa diakses oleh Admin, F&B, dan Resepsionis)
+    Route::get('/fnb/orders', [FnbOrderController::class, 'index'])->middleware('role:admin,fnb,receptionist');
 
-    // Mengelola Order (Hanya Admin & F&B Service)
-    Route::middleware('role:admin,fnb')->group(function () {
-        Route::get('/fnb/orders', [FnbOrderController::class, 'index']);
-        Route::patch('/fnb/orders/{id}/status', [FnbOrderController::class, 'updateStatus']);
-    });
+    // Mengelola Order Status (Hanya Admin & F&B Service)
+    Route::patch('/fnb/orders/{id}/status', [FnbOrderController::class, 'updateStatus'])->middleware('role:admin,fnb');
 
 
     // 6. RUTE KHUSUS ADMINISTRATOR (Hanya Admin)

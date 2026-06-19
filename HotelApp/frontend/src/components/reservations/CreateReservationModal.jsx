@@ -162,15 +162,15 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-xs overflow-y-auto">
+      <div className="w-full max-w-2xl bg-white border border-zinc-200 rounded-2xl shadow-xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between">
+        <div className="p-5 border-b border-zinc-200 bg-zinc-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-amber-500" />
-            <h3 className="text-base font-bold text-white">Buat Reservasi Baru</h3>
+            <div className="h-2 w-2 rounded-full bg-blue-600" />
+            <h3 className="text-base font-bold text-zinc-900">Buat Reservasi Baru</h3>
           </div>
-          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer border-0 bg-transparent">
+          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer border-0 bg-transparent">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -178,37 +178,37 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2.5 text-xs">
+            <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2.5 text-xs">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {error}
             </div>
           )}
 
           {/* Cari Tamu */}
-          <div className="bg-zinc-950/40 border border-zinc-800 p-4 rounded-xl space-y-3">
+          <div className="bg-slate-50 border border-zinc-200 p-4 rounded-xl space-y-3">
             <div className="flex justify-between items-center">
               <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Tamu Reservasi</label>
               <button
                 type="button"
                 onClick={() => setShowAddGuest(true)}
-                className="text-[10px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer border-0 bg-transparent"
+                className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer border-0 bg-transparent"
               >
                 <Plus className="h-3 w-3" /> Tambah Tamu Baru
               </button>
             </div>
 
             {selectedGuest ? (
-              <div className="flex items-center justify-between bg-zinc-800/40 p-3 rounded-xl border border-zinc-800">
+              <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-zinc-200 shadow-xs">
                 <div>
-                  <p className="text-sm font-bold text-white">{selectedGuest.name}</p>
-                  <p className="text-xs text-zinc-400 mt-0.5">
+                  <p className="text-sm font-bold text-zinc-900">{selectedGuest.name}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     {selectedGuest.email || "Tidak ada email"} · {selectedGuest.phone || "Tidak ada telp"}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedGuest(null)}
-                  className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-rose-400 rounded-lg cursor-pointer border-0 bg-transparent"
+                  className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-rose-600 rounded-lg cursor-pointer border-0 bg-transparent"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -216,18 +216,18 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
             ) : (
               <div className="space-y-2.5">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-450" />
                   <input
                     type="text"
                     placeholder="Cari tamu berdasarkan nama/email/identitas..."
                     value={guestSearch}
                     onChange={(e) => setGuestSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white focus:border-amber-500/40 outline-none"
+                    className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
                   />
                   
                   {/* Guest Results dropdown */}
                   {guestSearch.trim().length >= 2 && (
-                    <div className="absolute left-0 right-0 mt-1 bg-zinc-950 border border-zinc-800 rounded-xl max-h-48 overflow-y-auto z-10 shadow-2xl">
+                    <div className="absolute left-0 right-0 mt-1 bg-white border border-zinc-200 rounded-xl max-h-48 overflow-y-auto z-10 shadow-lg">
                       {searchingGuests ? (
                         <div className="p-3 text-xs text-zinc-500 flex items-center gap-2">
                           <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -245,9 +245,9 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
                               setGuestSearch("");
                               setGuestList([]);
                             }}
-                            className="w-full text-left p-3 hover:bg-zinc-900 border-b border-zinc-900/50 flex flex-col justify-start cursor-pointer text-xs border-0"
+                            className="w-full text-left p-3 hover:bg-slate-50 border-b border-zinc-100 flex flex-col justify-start cursor-pointer text-xs border-0"
                           >
-                            <span className="font-bold text-white">{g.name}</span>
+                            <span className="font-bold text-zinc-900">{g.name}</span>
                             <span className="text-zinc-500 mt-0.5">
                               ID: {g.id_number} · Telp: {g.phone || "—"}
                             </span>
@@ -268,10 +268,10 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
                           key={g.id}
                           type="button"
                           onClick={() => setSelectedGuest(g)}
-                          className="w-full text-left p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/10 hover:bg-zinc-800/40 transition-colors flex flex-col justify-start cursor-pointer text-xs border-0"
+                          className="w-full text-left p-2.5 rounded-xl border border-zinc-200 bg-white hover:bg-slate-50 transition-colors flex flex-col justify-start cursor-pointer text-xs border-0 shadow-xs"
                         >
-                          <span className="font-bold text-zinc-300 hover:text-white">{g.name}</span>
-                          <span className="text-[10px] text-zinc-400 mt-0.5">
+                          <span className="font-bold text-zinc-700 hover:text-zinc-900">{g.name}</span>
+                          <span className="text-[10px] text-zinc-500 mt-0.5">
                             ID: {g.id_number} · Telp: {g.phone || "—"}
                           </span>
                         </button>
@@ -288,28 +288,28 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Check In *</label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-455" />
                 <input
                   type="date"
                   required
                   min={new Date().toISOString().split("T")[0]}
                   value={checkInDate}
                   onChange={(e) => setCheckInDate(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none focus:border-amber-500/40"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
                 />
               </div>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Check Out *</label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-455" />
                 <input
                   type="date"
                   required
                   min={checkInDate || new Date().toISOString().split("T")[0]}
                   value={checkOutDate}
                   onChange={(e) => setCheckOutDate(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none focus:border-amber-500/40"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
                 />
               </div>
             </div>
@@ -323,7 +323,7 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
               disabled={!checkInDate || !checkOutDate}
               value={roomTypeId}
               onChange={(e) => setRoomTypeId(e.target.value)}
-              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {!checkInDate || !checkOutDate ? (
                 <option value="">-- Pilih Tanggal Terlebih Dahulu --</option>
@@ -350,7 +350,7 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
                 required
                 value={numAdults}
                 onChange={(e) => setNumAdults(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
               />
             </div>
             <div className="space-y-1">
@@ -360,7 +360,7 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
                 min={0}
                 value={numChildren}
                 onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
               />
             </div>
             <div className="space-y-1">
@@ -368,7 +368,7 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
               <select
                 value={channel}
                 onChange={(e) => setChannel(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-zinc-200 outline-none focus:border-amber-500/40 cursor-pointer"
+                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-700 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
               >
                 {CHANNELS.map((ch) => (
                   <option key={ch.key} value={ch.key}>{ch.label}</option>
@@ -387,7 +387,7 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
                 placeholder="Contoh: Booking.com, Traveloka, Agoda..."
                 value={otaName}
                 onChange={(e) => setOtaName(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none focus:border-amber-500/40"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"
               />
             </div>
           )}
@@ -400,36 +400,36 @@ const CreateReservationModal = ({ rooms, onClose, onSaved, prefilledCheckIn }) =
               value={specialRequest}
               onChange={(e) => setSpecialRequest(e.target.value)}
               placeholder="Contoh: Kamar bebas asap rokok, extra bed, check-in larut..."
-              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-800 bg-zinc-900/50 text-white outline-none focus:border-amber-500/40 resize-none"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 resize-none"
             />
           </div>
 
           {/* Estimasi Biaya */}
           {nights > 0 && roomTypeId && (
-            <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-4 flex justify-between items-center animate-in fade-in duration-200">
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex justify-between items-center animate-in fade-in duration-200">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Rincian Estimasi Biaya</p>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-blue-650">Rincian Estimasi Biaya</p>
+                <p className="text-xs text-zinc-550 mt-1">
                   {nights} malam x {formatRupiah(basePrice)}
                 </p>
               </div>
-              <p className="text-lg font-extrabold text-amber-400">{formatRupiah(estimatedTotal)}</p>
+              <p className="text-lg font-extrabold text-blue-650">{formatRupiah(estimatedTotal)}</p>
             </div>
           )}
 
           {/* Footer buttons */}
-          <div className="pt-3 border-t border-zinc-800 flex gap-3">
+          <div className="pt-3 border-t border-zinc-200 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-zinc-800 cursor-pointer bg-transparent"
+              className="flex-1 py-2.5 rounded-xl border border-zinc-300 text-zinc-650 text-sm font-medium hover:bg-zinc-50 cursor-pointer bg-transparent"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={saving || !selectedGuest || !roomTypeId || nights <= 0}
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5 border-0"
+              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5 border-0 shadow-sm"
             >
               {saving ? (
                 <>

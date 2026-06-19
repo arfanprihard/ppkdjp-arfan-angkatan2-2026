@@ -20,14 +20,20 @@ class ReportController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i)->toDateString();
 
-            // Hitung kamar yang occupied pada tanggal tersebut
-            // Sederhananya, hitung status kamar saat ini untuk demo
-            $occupiedCount = Room::whereIn('status', ['oc', 'od'])->count();
+            // Hitung kamar yang occupied pada tanggal tersebut berdasarkan reservasi aktif
+            $occupiedCount = \App\Models\Reservation::whereNotIn('status', ['cancelled', 'no_show'])
+                ->where('check_in_date', '<=', $date)
+                ->where('check_out_date', '>', $date)
+                ->count();
+            
             $rate = $totalRooms > 0 ? round(($occupiedCount / $totalRooms) * 100, 1) : 0;
+            if ($rate > 100) {
+                $rate = 100;
+            }
 
             $data[] = [
                 'date' => $date,
-                'occupied_rooms' => $occupiedCount,
+                'occupied_rooms' => min($occupiedCount, $totalRooms),
                 'occupancy_rate' => $rate
             ];
         }

@@ -96,9 +96,9 @@ const RoomsPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+          <div className="h-8 w-1 rounded-full bg-blue-600" />
           <div>
-            <h2 className="text-base font-bold text-white">Room Board</h2>
+            <h2 className="text-base font-bold text-zinc-800">Room Board</h2>
             <p className="text-[11px] text-zinc-500">
               {loading ? "Memuat..." : `${rooms.length} kamar total - ${filtered.length} ditampilkan`}
             </p>
@@ -107,13 +107,13 @@ const RoomsPage = () => {
         <div className="flex items-center gap-2">
           {isAdmin && (
             <button onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white text-xs font-bold transition-all duration-200 cursor-pointer shadow-lg shadow-amber-500/10">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm">
               <Plus className="h-3.5 w-3.5" />
               Tambah Kamar
             </button>
           )}
           <button onClick={fetchRooms} disabled={loading}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-200 text-xs font-medium cursor-pointer disabled:opacity-50">
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-zinc-200 text-zinc-600 hover:text-zinc-800 hover:bg-slate-200 transition-all duration-200 text-xs font-medium cursor-pointer disabled:opacity-50">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             Perbarui
           </button>
@@ -128,7 +128,7 @@ const RoomsPage = () => {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer ${
                 filterStatus === s.key
                   ? s.color + " ring-1 " + s.ring
-                  : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                  : "border-zinc-200 bg-white text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 shadow-xs"
               }`}>
               <span className={`h-2 w-2 rounded-full ${s.dot}`} />
               {s.label}
@@ -141,31 +141,31 @@ const RoomsPage = () => {
       {/* Search & Filter bar */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[180px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <input type="text" placeholder="Cari nomor / tipe kamar..." value={search} onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-amber-500/40 focus:ring-1 focus:ring-amber-500/20 transition-all" />
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-300 bg-white text-sm text-zinc-800 placeholder-zinc-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 transition-all" />
         </div>
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-600 pointer-events-none" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
           <select value={filterFloor} onChange={(e) => setFilterFloor(e.target.value)}
-            className="pl-8 pr-8 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-400 outline-none focus:border-amber-500/40 appearance-none cursor-pointer">
+            className="pl-8 pr-8 py-2 rounded-xl border border-zinc-300 bg-white text-sm text-zinc-700 outline-none focus:border-blue-600 appearance-none cursor-pointer">
             <option value="all">Semua Lantai</option>
             {floors.map((f) => (<option key={f} value={f}>Lantai {f}</option>))}
           </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-600 pointer-events-none" />
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
         </div>
         <div className="relative">
-          <Bed className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-600 pointer-events-none" />
+          <Bed className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
           <select value={filterType} onChange={(e) => setFilterType(e.target.value)}
-            className="pl-8 pr-8 py-2 rounded-xl border border-zinc-800 bg-zinc-900/60 text-sm text-zinc-400 outline-none focus:border-amber-500/40 appearance-none cursor-pointer">
+            className="pl-8 pr-8 py-2 rounded-xl border border-zinc-300 bg-white text-sm text-zinc-700 outline-none focus:border-blue-600 appearance-none cursor-pointer">
             <option value="all">Semua Tipe</option>
             {roomTypes.map((t) => (<option key={t.id} value={t.id}>{t.name}</option>))}
           </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-600 pointer-events-none" />
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
         </div>
         {hasActiveFilters && (
           <button onClick={() => { setSearch(""); setFilterStatus("all"); setFilterFloor("all"); setFilterType("all"); }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:text-rose-400 hover:border-rose-500/30 text-xs font-medium transition-all cursor-pointer">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-zinc-300 bg-white text-zinc-600 hover:text-rose-600 hover:border-rose-300 text-xs font-medium transition-all cursor-pointer shadow-xs">
             <X className="h-3.5 w-3.5" /> Reset
           </button>
         )}
@@ -173,7 +173,7 @@ const RoomsPage = () => {
 
       {/* Error */}
       {error && !loading && (
-        <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl px-5 py-4 text-sm text-rose-400">
+        <div className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-2xl px-5 py-4 text-sm text-rose-600">
           <AlertTriangle className="h-5 w-5 shrink-0" /> {error}
         </div>
       )}
@@ -182,10 +182,10 @@ const RoomsPage = () => {
       {loading ? (
         <GridSkeleton />
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center text-zinc-500">
-          <Bed className="h-10 w-10 mb-3 text-zinc-700" />
-          <p className="font-semibold text-zinc-400">Tidak ada kamar ditemukan</p>
-          <p className="text-sm mt-1">Coba ubah filter atau kata kunci pencarian.</p>
+        <div className="flex flex-col items-center justify-center py-20 text-center text-zinc-400">
+          <Bed className="h-10 w-10 mb-3 text-zinc-300" />
+          <p className="font-semibold text-zinc-600">Tidak ada kamar ditemukan</p>
+          <p className="text-xs mt-1">Coba ubah filter atau kata kunci pencarian.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3">
@@ -197,7 +197,7 @@ const RoomsPage = () => {
 
       {/* Edit hint */}
       {!loading && canEdit && rooms.length > 0 && (
-        <p className="text-center text-[11px] text-zinc-600">
+        <p className="text-center text-[11px] text-zinc-400">
           {isAdmin ? "Klik kartu kamar untuk detail, edit, atau hapus" : "Klik kartu kamar untuk melihat detail dan mengubah status"}
         </p>
       )}

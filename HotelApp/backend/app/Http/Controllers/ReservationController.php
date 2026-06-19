@@ -31,6 +31,17 @@ class ReservationController extends Controller
             $query->whereDate('check_in_date', $request->check_in_date);
         }
 
+        // Filter pencarian kode reservasi atau nama tamu
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('reservation_code', 'like', "%{$search}%")
+                  ->orWhereHas('guest', function($g) use ($search) {
+                      $g->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
         if ($request->has('all') && $request->all == 1) {
             $reservations = $query->latest()->get();
         } else {
@@ -142,6 +153,7 @@ class ReservationController extends Controller
             $roomType = RoomType::find($roomTypeId);
             $nights = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
             $reservation->total_amount = $roomType->base_price * $nights;
+            $validated['total_amount'] = $reservation->total_amount;
         }
 
         $reservation->update($validated);
