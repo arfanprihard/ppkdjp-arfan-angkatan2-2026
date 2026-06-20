@@ -11,7 +11,7 @@ import {
   ListOrdered,
 } from "lucide-react";
 
-const ReceptionistDashboard = ({ data, loading }) => {
+const ReceptionistDashboard = ({ data, loading, refreshTrigger }) => {
   const navigate = useNavigate();
 
   const quickActions = [
@@ -153,7 +153,7 @@ const ReceptionistDashboard = ({ data, loading }) => {
         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
           Laporan Harian Divisi
         </p>
-        <DailyReportSection endpoint="/api/reports/receptionist" role="receptionist" />
+        <DailyReportSection endpoint="/api/reports/receptionist" role="receptionist" refreshTrigger={refreshTrigger} />
       </div>
     </div>
   );

@@ -144,13 +144,13 @@ const DashboardPage = () => {
         <AdminDashboard data={data} loading={loading} onYearChange={fetchStats} />
       )}
       {role === "receptionist" && (
-        <ReceptionistDashboard data={data} loading={loading} />
+        <ReceptionistDashboard data={data} loading={loading} refreshTrigger={lastUpdated} />
       )}
       {role === "housekeeping" && (
-        <HousekeepingDashboard data={data} loading={loading} />
+        <HousekeepingDashboard data={data} loading={loading} refreshTrigger={lastUpdated} />
       )}
       {role === "fnb" && (
-        <FnbDashboard data={data} loading={loading} />
+        <FnbDashboard data={data} loading={loading} refreshTrigger={lastUpdated} />
       )}
 
       {/* Fallback jika role tidak dikenal */}

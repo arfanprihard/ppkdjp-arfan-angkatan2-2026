@@ -74,7 +74,7 @@ const RoomStatusBar = ({ data }) => {
   );
 };
 
-const HousekeepingDashboard = ({ data, loading }) => {
+const HousekeepingDashboard = ({ data, loading, refreshTrigger }) => {
   const navigate = useNavigate();
 
   const quickActions = [
@@ -170,7 +170,7 @@ const HousekeepingDashboard = ({ data, loading }) => {
         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
           Laporan Harian Divisi
         </p>
-        <DailyReportSection endpoint="/api/reports/housekeeping" role="housekeeping" />
+        <DailyReportSection endpoint="/api/reports/housekeeping" role="housekeeping" refreshTrigger={refreshTrigger} />
       </div>
     </div>
   );

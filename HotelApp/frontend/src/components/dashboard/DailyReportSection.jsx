@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
-import { AlertCircle, FileText, Printer, RefreshCw } from "lucide-react";
+import { AlertCircle, FileText, Printer, RefreshCw, PlaneLanding, PlaneTakeoff, CalendarPlus, ClipboardList, CheckSquare, Clock, ShoppingBag, TrendingUp, Utensils } from "lucide-react";
 
 const formatRupiah = (amount) =>
   new Intl.NumberFormat("id-ID", {
@@ -10,7 +10,7 @@ const formatRupiah = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount ?? 0);
 
-const DailyReportSection = ({ endpoint, role }) => {
+const DailyReportSection = ({ endpoint, role, refreshTrigger }) => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ const DailyReportSection = ({ endpoint, role }) => {
 
   useEffect(() => {
     fetchReport();
-  }, [endpoint]);
+  }, [endpoint, refreshTrigger]);
 
   const handlePrint = () => {
     if (!report) return;
@@ -306,10 +306,10 @@ const DailyReportSection = ({ endpoint, role }) => {
   if (!report) return null;
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-2xl p-5 shadow-sm space-y-4 hover:border-zinc-300 transition-all duration-300">
-      <div className="flex items-center justify-between border-b border-zinc-150 pb-3">
+    <div className="bg-white border border-zinc-200 rounded-2xl p-5 hover:border-blue-300 transition-all duration-300 shadow-sm space-y-5">
+      <div className="flex items-center justify-between border-b border-zinc-200 pb-3.5">
         <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-blue-600" />
+          <FileText className="h-4.5 w-4.5 text-blue-600 animate-pulse" />
           <h3 className="text-sm font-bold text-zinc-900">
             Laporan Harian Aktivitas Staf
           </h3>
@@ -323,56 +323,168 @@ const DailyReportSection = ({ endpoint, role }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {role === "receptionist" && (
           <>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Check-In Hari Ini</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.total_check_ins}</span>
+            {/* Check-In */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <PlaneLanding className="h-4 w-4 text-emerald-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.total_check_ins}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Check-In Hari Ini
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Check-Out Hari Ini</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.total_check_outs}</span>
+
+            {/* Check-Out */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-rose-50 flex items-center justify-center shrink-0">
+                  <PlaneTakeoff className="h-4 w-4 text-rose-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.total_check_outs}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Check-Out Hari Ini
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Reservasi Baru</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.total_reservations_created}</span>
+
+            {/* Reservasi Baru */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <CalendarPlus className="h-4 w-4 text-blue-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.total_reservations_created}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Reservasi Baru
+                </p>
+              </div>
             </div>
           </>
         )}
 
         {role === "housekeeping" && (
           <>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Total Tugas</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.total_tasks}</span>
+            {/* Total Tugas */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <ClipboardList className="h-4 w-4 text-blue-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.total_tasks}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Total Tugas
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Selesai</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.completed}</span>
+
+            {/* Selesai */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <CheckSquare className="h-4 w-4 text-emerald-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.completed}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Selesai
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Sisa Tugas</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.pending + report.summary.in_progress}</span>
+
+            {/* Sisa Tugas */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                  <Clock className="h-4 w-4 text-amber-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.pending + report.summary.in_progress}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Sisa Tugas
+                </p>
+              </div>
             </div>
           </>
         )}
 
         {role === "fnb" && (
           <>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Total Pesanan</span>
-              <span className="text-xl font-extrabold text-zinc-800 block mt-1">{report.summary.total_orders}</span>
+            {/* Total Pesanan */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                  <ShoppingBag className="h-4 w-4 text-blue-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.total_orders}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Total Pesanan
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Pendapatan Selesai</span>
-              <span className="text-xs font-black text-emerald-600 block mt-1 truncate">{formatRupiah(report.summary.total_revenue)}</span>
+
+            {/* Pendapatan Selesai */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <TrendingUp className="h-4 w-4 text-emerald-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-base sm:text-lg font-black text-emerald-600 leading-none mb-1.5 truncate">
+                  {formatRupiah(report.summary.total_revenue)}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Pendapatan Selesai
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 border border-zinc-150 rounded-xl p-3 text-center">
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block">Outlet (Resto/Room)</span>
-              <span className="text-sm font-extrabold text-zinc-800 block mt-1">
-                {report.summary.outlet_counts.resto} / {report.summary.outlet_counts.room_service}
-              </span>
+
+            {/* Outlet (Resto/Room) */}
+            <div className="bg-white border border-zinc-200 rounded-2xl p-4 hover:border-blue-200 transition-all duration-300 group shadow-xs flex flex-col justify-between">
+              <div className="flex items-start justify-between mb-3">
+                <div className="h-8 w-8 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                  <Utensils className="h-4 w-4 text-amber-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl font-black text-zinc-800 leading-none mb-1.5">
+                  {report.summary.outlet_counts.resto} / {report.summary.outlet_counts.room_service}
+                </p>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-tight">
+                  Outlet (Resto/Room)
+                </p>
+              </div>
             </div>
           </>
         )}

@@ -11,7 +11,7 @@ const formatRupiah = (amount) =>
     maximumFractionDigits: 0,
   }).format(amount ?? 0);
 
-const FnbDashboard = ({ data, loading }) => {
+const FnbDashboard = ({ data, loading, refreshTrigger }) => {
   const navigate = useNavigate();
 
   const quickActions = [
@@ -126,7 +126,7 @@ const FnbDashboard = ({ data, loading }) => {
         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
           Laporan Harian Divisi
         </p>
-        <DailyReportSection endpoint="/api/reports/fnb" role="fnb" />
+        <DailyReportSection endpoint="/api/reports/fnb" role="fnb" refreshTrigger={refreshTrigger} />
       </div>
     </div>
   );
