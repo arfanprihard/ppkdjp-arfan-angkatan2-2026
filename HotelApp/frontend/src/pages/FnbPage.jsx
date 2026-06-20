@@ -7,7 +7,8 @@ import {
   ClipboardList,
   History,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Settings
 } from "lucide-react";
 
 // Subkomponen modular
@@ -15,6 +16,7 @@ import MenuGrid from "../components/fnb/MenuGrid";
 import CartPanel from "../components/fnb/CartPanel";
 import KitchenBoard from "../components/fnb/KitchenBoard";
 import OrderHistory from "../components/fnb/OrderHistory";
+import MenuManagement from "../components/fnb/MenuManagement";
 
 const FnbPage = () => {
   const { user } = useAuth();
@@ -268,6 +270,20 @@ const FnbPage = () => {
               </button>
             </>
           )}
+
+          {user?.role === "admin" && (
+            <button
+              onClick={() => setActiveTab("manage")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent ${
+                activeTab === "manage" ? "bg-white text-blue-600 shadow-xs border-zinc-200/50" : "text-zinc-550 hover:text-zinc-800"
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Settings className="h-3.5 w-3.5" />
+                Kelola Menu
+              </span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -343,6 +359,13 @@ const FnbPage = () => {
             loading={loading}
             onRefresh={fetchOrders}
           />
+        </div>
+      )}
+
+      {/* --- TAB CONTENT: KELOLA MENU F&B (ADMIN ONLY) --- */}
+      {activeTab === "manage" && user?.role === "admin" && (
+        <div className="animate-in fade-in">
+          <MenuManagement />
         </div>
       )}
     </div>

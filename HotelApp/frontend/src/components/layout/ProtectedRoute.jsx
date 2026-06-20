@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { Loader2 } from "lucide-react";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -7,13 +8,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // Tampilkan loading spinner saat sedang cek sesi ke server
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#090a0f]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 border-3 border-zinc-800 border-t-white rounded-full animate-spin" />
-          <p className="text-xs text-zinc-400 font-medium tracking-wide uppercase">
-            Memverifikasi sesi...
-          </p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
       </div>
     );
   }

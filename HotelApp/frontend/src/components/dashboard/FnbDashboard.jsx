@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import StatCard from "./StatCard";
+import DailyReportSection from "./DailyReportSection";
 import { ShoppingBag, TrendingUp, PlusCircle, RefreshCw } from "lucide-react";
 
 const formatRupiah = (amount) =>
@@ -118,6 +119,14 @@ const FnbDashboard = ({ data, loading }) => {
             );
           })}
         </div>
+      </div>
+
+      {/* Daily Report Section */}
+      <div className="pt-4">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
+          Laporan Harian Divisi
+        </p>
+        <DailyReportSection endpoint="/api/reports/fnb" role="fnb" />
       </div>
     </div>
   );

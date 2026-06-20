@@ -16,6 +16,7 @@ import {
 import { TASK_TYPES, PRIORITIES, STATUS_MAP, ROOM_STATUSES, formatTime } from "../components/housekeeping/helpers";
 import CreateTaskModal from "../components/housekeeping/CreateTaskModal";
 import TaskTableSkeleton from "../components/housekeeping/TaskTableSkeleton";
+import TaskDetailModal from "../components/housekeeping/TaskDetailModal";
 
 // ─── HALAMAN UTAMA HOUSEKEEPING ──────────────────────────────────────────────
 const HousekeepingPage = () => {
@@ -29,6 +30,7 @@ const HousekeepingPage = () => {
   // Filters
   const [filterStatus, setFilterStatus] = useState("all");
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   // Default values for CreateTaskModal
   const [selectedRoomId, setSelectedRoomId] = useState("");
@@ -82,11 +84,9 @@ const HousekeepingPage = () => {
   }, [fetchRoomsAndBoard]);
 
   // Update Task Status
-  const handleUpdateStatus = async (taskId, newStatus) => {
+  const handleUpdateStatus = async (taskId, payload) => {
     try {
-      const res = await api.patch(`/api/housekeeping/tasks/${taskId}`, {
-        status: newStatus,
-      });
+      const res = await api.patch(`/api/housekeeping/tasks/${taskId}`, payload);
       if (res.data.success) {
         // Refresh all lists
         fetchTasks();
@@ -228,7 +228,15 @@ const HousekeepingPage = () => {
                     const statusInfo = STATUS_MAP[task.status] || { label: task.status, color: "bg-zinc-100 text-zinc-600 border-zinc-200" };
 
                     return (
-                      <tr key={task.id} className="hover:bg-slate-50 transition-colors">
+                      <tr
+                        key={task.id}
+                        onClick={(e) => {
+                          if (!e.target.closest('button')) {
+                            setSelectedTask(task);
+                          }
+                        }}
+                        className="hover:bg-slate-50 transition-colors cursor-pointer"
+                      >
                         <td className="p-4">
                           <div className="font-extrabold text-zinc-900 text-sm">Kamar {task.room?.room_number}</div>
                           <div className="text-[10px] text-zinc-450 mt-0.5">Lantai {task.room?.floor} · {task.room?.room_type?.name}</div>
@@ -269,7 +277,7 @@ const HousekeepingPage = () => {
                           <div className="flex justify-end gap-1.5">
                             {task.status === "pending" && (
                               <button
-                                onClick={() => handleUpdateStatus(task.id, "in_progress")}
+                                onClick={() => handleUpdateStatus(task.id, { status: "in_progress" })}
                                 className="px-2.5 py-1.5 rounded-lg border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-700 hover:text-zinc-900 transition-all cursor-pointer font-bold text-[10px] flex items-center gap-1 shadow-xs"
                                 title="Mulai Kerjakan Tugas"
                               >
@@ -279,7 +287,7 @@ const HousekeepingPage = () => {
                             )}
                             {task.status === "in_progress" && (
                               <button
-                                onClick={() => handleUpdateStatus(task.id, "completed")}
+                                onClick={() => handleUpdateStatus(task.id, { status: "completed" })}
                                 className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-all cursor-pointer font-bold text-[10px] flex items-center gap-1 shadow-sm"
                                 title="Selesaikan Tugas Kebersihan"
                               >
@@ -388,6 +396,15 @@ const HousekeepingPage = () => {
             fetchTasks();
             fetchRoomsAndBoard();
           }}
+        />
+      )}
+
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onStatusUpdate={handleUpdateStatus}
         />
       )}
     </div>

@@ -41,6 +41,7 @@ class CheckInController extends Controller
             'reservation_id' => 'required|exists:reservations,id',
             'room_id' => 'required|exists:rooms,id',
             'deposit_amount' => 'required|numeric|min:0',
+            'security_deposit' => 'nullable|numeric|min:0',
             'deposit_method' => 'required|in:cash,credit_card,debit,transfer',
             'notes' => 'nullable|string',
         ]);
@@ -80,6 +81,7 @@ class CheckInController extends Controller
                 'room_id' => $room->id,
                 'check_in_time' => Carbon::now(),
                 'deposit_amount' => $request->deposit_amount,
+                'security_deposit' => $request->security_deposit ?? 300000.00,
                 'deposit_method' => $request->deposit_method,
                 'processed_by' => $request->user()->id,
                 'notes' => $request->notes,

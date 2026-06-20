@@ -1,8 +1,8 @@
 import React from "react";
-import { User, Mail, Calendar, Edit2, UserMinus, UserCheck, Shield } from "lucide-react";
+import { User, Mail, Calendar, Edit2, UserMinus, UserCheck, Shield, Trash2 } from "lucide-react";
 import { getRoleInfo } from "./helpers";
 
-const UserCard = ({ user, onEdit, onToggleActive }) => {
+const UserCard = ({ user, onEdit, onToggleActive, onDelete }) => {
   const roleInfo = getRoleInfo(user.role);
   const formattedDate = user.created_at
     ? new Date(user.created_at).toLocaleDateString("id-ID", {
@@ -81,6 +81,17 @@ const UserCard = ({ user, onEdit, onToggleActive }) => {
             </>
           )}
         </button>
+
+        {onDelete && (
+          <button
+            onClick={() => onDelete(user)}
+            className="p-1.5 rounded-lg border transition-all cursor-pointer text-xs font-semibold flex items-center gap-1 bg-zinc-50 hover:bg-rose-50 text-zinc-500 hover:text-rose-655 border-zinc-200 hover:border-rose-200"
+            title="Hapus Akun Permanen"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Hapus
+          </button>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,9 @@ use App\Models\HousekeepingTask;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\CheckIn;
+use App\Models\GuestFolio;
+use App\Models\FolioCharge;
 
 class HousekeepingController extends Controller
 {
@@ -48,7 +51,7 @@ class HousekeepingController extends Controller
     {
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
-            'task_type' => 'required|in:room_cleaning,turndown,deep_clean,pool,public_area',
+            'task_type' => 'required|in:room_cleaning,turndown,deep_clean,pool,public_area,room_inspection',
             'priority' => 'required|in:low,medium,high,urgent',
             'assigned_to' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
@@ -103,6 +106,41 @@ class HousekeepingController extends Controller
         }
 
         $task->save();
+
+        // Jika ada data damage charge, masukkan ke folio tamu
+        if ($request->status === 'completed' && $request->has('damage_charges') && is_array($request->damage_charges)) {
+            foreach ($request->damage_charges as $damage) {
+                // Cari check-in aktif untuk kamar ini
+                $checkIn = CheckIn::where('room_id', $task->room_id)
+                    ->whereHas('reservation', function($q) {
+                        $q->where('status', 'checked_in');
+                    })->first();
+
+                if ($checkIn) {
+                    $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+                    if ($folio) {
+                        $amount = floatval($damage['amount'] ?? 0);
+                        if ($amount > 0) {
+                            FolioCharge::create([
+                                'folio_id' => $folio->id,
+                                'charge_type' => 'other',
+                                'description' => 'Denda Kerusakan/Kehilangan: ' . ($damage['item_name'] ?? 'Barang'),
+                                'amount' => $amount,
+                                'quantity' => 1,
+                                'charge_date' => Carbon::today(),
+                                'created_by' => $request->user()->id,
+                            ]);
+
+                            $folio->increment('total_charges', $amount);
+                            $folio->refresh();
+                            $folio->update([
+                                'balance' => $folio->total_charges - $folio->total_payments
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,

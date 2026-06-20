@@ -15,6 +15,7 @@ class CheckIn extends Model
         'room_id',
         'check_in_time',
         'deposit_amount',
+        'security_deposit',
         'deposit_method',
         'processed_by',
         'notes',

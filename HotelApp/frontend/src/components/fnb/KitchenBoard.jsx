@@ -1,4 +1,4 @@
-import { ClipboardList, RefreshCw, Clock, MapPin, User, AlertTriangle, Check } from "lucide-react";
+import { ClipboardList, RefreshCw, Clock, MapPin, User, AlertTriangle, Check, Truck } from "lucide-react";
 
 const OUTLETS = {
   resto: { label: "Restoran", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
@@ -19,8 +19,8 @@ const KitchenBoard = ({
   onRefresh,
   onUpdateStatus,
 }) => {
-  // Filter active orders with status 'proses'
-  const kitchenOrders = orders.filter((o) => o.status === "proses");
+  // Filter active orders with status 'proses' or 'pengiriman'
+  const kitchenOrders = orders.filter((o) => o.status === "proses" || o.status === "pengiriman");
 
   return (
     <div className="space-y-4">
@@ -120,14 +120,48 @@ const KitchenBoard = ({
                   <span className="font-extrabold text-zinc-800 block mt-0.5">{formatRupiah(order.total)}</span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => onUpdateStatus(order.id, "selesai")}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5 border-0"
-                >
-                  <Check className="h-4 w-4" />
-                  Selesaikan Pesanan
-                </button>
+                <div className="flex items-center gap-2">
+                  {/* Status badge */}
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
+                    order.status === 'proses' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200'
+                  }`}>
+                    {order.status === 'proses' ? '🔥 Proses' : '🚚 Pengiriman'}
+                  </span>
+
+                  {order.status === 'proses' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextStatus = order.outlet === 'room_service' ? 'pengiriman' : 'selesai';
+                        const label = order.outlet === 'room_service' ? 'Kirim ke Kamar' : 'Selesaikan Pesanan';
+                        if (window.confirm(`Konfirmasi: ${label}?`)) {
+                          onUpdateStatus(order.id, nextStatus);
+                        }
+                      }}
+                      className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5 border-0"
+                    >
+                      {order.outlet === 'room_service' ? (
+                        <><Truck className="h-4 w-4" /> Kirim</>
+                      ) : (
+                        <><Check className="h-4 w-4" /> Selesaikan</>
+                      )}
+                    </button>
+                  )}
+
+                  {order.status === 'pengiriman' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm('Konfirmasi: Pesanan sudah diterima tamu?')) {
+                          onUpdateStatus(order.id, 'selesai');
+                        }
+                      }}
+                      className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5 border-0"
+                    >
+                      <Check className="h-4 w-4" /> Selesai
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}

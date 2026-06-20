@@ -13,6 +13,7 @@ use App\Http\Controllers\FnbOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FnbItemController;
 use Illuminate\Support\Facades\Route;
 
 // ==========================================
@@ -47,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/guests', [GuestController::class, 'store']);
         Route::get('/guests/{id}', [GuestController::class, 'show']);
         Route::put('/guests/{id}', [GuestController::class, 'update']);
+        Route::delete('/guests/{id}', [GuestController::class, 'destroy']);
 
         // Reservasi
         Route::get('/reservations', [ReservationController::class, 'index']);
@@ -60,6 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/checkins', [CheckInController::class, 'store']);
         Route::get('/checkouts/today', [CheckOutController::class, 'expectedDepartures']);
         Route::post('/checkouts', [CheckOutController::class, 'store']);
+        Route::get('/checkouts/{checkInId}/inspection-status', [CheckOutController::class, 'getInspectionStatus']);
+        Route::post('/checkouts/{checkInId}/request-inspection', [CheckOutController::class, 'requestInspection']);
 
         // Billing / Guest Folio
         Route::get('/folios/{checkInId}', [FolioController::class, 'show']);
@@ -93,6 +97,19 @@ Route::middleware('auth:sanctum')->group(function () {
     // Mengelola Order Status (Hanya Admin & F&B Service)
     Route::patch('/fnb/orders/{id}/status', [FnbOrderController::class, 'updateStatus'])->middleware('role:admin,fnb');
 
+    // Menu F&B Items (Lihat: Admin, F&B, Resepsionis | Kelola: Admin Only)
+    Route::get('/fnb/items', [FnbItemController::class, 'index'])->middleware('role:admin,fnb,receptionist');
+    Route::middleware('role:admin')->group(function () {
+        Route::post('/fnb/items', [FnbItemController::class, 'store']);
+        Route::put('/fnb/items/{id}', [FnbItemController::class, 'update']);
+        Route::delete('/fnb/items/{id}', [FnbItemController::class, 'destroy']);
+    });
+
+
+    // 5b. RUTE LAPORAN HARIAN DIVISI / ROLE (Non-Admin)
+    Route::get('/reports/receptionist', [ReportController::class, 'receptionistDailyReport'])->middleware('role:admin,receptionist');
+    Route::get('/reports/housekeeping', [ReportController::class, 'housekeepingDailyReport'])->middleware('role:admin,housekeeping');
+    Route::get('/reports/fnb', [ReportController::class, 'fnbDailyReport'])->middleware('role:admin,fnb');
 
     // 6. RUTE KHUSUS ADMINISTRATOR (Hanya Admin)
     Route::middleware('role:admin')->group(function () {

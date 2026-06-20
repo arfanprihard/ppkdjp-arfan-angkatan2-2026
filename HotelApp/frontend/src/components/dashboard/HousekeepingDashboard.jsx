@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import StatCard from "./StatCard";
+import DailyReportSection from "./DailyReportSection";
 import { ClipboardList, Clock, Layers, CheckSquare } from "lucide-react";
 
 // Room status definition (supporting OOS - Out of Service)
@@ -162,6 +163,14 @@ const HousekeepingDashboard = ({ data, loading }) => {
             );
           })}
         </div>
+      </div>
+
+      {/* Daily Report Section */}
+      <div className="pt-4">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
+          Laporan Harian Divisi
+        </p>
+        <DailyReportSection endpoint="/api/reports/housekeeping" role="housekeeping" />
       </div>
     </div>
   );

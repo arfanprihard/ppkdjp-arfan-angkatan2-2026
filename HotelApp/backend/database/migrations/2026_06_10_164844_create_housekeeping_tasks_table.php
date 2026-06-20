@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('housekeeping_tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->enum('task_type', ['room_cleaning', 'turndown', 'deep_clean', 'pool', 'public_area']);
+            $table->enum('task_type', ['room_cleaning', 'turndown', 'deep_clean', 'pool', 'public_area', 'room_inspection']);
             $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending');
             $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null'); // Staff HK

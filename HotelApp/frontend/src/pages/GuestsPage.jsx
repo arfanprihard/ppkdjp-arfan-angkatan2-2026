@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Inbox,
+  Trash2,
 } from "lucide-react";
 
 import GuestFormModal from "../components/guests/GuestFormModal";
@@ -83,6 +84,19 @@ const GuestsPage = () => {
 
   const handlePrevPage = () => {
     if (page > 1) setPage(page - 1);
+  };
+
+  const handleDeleteGuest = async (guest) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus data tamu "${guest.name}" secara permanen? Data yang dihapus tidak dapat dikembalikan.`)) return;
+    try {
+      const res = await api.delete(`/api/guests/${guest.id}`);
+      if (res.data.success) {
+        alert('Data tamu berhasil dihapus.');
+        fetchGuests();
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menghapus data tamu.');
+    }
   };
 
   return (
@@ -225,6 +239,15 @@ const GuestsPage = () => {
                         title="Edit Profil"
                       >
                         <Edit2 className="h-4 w-4" />
+                      </button>
+
+                      {/* Delete Guest */}
+                      <button
+                        onClick={() => handleDeleteGuest(g)}
+                        className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-500 hover:text-rose-700 rounded-lg transition-colors cursor-pointer"
+                        title="Hapus Tamu"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>

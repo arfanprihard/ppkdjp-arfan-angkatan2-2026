@@ -1,11 +1,76 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { LogOut, User, Bell } from "lucide-react";
+import {
+  LogOut,
+  User,
+  Bell,
+  Menu,
+  X,
+  LayoutDashboard,
+  CalendarRange,
+  Users,
+  Bed,
+  ClipboardList,
+  Utensils,
+  ShieldAlert,
+} from "lucide-react";
 
 const Topbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const userRole = user?.role || "staff";
+
+  // Menu items list (matches Sidebar.jsx)
+  const menuItems = [
+    {
+      path: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      roles: ["admin", "receptionist", "housekeeping", "fnb"],
+    },
+    {
+      path: "/reservations",
+      label: "Reservasi",
+      icon: CalendarRange,
+      roles: ["admin", "receptionist"],
+    },
+    {
+      path: "/guests",
+      label: "Daftar Tamu",
+      icon: Users,
+      roles: ["admin", "receptionist"],
+    },
+    {
+      path: "/rooms",
+      label: "Status Kamar",
+      icon: Bed,
+      roles: ["admin", "receptionist", "housekeeping"],
+    },
+    {
+      path: "/housekeeping",
+      label: "Housekeeping",
+      icon: ClipboardList,
+      roles: ["admin", "housekeeping"],
+    },
+    {
+      path: "/fnb",
+      label: "Layanan F&B",
+      icon: Utensils,
+      roles: ["admin", "fnb", "receptionist"],
+    },
+    {
+      path: "/users",
+      label: "Kelola Staf",
+      icon: ShieldAlert,
+      roles: ["admin"],
+    },
+  ];
+
+  const allowedMenu = menuItems.filter((item) => item.roles.includes(userRole));
 
   // Menentukan judul halaman dinamis berdasarkan rute url
   const getPageTitle = () => {
@@ -18,7 +83,7 @@ const Topbar = () => {
       "/fnb": "Layanan Food & Beverage",
       "/users": "Manajemen Akun Staf",
     };
-    return pathMap[location.pathname] || "HotelOps System";
+    return pathMap[location.pathname] || "PPKD Hotel System";
   };
 
   // Subtitle per halaman
@@ -36,7 +101,6 @@ const Topbar = () => {
   };
 
   // Badge warna berdasarkan role
-  // Badge warna berdasarkan role (Light Theme)
   const getRoleBadgeClass = (role) => {
     const badges = {
       admin: "bg-rose-50 text-rose-600 border-rose-200",
@@ -56,17 +120,26 @@ const Topbar = () => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-zinc-200 px-6 flex items-center justify-between select-none sticky top-0 z-10">
-      {/* Page Title & Subtitle */}
-      <div>
-        <h1 className="font-bold text-[15px] text-zinc-900 tracking-tight leading-tight">
-          {getPageTitle()}
-        </h1>
-        {getPageSubtitle() && (
-          <p className="text-[11px] text-zinc-500 mt-0.5">
-            {getPageSubtitle()}
-          </p>
-        )}
+    <header className="h-16 bg-white border-b border-zinc-200 px-6 flex items-center justify-between select-none sticky top-0 z-50">
+      {/* Page Title & Subtitle + Burger Menu for Mobile */}
+      <div className="flex items-center gap-2.5">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden p-1.5 rounded-lg hover:bg-slate-50 text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer border-0 bg-transparent flex items-center justify-center shrink-0"
+          title="Menu Navigasi"
+        >
+          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+        <div>
+          <h1 className="font-bold text-[15px] text-zinc-900 tracking-tight leading-tight">
+            {getPageTitle()}
+          </h1>
+          {getPageSubtitle() && (
+            <p className="text-[11px] text-zinc-500 mt-0.5 hidden sm:block">
+              {getPageSubtitle()}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Profile & Actions */}
@@ -109,6 +182,31 @@ const Topbar = () => {
           <LogOut className="h-[18px] w-[18px]" />
         </button>
       </div>
+
+      {/* Mobile Navigation Dropdown Menu Overlay */}
+      {isOpen && (
+        <div className="absolute top-16 left-4 right-4 bg-white border border-zinc-200 rounded-2xl shadow-xl p-3 z-50 flex flex-col gap-1 md:hidden animate-in fade-in slide-in-from-top-2 duration-150">
+          {allowedMenu.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : "text-zinc-650 hover:bg-slate-50 hover:text-zinc-950"
+                }`}
+              >
+                <Icon className="h-[18px] w-[18px]" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 };

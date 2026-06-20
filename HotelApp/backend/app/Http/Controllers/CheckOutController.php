@@ -7,6 +7,7 @@ use App\Models\CheckIn;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\GuestFolio;
+use App\Models\FolioCharge;
 use App\Models\HousekeepingTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,8 +40,11 @@ class CheckOutController extends Controller
         $request->validate([
             'check_in_id' => 'required|exists:check_ins,id',
             'payment_method' => 'required|in:cash,credit_card,debit,transfer,city_ledger',
-            'feedback_rating' => 'nullable|integer|min:1|max:5',
             'feedback_notes' => 'nullable|string',
+            'room_inspected' => 'boolean',
+            'damage_charges' => 'nullable|array',
+            'damage_charges.*.item_name' => 'required_with:damage_charges|string',
+            'damage_charges.*.amount' => 'required_with:damage_charges|numeric|min:0',
         ]);
 
         return DB::transaction(function () use ($request) {
@@ -69,6 +73,21 @@ class CheckOutController extends Controller
                 ], 400);
             }
 
+            // Enforce housekeeping inspection check
+            $inspectionTask = HousekeepingTask::where('room_id', $checkIn->room_id)
+                ->where('task_type', 'room_inspection')
+                ->where('created_at', '>=', $checkIn->check_in_time)
+                ->where('status', '!=', 'cancelled')
+                ->latest()
+                ->first();
+
+            if (!$inspectionTask || $inspectionTask->status !== 'completed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Checkout tidak dapat diproses. Kamar harus diperiksa (inspeksi) terlebih dahulu oleh divisi Housekeeping.'
+                ], 400);
+            }
+
             $room = Room::find($checkIn->room_id);
             $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
 
@@ -83,6 +102,15 @@ class CheckOutController extends Controller
             $totalBill = $folio->total_charges;
             $totalPaid = $folio->total_payments;
             $balance = $folio->balance;
+
+            // Hitung deposit refund
+            $depositAmount = floatval($checkIn->security_deposit ?? 300000.00);
+            $depositRefund = max(0, $depositAmount - max(0, $balance));
+
+            // Cari denda kerusakan/kehilangan dari folio
+            $totalDamageCharges = FolioCharge::where('folio_id', $folio->id)
+                ->where('description', 'like', 'Denda%')
+                ->sum('amount');
 
             if ($balance > 0) {
                 // Catat sisa pembayaran
@@ -103,7 +131,10 @@ class CheckOutController extends Controller
                 'total_paid' => $totalPaid,
                 'payment_method' => $request->payment_method,
                 'processed_by' => $request->user()->id,
-                'feedback_rating' => $request->feedback_rating,
+                'room_inspected' => $request->room_inspected ?? true,
+                'deposit_amount' => $depositAmount,
+                'damage_charges' => $totalDamageCharges,
+                'deposit_refund' => $depositRefund,
                 'feedback_notes' => $request->feedback_notes,
             ]);
 
@@ -128,5 +159,90 @@ class CheckOutController extends Controller
                 'data' => $checkOut
             ], 200);
         });
+    }
+
+    /**
+     * Mengecek status inspeksi kamar untuk checkout.
+     */
+    public function getInspectionStatus(int $checkInId)
+    {
+        $checkIn = CheckIn::find($checkInId);
+        if (!$checkIn) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Check-in tidak ditemukan.'
+            ], 404);
+        }
+
+        // Cari tugas room_inspection terbaru untuk kamar ini yang dibuat setelah waktu check-in
+        $task = HousekeepingTask::where('room_id', $checkIn->room_id)
+            ->where('task_type', 'room_inspection')
+            ->where('created_at', '>=', $checkIn->check_in_time)
+            ->where('status', '!=', 'cancelled')
+            ->latest()
+            ->first();
+
+        if (!$task) {
+            return response()->json([
+                'success' => true,
+                'status' => 'none'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $task->status === 'completed' ? 'completed' : 'pending',
+            'task' => $task
+        ], 200);
+    }
+
+    /**
+     * Meminta inspeksi kamar ke divisi Housekeeping.
+     */
+    public function requestInspection(int $checkInId)
+    {
+        $checkIn = CheckIn::find($checkInId);
+        if (!$checkIn) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Check-in tidak ditemukan.'
+            ], 404);
+        }
+
+        // Cek apakah sudah ada inspeksi aktif
+        $existingTask = HousekeepingTask::where('room_id', $checkIn->room_id)
+            ->where('task_type', 'room_inspection')
+            ->where('created_at', '>=', $checkIn->check_in_time)
+            ->where('status', '!=', 'cancelled')
+            ->latest()
+            ->first();
+
+        if ($existingTask && $existingTask->status !== 'completed') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Inspeksi sedang berjalan.',
+                'task' => $existingTask
+            ], 200);
+        }
+
+        // Buat task Housekeeping room_inspection
+        $room = Room::find($checkIn->room_id);
+        
+        $task = HousekeepingTask::create([
+            'room_id' => $room->id,
+            'task_type' => 'room_inspection',
+            'priority' => 'urgent',
+            'status' => 'pending',
+            'notes' => 'Inspeksi Kamar Checkout. Mohon periksa kerusakan barang di kamar #' . $room->room_number . '.'
+        ]);
+
+        // Ubah status kamar menjadi occupied dirty (karena tamu mau checkout tapi belum selesai bayar)
+        $room->update(['status' => 'od']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permintaan inspeksi kamar berhasil dikirim ke Housekeeping.',
+            'task' => $task
+        ], 201);
     }
 }

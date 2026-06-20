@@ -80,6 +80,19 @@ const UsersPage = () => {
     }
   };
 
+  const handleDeleteUser = async (user) => {
+    if (!window.confirm(`Apakah Anda yakin ingin MENGHAPUS PERMANEN akun staf "${user.name}"? Tindakan ini tidak dapat dibatalkan.`)) return;
+    try {
+      const res = await api.delete(`/api/users/${user.id}`);
+      if (res.data.success) {
+        alert('Akun staf berhasil dihapus.');
+        fetchUsers();
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menghapus akun staf.');
+    }
+  };
+
   // Filtered Users
   const filteredUsers = users.filter((u) => {
     const matchSearch =
@@ -227,6 +240,7 @@ const UsersPage = () => {
               user={user}
               onEdit={setEditingUser}
               onToggleActive={handleToggleActive}
+              onDelete={handleDeleteUser}
             />
           ))}
         </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Hotel, Eye, EyeOff } from "lucide-react";
+import ppkdLogo from "../assets/ppkd_logo.png";
+
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -54,13 +56,12 @@ const LoginPage = () => {
       <div className="relative w-full max-w-[400px]">
         {/* Card */}
         <div className="relative bg-white border border-zinc-200 rounded-2xl p-8 shadow-xl">
-          {/* Header Logo */}
           <div className="text-center mb-8">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/10 mb-4">
-              <Hotel className="h-7 w-7" />
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-white border border-zinc-200 p-2 shadow-sm mb-4">
+              <img src={ppkdLogo} alt="Logo" className="h-10 w-10 object-contain" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-zinc-900">
-              Login Staff HotelOps
+              Login Staff PPKD Hotel
             </h2>
             <p className="text-[11px] text-zinc-400 mt-1.5 uppercase tracking-widest font-semibold">
               Sistem Manajemen Hotel
@@ -88,7 +89,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-800 placeholder-zinc-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 transition-all duration-200"
-                placeholder="nama@hotelops.com"
+                placeholder="nama@ppkdhotel.com"
                 disabled={loading}
               />
             </div>
@@ -140,9 +141,8 @@ const LoginPage = () => {
             </button>
           </form>
 
-          {/* Footer */}
           <p className="text-center text-[10px] text-zinc-400 mt-6">
-            © 2026 HotelOps • Internal Staff Portal
+            © 2026 PPKD Hotel • Internal Staff Portal
           </p>
         </div>
       </div>

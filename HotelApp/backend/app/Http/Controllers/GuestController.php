@@ -110,4 +110,43 @@ class GuestController extends Controller
             'data' => $guest
         ], 200);
     }
+
+    /**
+     * Menghapus data tamu secara permanen.
+     */
+    public function destroy($id)
+    {
+        $guest = Guest::find($id);
+
+        if (!$guest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tamu tidak ditemukan.'
+            ], 404);
+        }
+
+        // Cegah hapus jika tamu masih memiliki reservasi aktif
+        $activeReservations = $guest->reservations()
+            ->whereIn('status', ['pending', 'confirmed', 'checked_in'])
+            ->count();
+
+        if ($activeReservations > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat menghapus tamu yang masih memiliki reservasi aktif (' . $activeReservations . ' reservasi).'
+            ], 400);
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($guest) {
+            // Hapus reservasi historis terlebih dahulu (otomatis cascade ke check-ins, check-outs, folios)
+            $guest->reservations()->delete();
+            // Hapus tamu
+            $guest->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data tamu berhasil dihapus secara permanen.'
+        ], 200);
+    }
 }

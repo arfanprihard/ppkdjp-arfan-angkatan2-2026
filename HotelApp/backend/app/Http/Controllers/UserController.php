@@ -120,12 +120,12 @@ class UserController extends Controller
             ], 400);
         }
 
-        // Hapus soft/aktifkan status nonaktif
-        $user->update(['is_active' => false]);
+        $user->tokens()->delete(); // Hapus semua token aktif
+        $user->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Staf berhasil dinonaktifkan.'
+            'message' => 'Akun staf berhasil dihapus secara permanen.'
         ], 200);
     }
 }

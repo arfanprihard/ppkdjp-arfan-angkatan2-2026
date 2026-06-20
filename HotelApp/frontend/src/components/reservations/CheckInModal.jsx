@@ -6,6 +6,7 @@ import { formatRupiah, getNights } from "./helpers";
 const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
   const [roomId, setRoomId] = useState("");
   const depositAmount = reservation.total_amount || 0;
+  const [securityDeposit, setSecurityDeposit] = useState(300000);
   const [depositMethod, setDepositMethod] = useState("cash");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
@@ -31,6 +32,7 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
         reservation_id: reservation.id,
         room_id: Number(roomId),
         deposit_amount: Number(depositAmount),
+        security_deposit: Number(securityDeposit),
         deposit_method: depositMethod,
         notes: notes || null,
       });
@@ -120,6 +122,22 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
                 <option value="debit">Debit</option>
                 <option value="transfer">Transfer Bank</option>
               </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Deposit Jaminan Kerusakan *</label>
+              <input
+                type="number"
+                min="0"
+                value={securityDeposit}
+                onChange={(e) => setSecurityDeposit(Number(e.target.value))}
+                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 font-semibold"
+              />
+            </div>
+            <div className="space-y-1 flex flex-col justify-end text-[11px] text-zinc-500 pb-1.5">
+              <span>* Dikembalikan saat checkout jika tidak ada kerusakan kamar.</span>
             </div>
           </div>
 

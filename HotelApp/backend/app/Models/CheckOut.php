@@ -18,6 +18,10 @@ class CheckOut extends Model
         'processed_by',
         'feedback_rating',
         'feedback_notes',
+        'room_inspected',
+        'deposit_amount',
+        'damage_charges',
+        'deposit_refund',
     ];
 
     // Relasi ke CheckIn

@@ -4,6 +4,7 @@ export const TASK_TYPES = {
   deep_clean: { label: "Deep Clean", color: "bg-purple-50 text-purple-700 border-purple-200" },
   pool: { label: "Area Kolam", color: "bg-sky-50 text-sky-700 border-sky-200" },
   public_area: { label: "Area Publik", color: "bg-teal-50 text-teal-700 border-teal-200" },
+  room_inspection: { label: "Inspeksi Kamar (Checkout)", color: "bg-rose-50 text-rose-700 border-rose-200" },
 };
 
 export const PRIORITIES = {

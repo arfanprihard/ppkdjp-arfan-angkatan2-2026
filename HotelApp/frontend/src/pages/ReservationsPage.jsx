@@ -230,7 +230,7 @@ const ReservationsPage = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {roomTypes.map((t) => {
-            const roomsOfType = rooms.filter((r) => String(r.room_type?.id || r.roomType?.id) === String(t.id));
+            const roomsOfType = rooms.filter((r) => String(r.room_type?.id || r.roomType?.id) === String(t.id) && r.status === "vc");
             const totalCount = roomsOfType.length;
 
             const occupiedCount = allReservations.filter((res) => {

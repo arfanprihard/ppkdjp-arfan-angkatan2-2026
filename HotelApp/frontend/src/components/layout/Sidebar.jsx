@@ -13,6 +13,8 @@ import {
   ChevronRight,
   Hotel,
 } from "lucide-react";
+import ppkdLogo from "../../assets/ppkd_logo.png";
+
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -74,23 +76,21 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`bg-white text-zinc-600 border-r border-zinc-200 min-h-screen flex flex-col transition-all duration-300 ease-in-out relative ${
-        isCollapsed ? "w-[72px]" : "w-64"
-      }`}
+      className={`bg-white text-zinc-650 border-r border-zinc-200 sticky top-0 h-screen flex-col transition-all duration-300 ease-in-out relative ${isCollapsed ? "w-[72px]" : "w-64"
+        } hidden md:flex`}
     >
       {/* Header Logo */}
       <div className="h-16 flex items-center px-5 border-b border-zinc-200">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="h-9 w-9 rounded-lg bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10">
-            <Hotel className="h-5 w-5" />
+          <div className="h-7 w-7 rounded-lg bg-white overflow-hidden flex items-center justify-center shrink-0 shadow-sm border border-zinc-200">
+            <img src={ppkdLogo} alt="Logo" className="h-7 w-7 object-contain" />
           </div>
           <div
-            className={`overflow-hidden transition-all duration-300 ${
-              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
-            }`}
+            className={`overflow-hidden transition-all duration-300 ${isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+              }`}
           >
             <span className="font-bold text-lg tracking-tight text-zinc-900 whitespace-nowrap">
-              HotelOps
+              PPKD Hotel
             </span>
           </div>
         </div>
@@ -115,11 +115,10 @@ const Sidebar = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative ${
-                isActive
-                  ? "bg-blue-50 text-blue-600 font-semibold"
-                  : "text-zinc-600 hover:bg-slate-50 hover:text-zinc-950"
-              } ${isCollapsed ? "justify-center" : ""}`}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative ${isActive
+                ? "bg-blue-50 text-blue-600 font-semibold"
+                : "text-zinc-600 hover:bg-slate-50 hover:text-zinc-950"
+                } ${isCollapsed ? "justify-center" : ""}`}
               title={isCollapsed ? item.label : ""}
             >
               {/* Active indicator bar */}
@@ -127,16 +126,14 @@ const Sidebar = () => {
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-blue-600 rounded-r-full" />
               )}
               <Icon
-                className={`h-[18px] w-[18px] shrink-0 transition-colors duration-200 ${
-                  isActive
-                    ? "text-blue-600"
-                    : "text-zinc-400 group-hover:text-zinc-600"
-                }`}
+                className={`h-[18px] w-[18px] shrink-0 transition-colors duration-200 ${isActive
+                  ? "text-blue-600"
+                  : "text-zinc-400 group-hover:text-zinc-600"
+                  }`}
               />
               <span
-                className={`truncate whitespace-nowrap transition-all duration-300 ${
-                  isCollapsed ? "hidden" : "block"
-                }`}
+                className={`truncate whitespace-nowrap transition-all duration-300 ${isCollapsed ? "hidden" : "block"
+                  }`}
               >
                 {item.label}
               </span>
@@ -149,17 +146,15 @@ const Sidebar = () => {
       {user && (
         <div className="border-t border-zinc-200 p-3">
           <div
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-50 border border-zinc-200/60 ${
-              isCollapsed ? "justify-center" : ""
-            }`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-50 border border-zinc-200/60 ${isCollapsed ? "justify-center" : ""
+              }`}
           >
             <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0 uppercase">
               {user.name?.charAt(0) || "?"}
             </div>
             <div
-              className={`overflow-hidden transition-all duration-300 min-w-0 ${
-                isCollapsed ? "hidden" : "block"
-              }`}
+              className={`overflow-hidden transition-all duration-300 min-w-0 ${isCollapsed ? "hidden" : "block"
+                }`}
             >
               <p className="text-xs font-semibold text-zinc-800 truncate">
                 {user.name}

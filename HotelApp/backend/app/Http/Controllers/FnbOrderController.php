@@ -152,7 +152,7 @@ class FnbOrderController extends Controller
     public function updateStatus(Request $request, int $id)
     {
         $request->validate([
-            'status' => 'required|in:proses,selesai'
+            'status' => 'required|in:proses,pengiriman,selesai'
         ]);
 
         $order = FnbOrder::find($id);
@@ -164,11 +164,15 @@ class FnbOrderController extends Controller
             ], 404);
         }
 
-        // Batasi perubahan status agar hanya bisa maju (proses -> selesai)
-        if ($order->status === 'selesai' && $request->status === 'proses') {
+        // Batasi perubahan status agar hanya bisa maju (proses -> pengiriman -> selesai)
+        $statusOrder = ['proses' => 1, 'pengiriman' => 2, 'selesai' => 3];
+        $currentLevel = $statusOrder[$order->status] ?? 0;
+        $newLevel = $statusOrder[$request->status] ?? 0;
+
+        if ($newLevel <= $currentLevel) {
             return response()->json([
                 'success' => false,
-                'message' => 'Pesanan yang sudah selesai tidak dapat diubah kembali ke status proses.'
+                'message' => 'Status pesanan tidak dapat diubah mundur.'
             ], 400);
         }
 

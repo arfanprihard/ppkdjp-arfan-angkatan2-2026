@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Trash2,
   Edit2,
-  RefreshCw
+  RefreshCw,
+  Printer
 } from "lucide-react";
 import {
   RESERVATION_STATUSES,
@@ -156,6 +157,348 @@ const ReservationDetailModal = ({
     } finally {
       setSaving(false);
     }
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank");
+    const todayStr = new Date().toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const isWalkIn = reservation.channel === "walk_in";
+    const totalNights = getNights(reservation.check_in_date, reservation.check_out_date);
+    const guestName = reservation.guest?.name ?? "—";
+    const guestPhone = reservation.guest?.phone ?? "—";
+    const guestEmail = reservation.guest?.email ?? "—";
+    const guestAddress = reservation.guest?.address ?? "—";
+    const guestNationality = reservation.guest?.nationality ?? "—";
+    const idType = (reservation.guest?.id_type || "KTP").toUpperCase();
+    const idNumber = reservation.guest?.id_number ?? "—";
+    const roomNumber = reservation.room?.room_number ?? "—";
+    const roomTypeName = reservation.room_type?.name || reservation.roomType?.name || "—";
+    const totalAmountStr = formatRupiah(reservation.total_amount);
+    const creatorName = reservation.creator?.name || "Resepsionis";
+
+    const depositAmount = reservation.check_in?.deposit_amount || reservation.checkIn?.deposit_amount || 0;
+    const depositMethod = reservation.check_in?.deposit_method || reservation.checkIn?.deposit_method || "cash";
+
+    let contentHtml = "";
+
+    if (isWalkIn) {
+      contentHtml = `
+        <div class="header">
+          <h1>PPKD Hotel</h1>
+          <p>Formulir Pendaftaran / Registration Form</p>
+        </div>
+        
+        <table class="info-table">
+          <tr>
+            <td class="label">Room No. <span class="sub-label">No. Kamar</span></td>
+            <td class="val"><strong>${roomNumber}</strong></td>
+            <td class="label">No. of Person <span class="sub-label">Jumlah Tamu</span></td>
+            <td class="val">${reservation.num_adults + reservation.num_children} Orang / Person(s)</td>
+          </tr>
+          <tr>
+            <td class="label">No. of Room <span class="sub-label">Jumlah Kamar</span></td>
+            <td class="val">1</td>
+            <td class="label">Room Type <span class="sub-label">Tipe Kamar</span></td>
+            <td class="val">${roomTypeName}</td>
+          </tr>
+        </table>
+        
+        <div style="text-align: right; font-size: 10px; margin-bottom: 10px; font-weight: bold;">
+          Check Out Time: 12.00 Noon / Waktu Lapor Keluar: Jam 12.00 Siang
+        </div>
+        <div style="font-size: 11px; font-style: italic; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px;">
+          Harap tulis dengan huruf cetak — Please print in block letters
+        </div>
+
+        <table class="info-table">
+          <tr>
+            <td class="label">Name <span class="sub-label">Nama</span></td>
+            <td colspan="3"><strong>${guestName}</strong></td>
+          </tr>
+          <tr>
+            <td class="label">Profession <span class="sub-label">Pekerjaan</span></td>
+            <td class="val">_______________________</td>
+            <td class="label">Company <span class="sub-label">Perusahaan</span></td>
+            <td class="val">_______________________</td>
+          </tr>
+          <tr>
+            <td class="label">Arrival Date <span class="sub-label">Tanggal Kedatangan</span></td>
+            <td class="val">${reservation.check_in_date || "—"}</td>
+            <td class="label">Arrival Time <span class="sub-label">Waktu Kedatangan</span></td>
+            <td class="val">_______________________</td>
+          </tr>
+          <tr>
+            <td class="label">Nationality <span class="sub-label">Kebangsaan</span></td>
+            <td class="val">${guestNationality}</td>
+            <td class="label">Birth Date <span class="sub-label">Tanggal Lahir</span></td>
+            <td class="val">_______________________</td>
+          </tr>
+          <tr>
+            <td class="label">ID Type & Number <span class="sub-label">No. Identitas (${idType})</span></td>
+            <td colspan="3">${idNumber}</td>
+          </tr>
+          <tr>
+            <td class="label">Address <span class="sub-label">Alamat</span></td>
+            <td colspan="3">${guestAddress}</td>
+          </tr>
+          <tr>
+            <td class="label">Phone / Handphone <span class="sub-label">No. Telepon / HP</span></td>
+            <td class="val">${guestPhone}</td>
+            <td class="label">Email <span class="sub-label">Alamat Email</span></td>
+            <td class="val">${guestEmail}</td>
+          </tr>
+          <tr>
+            <td class="label">Departure Date <span class="sub-label">Tgl Keberangkatan</span></td>
+            <td class="val">${reservation.check_out_date || "—"}</td>
+            <td class="label">Member Card No. <span class="sub-label">No. Kartu Member</span></td>
+            <td class="val">_______________________</td>
+          </tr>
+          <tr>
+            <td class="label">Method of Payment <span class="sub-label">Cara Pembayaran</span></td>
+            <td colspan="3">
+              [ ${depositMethod === "visa" ? "X" : " "} ] VISA &nbsp;&nbsp;&nbsp;&nbsp;
+              [ ${depositMethod === "debit" ? "X" : " "} ] Debit Card &nbsp;&nbsp;&nbsp;&nbsp;
+              [ ${(depositMethod === "cash" || !depositMethod) ? "X" : " "} ] Cash &nbsp;&nbsp;&nbsp;&nbsp;
+              [ ${depositMethod === "other" ? "X" : " "} ] Other
+            </td>
+          </tr>
+        </table>
+
+        <div class="terms">
+          <p><strong>Kepada PPKD Hotel</strong>, Saya menyatakan bahwa saya baik sendiri ataupun bersama-sama dengan perusahaan, asosiasi, perorangan atau semuanya bertanggung jawab atas pembayaran semua tagihan yang terjadi sehubungan dengan seluruh pelayanan yang Anda berikan sesuai formulir pendaftaran ini.</p>
+          <p><strong>To PPKD Hotel</strong>: I acknowledge that I'm jointly and severally liable with the fore-going person, company or association (and if more than one all of them) for payment of the amount of any charges payable or incurred in connection with all services provided by you under registration.</p>
+          <p style="margin-top: 6px;"><strong>Peraturan Hotel / Hotel Regulations:</strong></p>
+          <ul style="margin: 0; padding-left: 15px;">
+            <li>Untuk diketahui bahwa anda tidak diperkenankan untuk membawa durian ke area hotel. / <em>Please be informed that you are not allowed to bring Durian into the hotel premises.</em></li>
+            <li>Barang berharga (perhiasan, uang dsb) dapat anda simpan dalam brankas di kamar anda atau di kantor depan. / <em>For your valuable belongings (jewels, money, etc) could be stored in the safe deposit box in your room or in the front office.</em></li>
+            <li>Kamar ini bebas rokok. Denda sebesar Rp 1.000.000,- akan ditagihkan apabila Anda merokok di kamar ini. / <em>This room is designed as a non-smoking room. A fine of IDR 1,000,000 will be charged for smoking in this room.</em></li>
+          </ul>
+        </div>
+
+        <table class="info-table" style="margin-top: 10px;">
+          <tr>
+            <td class="label" style="width: 25%;">Safety Deposit Box Number <span class="sub-label">Nomor Kotak Deposit</span></td>
+            <td style="width: 25%;">_________________</td>
+            <td class="label" style="width: 20%;">Issued / Dikeluarkan oleh</td>
+            <td style="width: 30%;">_________________</td>
+          </tr>
+        </table>
+
+        <div class="signatures">
+          <div class="sig-block">
+            <div class="sig-label">Tanda Tangan Tamu</div>
+            <div class="sig-sub">Guest Signature</div>
+            <div class="sig-line"></div>
+          </div>
+          <div class="sig-block">
+            <div class="sig-label">Front Office Staff (Check In)</div>
+            <div class="sig-sub">Melapor masuk oleh: ${creatorName}</div>
+            <div class="sig-line"></div>
+          </div>
+          <div class="sig-block">
+            <div class="sig-label">Front Office Staff (Check Out)</div>
+            <div class="sig-sub">Melapor keluar oleh</div>
+            <div class="sig-line"></div>
+          </div>
+        </div>
+      `;
+    } else {
+      contentHtml = `
+        <div class="header">
+          <h1>PPKD Hotel</h1>
+          <p>Sistem Informasi Manajemen Hotel / Hotel Confirmation</p>
+        </div>
+        
+        <div class="conf-title">Reservation Confirmation</div>
+        
+        <table class="conf-table">
+          <tr>
+            <td class="label">To.</td>
+            <td class="val">${guestName}</td>
+            <td class="label">Date</td>
+            <td class="val">${todayStr}</td>
+          </tr>
+          <tr>
+            <td class="label">Company / Agent</td>
+            <td class="val">${reservation.channel === "ota" ? reservation.ota_name : getChannelLabel(reservation.channel)}</td>
+            <td class="label">Booking No.</td>
+            <td class="val"><strong>${reservation.reservation_code}</strong></td>
+          </tr>
+          <tr>
+            <td class="label">Book By</td>
+            <td class="val">${creatorName}</td>
+            <td class="label">Phone</td>
+            <td class="val">${guestPhone}</td>
+          </tr>
+          <tr>
+            <td class="label">Email</td>
+            <td class="val">${guestEmail}</td>
+            <td class="label">Status</td>
+            <td class="val"><span style="text-transform: uppercase; font-weight: bold;">${reservation.status}</span></td>
+          </tr>
+        </table>
+
+        <div class="details-title">Detail Reservasi / Reservation Details</div>
+        <table class="conf-table">
+          <tr>
+            <td class="label">Guest Name</td>
+            <td class="val-wide" colspan="3"><strong>${guestName}</strong></td>
+          </tr>
+          <tr>
+            <td class="label">Arrival Date</td>
+            <td class="val">${reservation.check_in_date || "—"}</td>
+            <td class="label">Departure Date</td>
+            <td class="val">${reservation.check_out_date || "—"}</td>
+          </tr>
+          <tr>
+            <td class="label">Total Nights</td>
+            <td class="val">${totalNights} Night(s)</td>
+            <td class="label">Person Pax</td>
+            <td class="val">${reservation.num_adults} Dewasa (Adult) ${reservation.num_children > 0 ? `, ${reservation.num_children} Anak (Child)` : ""}</td>
+          </tr>
+          <tr>
+            <td class="label">Room Type</td>
+            <td class="val">${roomTypeName}</td>
+            <td class="label">Room Rate Net</td>
+            <td class="val"><strong>${totalAmountStr}</strong></td>
+          </tr>
+          ${reservation.special_request ? `
+          <tr>
+            <td class="label">Special Request</td>
+            <td class="val-wide" colspan="3" style="font-style: italic; color: #555;">${reservation.special_request}</td>
+          </tr>
+          ` : ""}
+        </table>
+
+        <div class="policy-section">
+          <h4>Payment & Guarantee Policy</h4>
+          <p>Please guarantee this booking with credit card number with clear copy of the card both sides and card holder signature in the column provided. The copy of credit card both sides should be faxed/emailed to hotel.</p>
+          
+          <div class="bank-details">
+            <strong>Please settle your outstanding to our account:</strong><br/>
+            Bank Transfer<br/>
+            Mandiri Account: <strong>123-456-789-0</strong><br/>
+            Mandiri Name Account: <strong>PPKD Hotel</strong>
+          </div>
+        </div>
+
+        <div class="credit-card-form">
+          <strong>Reservation guaranteed by the following credit card / bank transfer:</strong>
+          <table style="width: 100%; border: none; margin-top: 10px; font-size: 11px;">
+            <tr>
+              <td style="width: 25%; padding: 4px 0; border: none;">Card Number:</td>
+              <td style="width: 25%; border-bottom: 1px solid #333;"></td>
+              <td style="width: 25%; padding: 4px 0; border: none;">Card Holder Name:</td>
+              <td style="width: 25%; border-bottom: 1px solid #333;"></td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; border: none;">Card Type:</td>
+              <td style="border-bottom: 1px solid #333;"></td>
+              <td style="padding: 4px 0; border: none;">Expired Date (MM/YY):</td>
+              <td style="border-bottom: 1px solid #333;"></td>
+            </tr>
+          </table>
+          <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
+            <div style="width: 40%; text-align: center;">
+              <div style="font-style: italic;">Card Holder Signature</div>
+              <div style="margin-top: 40px; border-top: 1px solid #333;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="policy-section" style="margin-top: 15px;">
+          <h4>Cancellation Policy</h4>
+          <ol>
+            <li>Please note that check in time is 02.00 pm and check out time is 12.00 pm.</li>
+            <li>All non-guaranteed reservations will automatically be released at 6.00 pm.</li>
+            <li>The Hotel will charge 1 night for guaranteed reservations that have not been cancelled before the day of arrival. Please carefully note your cancellation number.</li>
+          </ol>
+        </div>
+
+        <div class="signature-area">
+          <div class="sig-box">
+            <div style="font-weight: bold;">Prepared By</div>
+            <div style="font-size: 10px; color: #555;">Front Office Dept.</div>
+            <div class="sig-line"></div>
+            <div style="font-size: 11px; margin-top: 5px;">${creatorName}</div>
+          </div>
+          <div class="sig-box">
+            <div style="font-weight: bold;">Confirmed By</div>
+            <div style="font-size: 10px; color: #555;">Guest / Agent Representative</div>
+            <div class="sig-line"></div>
+            <div style="font-size: 11px; margin-top: 5px;">${guestName}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Cetak Reservasi ${reservation.reservation_code} — PPKD Hotel</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #333; line-height: 1.4; font-size: 12px; }
+            .header { text-align: center; border-bottom: 3px double #2563eb; padding-bottom: 10px; margin-bottom: 15px; }
+            .header h1 { margin: 0; font-size: 24px; color: #1e3a8a; font-weight: bold; text-transform: uppercase; }
+            .header p { margin: 3px 0 0; font-size: 11px; color: #555; text-transform: uppercase; font-weight: bold; }
+            .form-title { text-align: center; font-size: 15px; font-weight: bold; text-transform: uppercase; margin: 12px 0; }
+            .conf-title { text-align: center; font-size: 16px; font-weight: 800; text-transform: uppercase; color: #1e3a8a; margin: 15px 0; }
+            
+            table.info-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+            table.info-table td { border: 1px solid #333; padding: 5px 8px; vertical-align: top; }
+            table.info-table td.label { font-weight: bold; width: 25%; background-color: #f9fafb; }
+            table.info-table td.val { width: 25%; }
+            
+            table.conf-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+            table.conf-table td { padding: 6px 10px; vertical-align: top; border-bottom: 1px solid #e5e7eb; }
+            table.conf-table td.label { font-weight: bold; color: #4b5563; width: 25%; }
+            table.conf-table td.val { color: #111827; width: 25%; }
+            table.conf-table td.val-wide { color: #111827; width: 75%; }
+            
+            .sub-label { display: block; font-size: 9px; font-weight: normal; font-style: italic; color: #666; margin-top: 1px; }
+            .details-title { font-weight: bold; font-size: 12px; text-transform: uppercase; color: #1e3a8a; margin-top: 20px; margin-bottom: 8px; border-bottom: 2px solid #e5e7eb; padding-bottom: 3px; }
+            
+            .terms { font-size: 8.5px; line-height: 1.3; text-align: justify; margin-top: 12px; color: #333; border-top: 1px solid #333; padding-top: 6px; }
+            .terms p { margin: 0 0 5px 0; }
+            
+            .policy-section { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 12px; border-radius: 6px; font-size: 10px; margin-top: 15px; color: #4b5563; }
+            .policy-section h4 { margin: 0 0 8px 0; color: #1e3a8a; font-size: 11px; text-transform: uppercase; }
+            .policy-section ol { margin: 0; padding-left: 15px; }
+            .policy-section li { margin-bottom: 4px; }
+            
+            .bank-details { margin-top: 10px; border-top: 1px dashed #d1d5db; padding-top: 8px; }
+            .credit-card-form { margin-top: 15px; border: 1px solid #333; padding: 10px; font-size: 10px; }
+            
+            .signatures { display: flex; justify-content: space-between; margin-top: 20px; }
+            .sig-block { text-align: center; width: 30%; }
+            .sig-line { margin-top: 40px; border-top: 1px solid #333; width: 100%; }
+            .sig-label { font-size: 10px; font-weight: bold; margin-top: 3px; }
+            .sig-sub { font-size: 8.5px; font-style: italic; color: #666; }
+            
+            .signature-area { display: flex; justify-content: space-between; margin-top: 30px; }
+            .sig-box { text-align: center; width: 40%; }
+            .sig-line { margin-top: 45px; border-top: 1px solid #333; }
+            
+            @media print {
+              body { padding: 0; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${contentHtml}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   return (
@@ -315,6 +658,14 @@ const ReservationDetailModal = ({
                     <Edit2 className="h-4 w-4" /> Edit Detail
                   </button>
                 )}
+
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-all duration-200 cursor-pointer border border-blue-200 flex items-center gap-1.5 shadow-xs"
+                >
+                  <Printer className="h-4 w-4" /> Cetak Dokumen
+                </button>
 
                 <button
                   type="button"
