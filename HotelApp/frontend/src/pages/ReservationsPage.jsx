@@ -230,21 +230,30 @@ const ReservationsPage = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {roomTypes.map((t) => {
-            const roomsOfType = rooms.filter((r) => String(r.room_type?.id || r.roomType?.id) === String(t.id) && r.status === "vc");
-            const totalCount = roomsOfType.length;
+            const physicalRooms = rooms.filter((r) => String(r.room_type?.id || r.roomType?.id) === String(t.id));
+            const totalCount = physicalRooms.length;
 
-            const occupiedCount = allReservations.filter((res) => {
-              if (["cancelled", "no_show", "checked_out"].includes(res.status)) {
-                return false;
-              }
-              if (String(res.room_type_id) !== String(t.id)) {
-                return false;
-              }
-              const targetStr = availabilityDate;
-              return targetStr >= res.check_in_date && targetStr < res.check_out_date;
-            }).length;
+            const todayStr = new Date().toISOString().split("T")[0];
+            const isToday = availabilityDate === todayStr;
 
-            const availableCount = Math.max(0, totalCount - occupiedCount);
+            let availableCount = 0;
+            if (isToday) {
+              const vcRoomsCount = physicalRooms.filter((r) => r.status === "vc").length;
+              const uncheckinReservationsCount = allReservations.filter((res) => {
+                if (!["pending", "confirmed"].includes(res.status)) return false;
+                if (String(res.room_type_id) !== String(t.id)) return false;
+                return availabilityDate >= res.check_in_date && availabilityDate < res.check_out_date;
+              }).length;
+              availableCount = Math.max(0, vcRoomsCount - uncheckinReservationsCount);
+            } else {
+              const occupiedCount = allReservations.filter((res) => {
+                if (["cancelled", "no_show", "checked_out"].includes(res.status)) return false;
+                if (String(res.room_type_id) !== String(t.id)) return false;
+                return availabilityDate >= res.check_in_date && availabilityDate < res.check_out_date;
+              }).length;
+              availableCount = Math.max(0, totalCount - occupiedCount);
+            }
+
             const percentage = totalCount > 0 ? (availableCount / totalCount) * 100 : 0;
 
             let barColor = "bg-emerald-500";
