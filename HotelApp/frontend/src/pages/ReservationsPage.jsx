@@ -131,15 +131,16 @@ const ReservationsPage = () => {
         setError("Gagal memuat reservasi.");
       }
 
-      // Refresh ketersediaan kamar
+      // Refresh ketersediaan kamar & status kamar fisik
       fetchAllReservations();
+      fetchRooms();
     } catch (err) {
       console.error(err);
       setError("Gagal menghubungi server backend.");
     } finally {
       setLoading(false);
     }
-  }, [page, filterStatus, filterChannel, filterDate, debouncedSearch, fetchAllReservations]);
+  }, [page, filterStatus, filterChannel, filterDate, debouncedSearch, fetchAllReservations, fetchRooms]);
 
   useEffect(() => {
     fetchReservations();
