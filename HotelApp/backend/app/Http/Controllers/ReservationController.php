@@ -14,7 +14,7 @@ class ReservationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Reservation::with(['guest', 'roomType', 'room', 'checkIn']);
+        $query = Reservation::with(['guest', 'roomType', 'room', 'checkIn', 'creator']);
 
         // Filter berdasarkan status
         if ($request->has('status')) {
@@ -92,6 +92,8 @@ class ReservationController extends Controller
             'created_by' => $request->user()->id // Diambil dari id staf yang sedang login
         ]));
 
+        $reservation->load(['guest', 'roomType', 'room', 'creator', 'checkIn']);
+
         return response()->json([
             'success' => true,
             'message' => 'Reservasi berhasil dibuat dengan kode: ' . $reservationCode,
@@ -157,6 +159,7 @@ class ReservationController extends Controller
         }
 
         $reservation->update($validated);
+        $reservation->load(['guest', 'roomType', 'room', 'creator', 'checkIn']);
 
         return response()->json([
             'success' => true,
