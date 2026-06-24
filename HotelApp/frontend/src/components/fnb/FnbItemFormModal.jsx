@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, AlertCircle, RefreshCw } from "lucide-react";
 import api from "../../api/axios";
+import { useToast } from "../../contexts/ToastContext";
 
 const CATEGORIES = [
   { key: "food", label: "Makanan" },
@@ -10,6 +11,7 @@ const CATEGORIES = [
 ];
 
 const FnbItemFormModal = ({ item, onClose, onSaved }) => {
+  const toast = useToast();
   const [name, setName] = useState(item?.name || "");
   const [category, setCategory] = useState(item?.category || "food");
   const [price, setPrice] = useState(item?.price || "");
@@ -51,7 +53,7 @@ const FnbItemFormModal = ({ item, onClose, onSaved }) => {
       }
 
       if (res.data.success) {
-        alert(item ? "Menu berhasil diperbarui!" : "Menu baru berhasil ditambahkan!");
+        toast.success(item ? "Menu berhasil diperbarui!" : "Menu baru berhasil ditambahkan!");
         onSaved();
       } else {
         setError(res.data.message || "Gagal menyimpan menu.");

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { Plus, Search, Edit2, Trash2, Utensils, Coffee, IceCream, Cookie, RefreshCw, AlertCircle } from "lucide-react";
 import FnbItemFormModal from "./FnbItemFormModal";
+import { useToast } from "../../contexts/ToastContext";
 
 const CATEGORIES = {
   semua: "Semua",
@@ -27,6 +28,7 @@ const formatRupiah = (amount) =>
   }).format(amount ?? 0);
 
 const MenuManagement = () => {
+  const toast = useToast();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,14 +81,14 @@ const MenuManagement = () => {
     try {
       const res = await api.delete(`/api/fnb/items/${item.id}`);
       if (res.data.success) {
-        alert("Menu berhasil dihapus.");
+        toast.success(`Menu "${item.name}" berhasil dihapus.`);
         fetchItems();
       } else {
-        alert(res.data.message || "Gagal menghapus menu.");
+        toast.error(res.data.message || "Gagal menghapus menu.");
       }
     } catch (err) {
       console.error(err);
-      alert("Gagal menghapus menu. Pastikan Anda memiliki akses.");
+      toast.error("Gagal menghapus menu. Pastikan Anda memiliki akses.");
     }
   };
 

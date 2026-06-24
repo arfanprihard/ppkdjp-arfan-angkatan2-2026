@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import api from "../../api/axios";
 import { X, AlertCircle, RefreshCw, Plus, Trash2, ChevronRight, ShieldAlert, CheckCircle } from "lucide-react";
 import { formatRupiah } from "./helpers";
+import { useToast } from "../../contexts/ToastContext";
 
 const CheckOutModal = ({ reservation, onClose, onSaved }) => {
+  const toast = useToast();
   const [step, setStep] = useState(1);
   const [folio, setFolio] = useState(null);
   const [loadingFolio, setLoadingFolio] = useState(true);
@@ -78,7 +80,7 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
       if (res.data.success) {
         setInspectionStatus("pending");
         setInspectionTask(res.data.task);
-        alert(res.data.message);
+        toast.info(res.data.message);
       }
     } catch (err) {
       console.error(err);
@@ -101,7 +103,7 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
   const netDue = remainingBalance - securityDeposit;
   const depositRefund = netDue <= 0 ? Math.abs(netDue) : 0;
   const amountToPay = netDue > 0 ? netDue : 0;
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!checkInId) return;
@@ -125,7 +127,7 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
 
       const res = await api.post("/api/checkouts", payload);
       if (res.data.success) {
-        alert("Checkout berhasil diselesaikan!");
+        toast.success("Checkout berhasil diselesaikan!");
         onSaved();
       } else {
         setError(res.data.message ?? "Gagal memproses checkout.");

@@ -16,8 +16,10 @@ import { ROLES } from "../components/users/helpers";
 import UserCard from "../components/users/UserCard";
 import UserFormModal from "../components/users/UserFormModal";
 import UserSkeleton from "../components/users/UserSkeleton";
+import { useToast } from "../contexts/ToastContext";
 
 const UsersPage = () => {
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,11 +68,12 @@ const UsersPage = () => {
         is_active: !user.is_active,
       });
       if (res.data.success) {
+        toast.success(`Akun staf "${user.name}" berhasil ${user.is_active ? 'dinonaktifkan' : 'diaktifkan'}.`);
         fetchUsers();
       }
     } catch (err) {
       console.error("Gagal mengubah status keaktifan:", err);
-      alert(err.response?.data?.message || "Gagal mengubah status staf.");
+      toast.error(err.response?.data?.message || "Gagal mengubah status staf.");
     }
   };
 
@@ -79,11 +82,11 @@ const UsersPage = () => {
     try {
       const res = await api.delete(`/api/users/${user.id}`);
       if (res.data.success) {
-        alert('Akun staf berhasil dihapus.');
+        toast.success(`Akun staf "${user.name}" berhasil dihapus.`);
         fetchUsers();
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal menghapus akun staf.');
+      toast.error(err.response?.data?.message || 'Gagal menghapus akun staf.');
     }
   };
 
@@ -249,6 +252,8 @@ const UsersPage = () => {
             setEditingUser(null);
           }}
           onSaved={() => {
+            const isEdit = !!editingUser;
+            toast.success(isEdit ? "Profil staf berhasil diperbarui." : "Staf baru berhasil didaftarkan.");
             setShowAddForm(false);
             setEditingUser(null);
             fetchUsers();

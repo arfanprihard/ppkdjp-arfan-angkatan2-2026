@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Bed, X, AlertTriangle, RefreshCw } from "lucide-react";
 import api from "../../api/axios";
 import { STATUSES, formatRupiah } from "./helpers";
+import { useToast } from "../../contexts/ToastContext";
 
 const NewRoomModal = ({ roomTypes, onClose, onSaved }) => {
+  const toast = useToast();
   const [roomNumber, setRoomNumber] = useState("");
   const [floor, setFloor] = useState(1);
   const [roomTypeId, setRoomTypeId] = useState("");
@@ -29,6 +31,7 @@ const NewRoomModal = ({ roomTypes, onClose, onSaved }) => {
         notes: notes || null,
       });
       if (res.data.success) {
+        toast.success(`Kamar #${roomNumber} berhasil ditambahkan.`);
         onSaved();
       } else {
         setError(res.data.message || "Gagal menambahkan kamar.");

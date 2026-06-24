@@ -17,9 +17,11 @@ import { TASK_TYPES, PRIORITIES, STATUS_MAP, ROOM_STATUSES, formatTime } from ".
 import CreateTaskModal from "../components/housekeeping/CreateTaskModal";
 import TaskTableSkeleton from "../components/housekeeping/TaskTableSkeleton";
 import TaskDetailModal from "../components/housekeeping/TaskDetailModal";
+import { useToast } from "../contexts/ToastContext";
 
 // ─── HALAMAN UTAMA HOUSEKEEPING ──────────────────────────────────────────────
 const HousekeepingPage = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState("tasks"); // 'tasks' | 'board'
   const [tasks, setTasks] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -88,12 +90,15 @@ const HousekeepingPage = () => {
     try {
       const res = await api.patch(`/api/housekeeping/tasks/${taskId}`, payload);
       if (res.data.success) {
+        const statusLabel = payload.status === "in_progress" ? "mulai dikerjakan" : "selesai";
+        toast.success(`Tugas kebersihan berhasil diubah ke status ${statusLabel}.`);
         // Refresh all lists
         fetchTasks();
         fetchRoomsAndBoard();
       }
     } catch (err) {
       console.error("Gagal memperbarui status tugas", err);
+      toast.error(err.response?.data?.message || "Gagal memperbarui status tugas.");
     }
   };
 
@@ -391,6 +396,7 @@ const HousekeepingPage = () => {
             setShowCreate(false);
           }}
           onSaved={() => {
+            toast.success("Tugas kebersihan baru berhasil dibuat.");
             setSelectedRoomId("");
             setShowCreate(false);
             fetchTasks();

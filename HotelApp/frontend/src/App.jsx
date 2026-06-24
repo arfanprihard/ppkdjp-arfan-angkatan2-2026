@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ToastProvider } from "./contexts/ToastContext";
 import Content from "./components/layout/Content";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
@@ -27,6 +28,7 @@ const Placeholder = ({ name }) => (
 function App() {
   return (
     <BrowserRouter>
+      <ToastProvider>
       <AuthProvider>
         <Routes>
           {/* 1. Rute Publik (Halaman Login) */}
@@ -124,6 +126,7 @@ function App() {
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

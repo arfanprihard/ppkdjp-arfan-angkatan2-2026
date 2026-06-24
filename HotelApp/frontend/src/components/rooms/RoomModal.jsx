@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { X, Edit2, Trash2, AlertTriangle, CheckCircle, RefreshCw } from "lucide-react";
 import api from "../../api/axios";
 import { STATUSES, getStatus, formatRupiah } from "./helpers";
+import { useToast } from "../../contexts/ToastContext";
 
 const RoomModal = ({ room, roomTypes, isAdmin, canEdit, onClose, onUpdated }) => {
+  const toast = useToast();
   const s = getStatus(room.status);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -35,7 +37,8 @@ const RoomModal = ({ room, roomTypes, isAdmin, canEdit, onClose, onUpdated }) =>
       const res = await api.put(`/api/rooms/${room.id}/status`, { status: newStatus, notes: notes || null });
       if (res.data.success) {
         setSuccess(true);
-        setTimeout(() => { onUpdated(); onClose(); }, 800);
+        toast.success(`Status kamar #${room.room_number} berhasil diperbarui.`);
+        setTimeout(() => { onUpdated(); onClose(); }, 850);
       } else {
         setError(res.data.message || "Gagal memperbarui status.");
       }
@@ -60,7 +63,8 @@ const RoomModal = ({ room, roomTypes, isAdmin, canEdit, onClose, onUpdated }) =>
       });
       if (res.data.success) {
         setSuccess(true);
-        setTimeout(() => { onUpdated(); onClose(); }, 800);
+        toast.success(`Detail kamar #${roomNumber} berhasil diperbarui.`);
+        setTimeout(() => { onUpdated(); onClose(); }, 850);
       } else {
         setError(res.data.message || "Gagal memperbarui kamar.");
       }
@@ -77,6 +81,7 @@ const RoomModal = ({ room, roomTypes, isAdmin, canEdit, onClose, onUpdated }) =>
     try {
       const res = await api.delete(`/api/rooms/${room.id}`);
       if (res.data.success) {
+        toast.success(`Kamar #${room.room_number} berhasil dihapus.`);
         onUpdated();
         onClose();
       } else {

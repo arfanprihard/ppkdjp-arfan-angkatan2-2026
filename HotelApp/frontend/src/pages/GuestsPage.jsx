@@ -17,9 +17,11 @@ import {
 import GuestFormModal from "../components/guests/GuestFormModal";
 import GuestDetailModal from "../components/guests/GuestDetailModal";
 import TableSkeleton from "../components/guests/TableSkeleton";
+import { useToast } from "../contexts/ToastContext";
 
 // ─── HALAMAN UTAMA DAFTAR TAMU ────────────────────────────────────────────────
 const GuestsPage = () => {
+  const toast = useToast();
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -91,11 +93,11 @@ const GuestsPage = () => {
     try {
       const res = await api.delete(`/api/guests/${guest.id}`);
       if (res.data.success) {
-        alert('Data tamu berhasil dihapus.');
+        toast.success(`Data tamu "${guest.name}" berhasil dihapus.`);
         fetchGuests();
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal menghapus data tamu.');
+      toast.error(err.response?.data?.message || 'Gagal menghapus data tamu.');
     }
   };
 
@@ -294,6 +296,8 @@ const GuestsPage = () => {
             setEditingGuest(null);
           }}
           onSaved={() => {
+            const isEdit = !!editingGuest;
+            toast.success(isEdit ? "Data tamu berhasil diperbarui." : "Tamu baru berhasil didaftarkan.");
             setShowForm(false);
             setEditingGuest(null);
             fetchGuests();

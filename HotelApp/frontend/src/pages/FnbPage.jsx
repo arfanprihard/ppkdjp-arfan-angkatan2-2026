@@ -17,9 +17,11 @@ import CartPanel from "../components/fnb/CartPanel";
 import KitchenBoard from "../components/fnb/KitchenBoard";
 import OrderHistory from "../components/fnb/OrderHistory";
 import MenuManagement from "../components/fnb/MenuManagement";
+import { useToast } from "../contexts/ToastContext";
 
 const FnbPage = () => {
   const { user } = useAuth();
+  const toast = useToast();
   const isReceptionist = user?.role === "receptionist";
   
   // Tab default: staf F&B diarahkan ke Dapur, resepsionis ke POS
@@ -41,7 +43,6 @@ const FnbPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [submittingOrder, setSubmittingOrder] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
 
   // Fetch active check-ins for Room Service dropdown
   const fetchActiveCheckins = useCallback(async () => {
@@ -150,11 +151,11 @@ const FnbPage = () => {
   const handleCreateOrder = async (e) => {
     e.preventDefault();
     if (cart.length === 0) {
-      alert("Keranjang pesanan masih kosong.");
+      toast.warning("Keranjang pesanan masih kosong.");
       return;
     }
     if (outlet === "room_service" && !selectedReservationId) {
-      alert("Silakan pilih Kamar untuk Room Service.");
+      toast.warning("Silakan pilih Kamar untuk Room Service.");
       return;
     }
 
@@ -178,9 +179,8 @@ const FnbPage = () => {
 
       const res = await api.post("/api/fnb/orders", payload);
       if (res.data.success) {
-        setSuccessMessage("Pesanan F&B berhasil dibuat.");
+        toast.success("Pesanan F&B berhasil dibuat.");
         clearCart();
-        setTimeout(() => setSuccessMessage(""), 4000);
         
         // Refresh active check-in data
         fetchActiveCheckins();
@@ -200,11 +200,12 @@ const FnbPage = () => {
         status: newStatus,
       });
       if (res.data.success) {
+        toast.success("Status pesanan F&B berhasil diperbarui.");
         fetchOrders();
       }
     } catch (err) {
       console.error("Gagal memperbarui status order", err);
-      alert("Gagal memperbarui status pesanan.");
+      toast.error("Gagal memperbarui status pesanan.");
     }
   };
 

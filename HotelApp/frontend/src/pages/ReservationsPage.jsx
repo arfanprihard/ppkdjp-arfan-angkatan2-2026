@@ -32,6 +32,7 @@ import CreateReservationModal from "../components/reservations/CreateReservation
 import ReservationDetailModal from "../components/reservations/ReservationDetailModal";
 import CheckInModal from "../components/reservations/CheckInModal";
 import CheckOutModal from "../components/reservations/CheckOutModal";
+import { useToast } from "../contexts/ToastContext";
 
 // ─── SKELETON LOADER UNTUK TABEL ──────────────────────────────────────────────
 const TableSkeleton = () => (
@@ -44,6 +45,7 @@ const TableSkeleton = () => (
 
 // ─── HALAMAN UTAMA RESERVASI ──────────────────────────────────────────────────
 const ReservationsPage = () => {
+  const toast = useToast();
   // State
   const [reservations, setReservations] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -489,6 +491,7 @@ const ReservationsPage = () => {
             setShowCreate(false);
           }}
           onSaved={() => {
+            toast.success("Reservasi baru berhasil dibuat.");
             setShowCreate(false);
             setPage(1);
             fetchReservations();
@@ -511,6 +514,7 @@ const ReservationsPage = () => {
             setShowCheckOut(res);
           }}
           onUpdated={() => {
+            toast.success("Data reservasi berhasil diperbarui.");
             setSelected(null);
             fetchReservations();
           }}
@@ -524,6 +528,7 @@ const ReservationsPage = () => {
           rooms={rooms}
           onClose={() => setShowCheckIn(null)}
           onSaved={() => {
+            toast.success("Check-In tamu berhasil diproses!");
             setShowCheckIn(null);
             fetchReservations();
           }}
@@ -536,6 +541,7 @@ const ReservationsPage = () => {
           reservation={showCheckOut}
           onClose={() => setShowCheckOut(null)}
           onSaved={() => {
+            toast.success("Checkout tamu berhasil diselesaikan!");
             setShowCheckOut(null);
             fetchReservations();
           }}
