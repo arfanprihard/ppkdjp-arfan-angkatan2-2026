@@ -288,13 +288,6 @@ const FnbPage = () => {
         </div>
       </div>
 
-      {successMessage && (
-        <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-xs animate-in fade-in slide-in-from-top-4 duration-300">
-          <CheckCircle className="h-4 w-4 shrink-0" />
-          {successMessage}
-        </div>
-      )}
-
       {error && (
         <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-xs">
           <AlertTriangle className="h-4 w-4 shrink-0" />
