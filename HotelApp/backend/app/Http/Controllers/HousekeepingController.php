@@ -36,7 +36,12 @@ class HousekeepingController extends Controller
      */
     public function roomBoard()
     {
-        $rooms = Room::with('roomType')->get()->groupBy('floor');
+        $rooms = Room::with([
+            'roomType', 
+            'housekeepingTasks' => function($query) {
+                $query->whereIn('status', ['pending', 'in_progress'])->with('assignedStaff');
+            }
+        ])->get()->groupBy('floor');
 
         return response()->json([
             'success' => true,

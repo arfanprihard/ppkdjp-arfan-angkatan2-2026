@@ -22,4 +22,10 @@ class Room extends Model
     {
         return $this->belongsTo(RoomType::class);
     }
+
+    // Relasi: Kamar fisik memiliki banyak tugas kebersihan
+    public function housekeepingTasks()
+    {
+        return $this->hasMany(HousekeepingTask::class);
+    }
 }

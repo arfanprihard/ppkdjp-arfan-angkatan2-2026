@@ -365,13 +365,27 @@ const HousekeepingPage = () => {
                               {isDirty && (
                                 <button
                                   onClick={() => {
-                                    setSelectedRoomId(room.id);
-                                    setShowCreate(true);
+                                    const activeTask = room.housekeeping_tasks && room.housekeeping_tasks[0];
+                                    if (activeTask) {
+                                      // Hubungkan data room ke task agar modal detail dapat membaca info kamar
+                                      setSelectedTask({ ...activeTask, room });
+                                    } else {
+                                      setSelectedRoomId(room.id);
+                                      setShowCreate(true);
+                                    }
                                   }}
-                                  className="w-full mt-1.5 py-1 text-[8px] font-extrabold uppercase bg-blue-600 hover:bg-blue-750 text-white rounded transition-all cursor-pointer text-center shadow-xs"
-                                  title="Buat Tugas Pembersihan Kamar Kotor"
+                                  className={`w-full mt-1.5 py-1 text-[8px] font-extrabold uppercase rounded transition-all cursor-pointer text-center shadow-xs ${
+                                    room.housekeeping_tasks && room.housekeeping_tasks.length > 0
+                                      ? "bg-amber-600 hover:bg-amber-700 text-white"
+                                      : "bg-blue-600 hover:bg-blue-755 text-white"
+                                  }`}
+                                  title={
+                                    room.housekeeping_tasks && room.housekeeping_tasks.length > 0
+                                      ? "Kerjakan Tugas Kebersihan Aktif"
+                                      : "Buat Tugas Pembersihan Kamar"
+                                  }
                                 >
-                                  Bersihkan
+                                  {room.housekeeping_tasks && room.housekeeping_tasks.length > 0 ? "Kerjakan" : "Bersihkan"}
                                 </button>
                               )}
                             </div>
