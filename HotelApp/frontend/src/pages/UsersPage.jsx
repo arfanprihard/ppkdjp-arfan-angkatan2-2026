@@ -61,18 +61,12 @@ const UsersPage = () => {
     if (!window.confirm(confirmMessage)) return;
 
     try {
-      if (user.is_active) {
-        // DELETE /api/users/{id} to deactivate
-        const res = await api.delete(`/api/users/${user.id}`);
-        if (res.data.success) {
-          fetchUsers();
-        }
-      } else {
-        // PUT /api/users/{id} with is_active = true to reactivate
-        const res = await api.put(`/api/users/${user.id}`, { is_active: true });
-        if (res.data.success) {
-          fetchUsers();
-        }
+      // Gunakan PUT untuk toggle status is_active (bukan DELETE)
+      const res = await api.put(`/api/users/${user.id}`, {
+        is_active: !user.is_active,
+      });
+      if (res.data.success) {
+        fetchUsers();
       }
     } catch (err) {
       console.error("Gagal mengubah status keaktifan:", err);
