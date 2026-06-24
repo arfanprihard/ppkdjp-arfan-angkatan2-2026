@@ -114,11 +114,19 @@ const TaskDetailModal = ({ task, onClose, onStatusUpdate }) => {
             <div className="border border-zinc-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-zinc-805 text-amber-800">Denda Kerusakan / Kehilangan Barang</h4>
-                <button type="button" onClick={addDamageRow} className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 cursor-pointer bg-transparent border-0">
-                  <Plus className="h-3.5 w-3.5" /> Tambah Item
-                </button>
+                {["oc", "od"].includes(task.room?.status) ? (
+                  <button type="button" onClick={addDamageRow} className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 cursor-pointer bg-transparent border-0">
+                    <Plus className="h-3.5 w-3.5" /> Tambah Item
+                  </button>
+                ) : (
+                  <span className="text-[10px] text-zinc-450 italic font-medium">Kamar kosong (sudah checkout)</span>
+                )}
               </div>
-              {damageCharges.length === 0 ? (
+              {!["oc", "od"].includes(task.room?.status) ? (
+                <p className="text-[11px] text-zinc-450 italic bg-zinc-50 border border-zinc-200/60 p-2.5 rounded-xl">
+                  ⚠️ Denda tidak dapat ditambahkan karena kamar ini tidak memiliki tamu aktif (sudah checkout).
+                </p>
+              ) : damageCharges.length === 0 ? (
                 <p className="text-[11px] text-zinc-400 italic">Tidak ada denda kerusakan. Klik "Tambah Item" jika ada barang rusak/hilang.</p>
               ) : (
                 <div className="space-y-2">

@@ -114,35 +114,50 @@ class HousekeepingController extends Controller
 
         // Jika ada data damage charge, masukkan ke folio tamu
         if ($request->status === 'completed' && $request->has('damage_charges') && is_array($request->damage_charges)) {
-            foreach ($request->damage_charges as $damage) {
+            // Saring denda yang valid (nominal > 0 dan nama barang terisi)
+            $validCharges = array_filter($request->damage_charges, function($d) {
+                return !empty($d['item_name']) && floatval($d['amount'] ?? 0) > 0;
+            });
+
+            if (count($validCharges) > 0) {
                 // Cari check-in aktif untuk kamar ini
                 $checkIn = CheckIn::where('room_id', $task->room_id)
                     ->whereHas('reservation', function($q) {
                         $q->where('status', 'checked_in');
                     })->first();
 
-                if ($checkIn) {
-                    $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
-                    if ($folio) {
-                        $amount = floatval($damage['amount'] ?? 0);
-                        if ($amount > 0) {
-                            FolioCharge::create([
-                                'folio_id' => $folio->id,
-                                'charge_type' => 'other',
-                                'description' => 'Denda Kerusakan/Kehilangan: ' . ($damage['item_name'] ?? 'Barang'),
-                                'amount' => $amount,
-                                'quantity' => 1,
-                                'charge_date' => Carbon::today(),
-                                'created_by' => $request->user()->id,
-                            ]);
+                if (!$checkIn) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal menyimpan denda. Kamar ini tidak memiliki tamu aktif (sudah checkout).'
+                    ], 422);
+                }
 
-                            $folio->increment('total_charges', $amount);
-                            $folio->refresh();
-                            $folio->update([
-                                'balance' => $folio->total_charges - $folio->total_payments
-                            ]);
-                        }
-                    }
+                $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+                if (!$folio) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal menyimpan denda. Folio tagihan kamar ini sudah ditutup.'
+                    ], 422);
+                }
+
+                foreach ($validCharges as $damage) {
+                    $amount = floatval($damage['amount']);
+                    FolioCharge::create([
+                        'folio_id' => $folio->id,
+                        'charge_type' => 'other',
+                        'description' => 'Denda Kerusakan/Kehilangan: ' . $damage['item_name'],
+                        'amount' => $amount,
+                        'quantity' => 1,
+                        'charge_date' => Carbon::today(),
+                        'created_by' => $request->user()->id,
+                    ]);
+
+                    $folio->increment('total_charges', $amount);
+                    $folio->refresh();
+                    $folio->update([
+                        'balance' => $folio->total_charges - $folio->total_payments
+                    ]);
                 }
             }
         }
