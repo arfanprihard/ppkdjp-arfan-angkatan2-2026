@@ -172,6 +172,4 @@ class CheckInController extends Controller
             ], 201);
         });
     }
-
-    }
 }
