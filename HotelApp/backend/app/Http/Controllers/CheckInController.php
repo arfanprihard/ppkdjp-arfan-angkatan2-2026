@@ -44,6 +44,9 @@ class CheckInController extends Controller
             'security_deposit' => 'nullable|numeric|min:0',
             'deposit_method' => 'required|in:cash,credit_card,debit,transfer',
             'notes' => 'nullable|string',
+            'check_in_time' => 'nullable|date',
+            'extra_bed' => 'nullable|boolean',
+            'extra_bed_price' => 'nullable|numeric|min:0',
         ]);
 
         // Menggunakan Database Transaction agar jika salah satu langkah gagal, semua dibatalkan (aman)
@@ -59,10 +62,13 @@ class CheckInController extends Controller
             }
 
             // Validasi Pelunasan Penuh (Tidak boleh DP/Down Payment)
-            if (abs(floatval($request->deposit_amount) - floatval($reservation->total_amount)) > 0.01) {
+            $extraBedPrice = $request->extra_bed ? floatval($request->extra_bed_price ?? 100000) : 0;
+            $expectedTotal = floatval($reservation->total_amount) + $extraBedPrice;
+
+            if (abs(floatval($request->deposit_amount) - $expectedTotal) > 0.01) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pembayaran harus dilunasi secara penuh sebesar Rp ' . number_format($reservation->total_amount, 0, ',', '.') . ' saat check-in.'
+                    'message' => 'Pembayaran harus dilunasi secara penuh sebesar Rp ' . number_format($expectedTotal, 0, ',', '.') . ' saat check-in.'
                 ], 400);
             }
 
@@ -76,10 +82,11 @@ class CheckInController extends Controller
             }
 
             // 3. Simpan data Check-in
+            $checkInTime = $request->check_in_time ? Carbon::parse($request->check_in_time) : Carbon::now();
             $checkIn = CheckIn::create([
                 'reservation_id' => $reservation->id,
                 'room_id' => $room->id,
-                'check_in_time' => Carbon::now(),
+                'check_in_time' => $checkInTime,
                 'deposit_amount' => $request->deposit_amount,
                 'security_deposit' => $request->security_deposit ?? 300000.00,
                 'deposit_method' => $request->deposit_method,
@@ -124,6 +131,30 @@ class CheckInController extends Controller
 
             // 8. Hitung ulang total biaya dan balance pada Folio
             $folio->increment('total_charges', $roomChargeAmount);
+
+            // Tambah charge extra bed jika dipesan saat checkin
+            if ($request->extra_bed) {
+                FolioCharge::create([
+                    'folio_id' => $folio->id,
+                    'charge_type' => 'extra_bed',
+                    'description' => 'Extra Bed Charge - Kamar #' . $room->room_number,
+                    'amount' => $extraBedPrice,
+                    'quantity' => 1,
+                    'charge_date' => Carbon::today(),
+                    'created_by' => $request->user()->id,
+                ]);
+                $folio->increment('total_charges', $extraBedPrice);
+
+                // Buat task Housekeeping untuk mengantar extra bed
+                \App\Models\HousekeepingTask::create([
+                    'room_id' => $room->id,
+                    'task_type' => 'extra_bed',
+                    'priority' => 'medium',
+                    'status' => 'pending',
+                    'notes' => 'Siapkan dan antarkan extra bed ke Kamar #' . $room->room_number . ' (dipesan saat check-in).'
+                ]);
+            }
+
             $folio->refresh();
             $folio->update([
                 'balance' => $folio->total_charges - $folio->total_payments
@@ -137,6 +168,73 @@ class CheckInController extends Controller
                     'folio_number' => $folio->folio_number,
                     'room_charge' => $roomChargeAmount,
                     'deposit' => $request->deposit_amount
+                ]
+            ], 201);
+        });
+    }
+
+    /**
+     * Memesan extra bed selama masa stay (Checked-In).
+     */
+    public function addExtraBed(Request $request, int $checkInId)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+        ]);
+
+        $checkIn = CheckIn::find($checkInId);
+        if (!$checkIn) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Check-in tidak ditemukan.'
+            ], 404);
+        }
+
+        $room = Room::find($checkIn->room_id);
+        $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+        if (!$folio) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Guest Folio aktif tidak ditemukan.'
+            ], 400);
+        }
+
+        return DB::transaction(function () use ($request, $checkIn, $room, $folio) {
+            $amount = floatval($request->amount);
+
+            // 1. Tambah Folio Charge
+            $charge = FolioCharge::create([
+                'folio_id' => $folio->id,
+                'charge_type' => 'extra_bed',
+                'description' => 'Layanan Tambahan - Extra Bed Kamar #' . $room->room_number,
+                'amount' => $amount,
+                'quantity' => 1,
+                'charge_date' => Carbon::today(),
+                'created_by' => $request->user()->id,
+            ]);
+
+            // 2. Update Saldo Folio
+            $folio->increment('total_charges', $amount);
+            $folio->refresh();
+            $folio->update([
+                'balance' => $folio->total_charges - $folio->total_payments
+            ]);
+
+            // 3. Buat Housekeeping Task
+            $task = \App\Models\HousekeepingTask::create([
+                'room_id' => $room->id,
+                'task_type' => 'extra_bed',
+                'priority' => 'medium',
+                'status' => 'pending',
+                'notes' => 'Siapkan dan antarkan extra bed ke Kamar #' . $room->room_number . ' (dipesan oleh Front Office selama menginap).'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Layanan Extra Bed berhasil dipesan. Tugas dikirim ke Housekeeping.',
+                'data' => [
+                    'charge' => $charge,
+                    'task' => $task
                 ]
             ], 201);
         });

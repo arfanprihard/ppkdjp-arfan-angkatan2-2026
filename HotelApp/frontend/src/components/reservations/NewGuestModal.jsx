@@ -10,6 +10,9 @@ const NewGuestModal = ({ onClose, onSaved }) => {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [nationality, setNationality] = useState("Indonesia");
+  const [profesi, setProfesi] = useState("");
+  const [company, setCompany] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,6 +33,9 @@ const NewGuestModal = ({ onClose, onSaved }) => {
         email: email || null,
         address: address || null,
         nationality: nationality || null,
+        profesi: profesi || null,
+        company: company || null,
+        birth_date: birthDate || null,
       });
       if (res.data.success) {
         onSaved(res.data.data);
@@ -51,7 +57,7 @@ const NewGuestModal = ({ onClose, onSaved }) => {
             <User className="h-5 w-5 text-blue-600" />
             <h4 className="text-base font-bold text-zinc-900">Daftarkan Tamu Baru</h4>
           </div>
-          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer border-0 bg-transparent">
+          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-650 rounded-lg hover:bg-zinc-100 cursor-pointer border-0 bg-transparent">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -135,15 +141,48 @@ const NewGuestModal = ({ onClose, onSaved }) => {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Alamat</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Tanggal Lahir</label>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Pekerjaan</label>
               <input
                 type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Jl. Merdeka No. 10"
+                value={profesi}
+                onChange={(e) => setProfesi(e.target.value)}
+                placeholder="Contoh: PNS"
                 className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
               />
             </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Perusahaan</label>
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="Contoh: PT. ABC"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Alamat</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Jl. Merdeka No. 10"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none"
+            />
           </div>
 
           <div className="pt-3 border-t border-zinc-200 flex gap-3">

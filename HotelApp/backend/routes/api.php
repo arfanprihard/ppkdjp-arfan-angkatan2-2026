@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Check-in & Check-out
         Route::get('/checkins/today', [CheckInController::class, 'expectedArrivals']);
         Route::post('/checkins', [CheckInController::class, 'store']);
+        Route::post('/checkins/{id}/extra-bed', [CheckInController::class, 'addExtraBed']);
         Route::get('/checkouts/today', [CheckOutController::class, 'expectedDepartures']);
         Route::post('/checkouts', [CheckOutController::class, 'store']);
         Route::get('/checkouts/{checkInId}/inspection-status', [CheckOutController::class, 'getInspectionStatus']);
@@ -72,19 +73,21 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    // 4. RUTE HOUSEKEEPING - Kebersihan & Laundry (Dapat diakses oleh Admin & Housekeeping)
+    // 4. RUTE HOUSEKEEPING - Kebersihan (Dapat diakses oleh Admin & Housekeeping)
     Route::middleware('role:admin,housekeeping')->group(function () {
         // Housekeeping Tasks
         Route::get('/housekeeping/tasks', [HousekeepingController::class, 'index']);
         Route::post('/housekeeping/tasks', [HousekeepingController::class, 'store']);
         Route::patch('/housekeeping/tasks/{id}', [HousekeepingController::class, 'updateStatus']);
         Route::get('/housekeeping/room-board', [HousekeepingController::class, 'roomBoard']);
+    });
 
-        // Laundry Requests
+    // 4b. RUTE LAUNDRY (Bisa diakses oleh Admin, Resepsionis & Housekeeping untuk Pemesanan, Status Update oleh HK)
+    Route::middleware('role:admin,receptionist,housekeeping')->group(function () {
         Route::get('/laundry', [LaundryController::class, 'index']);
         Route::post('/laundry', [LaundryController::class, 'store']);
-        Route::patch('/laundry/{id}', [LaundryController::class, 'updateStatus']);
     });
+    Route::patch('/laundry/{id}', [LaundryController::class, 'updateStatus'])->middleware('role:admin,housekeeping');
 
 
     // 5. RUTE FOOD & BEVERAGE ORDERS
@@ -124,5 +127,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/rooms', [RoomController::class, 'store']);
         Route::put('/rooms/{id}', [RoomController::class, 'update']);
         Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
+        Route::post('/room-types', [RoomController::class, 'storeRoomType']);
     });
 });

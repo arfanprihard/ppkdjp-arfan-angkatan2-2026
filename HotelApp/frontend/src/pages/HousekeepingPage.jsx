@@ -22,17 +22,48 @@ import { useToast } from "../contexts/ToastContext";
 // ─── HALAMAN UTAMA HOUSEKEEPING ──────────────────────────────────────────────
 const HousekeepingPage = () => {
   const toast = useToast();
-  const [activeTab, setActiveTab] = useState("tasks"); // 'tasks' | 'board'
+  const [activeTab, setActiveTab] = useState("tasks"); // 'tasks' | 'board' | 'laundry'
   const [tasks, setTasks] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [groupedRooms, setGroupedRooms] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Laundry states
+  const [laundries, setLaundries] = useState([]);
+  const [loadingLaundry, setLoadingLaundry] = useState(false);
+
   // Filters
   const [filterStatus, setFilterStatus] = useState("all");
   const [showCreate, setShowCreate] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const fetchLaundries = useCallback(async () => {
+    setLoadingLaundry(true);
+    try {
+      const res = await api.get("/api/laundry");
+      if (res.data.success) {
+        setLaundries(res.data.data || []);
+      }
+    } catch (err) {
+      console.error("Gagal memuat laundry", err);
+    } finally {
+      setLoadingLaundry(false);
+    }
+  }, []);
+
+  const handleUpdateLaundryStatus = async (laundryId, newStatus) => {
+    try {
+      const res = await api.patch(`/api/laundry/${laundryId}`, { status: newStatus });
+      if (res.data.success) {
+        toast.success(`Status laundry berhasil diupdate.`);
+        fetchLaundries();
+      }
+    } catch (err) {
+      console.error("Gagal memperbarui status laundry", err);
+      toast.error(err.response?.data?.message || "Gagal memperbarui status laundry.");
+    }
+  };
 
   // Default values for CreateTaskModal
   const [selectedRoomId, setSelectedRoomId] = useState("");
@@ -79,7 +110,8 @@ const HousekeepingPage = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [fetchTasks]);
+    fetchLaundries();
+  }, [fetchTasks, fetchLaundries]);
 
   useEffect(() => {
     fetchRoomsAndBoard();
@@ -141,12 +173,24 @@ const HousekeepingPage = () => {
                 Peta Kamar (Board)
               </span>
             </button>
+            <button
+              onClick={() => setActiveTab("laundry")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent ${
+                activeTab === "laundry" ? "bg-white text-blue-600 shadow-xs border-zinc-200/50" : "text-zinc-550 hover:text-zinc-800"
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                Layanan Laundry
+              </span>
+            </button>
           </div>
 
           <button
             onClick={() => {
               fetchTasks();
               fetchRoomsAndBoard();
+              fetchLaundries();
             }}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-zinc-300 text-zinc-650 hover:text-zinc-900 hover:bg-zinc-50 transition-all text-xs font-medium cursor-pointer"
           >
@@ -167,7 +211,7 @@ const HousekeepingPage = () => {
       </div>
 
       {/* Main Tabs Content */}
-      {activeTab === "tasks" ? (
+      {activeTab === "tasks" && (
         // --- TAB: TASKS LIST ---
         <div className="space-y-4 animate-in fade-in duration-150">
           {/* Status Quick Filters */}
@@ -319,7 +363,9 @@ const HousekeepingPage = () => {
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {activeTab === "board" && (
         // --- TAB: ROOM BOARD ---
         <div className="space-y-6 animate-in fade-in duration-150">
           <div className="bg-white border border-zinc-200 p-4 rounded-2xl shadow-sm">
@@ -397,6 +443,92 @@ const HousekeepingPage = () => {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === "laundry" && (
+        // --- TAB: LAUNDRY SERVICES ---
+        <div className="space-y-4 animate-in fade-in duration-150">
+          {loadingLaundry ? (
+            <div className="space-y-3 py-6 animate-pulse">
+              <div className="h-6 bg-zinc-100 rounded-lg w-1/4" />
+              <div className="h-20 bg-zinc-100 rounded-lg" />
+              <div className="h-20 bg-zinc-100 rounded-lg" />
+            </div>
+          ) : laundries.length === 0 ? (
+            <div className="text-center py-20 text-zinc-500 border border-zinc-200 bg-white rounded-2xl shadow-sm">
+              <Clock className="h-10 w-10 mx-auto mb-3 text-zinc-400" />
+              <p className="font-semibold text-zinc-800">Tidak ada permintaan laundry saat ini</p>
+              <p className="text-xs mt-1 text-zinc-500">Permintaan laundry tamu yang checked-in akan muncul di sini.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-zinc-50 text-[10px] font-bold uppercase tracking-widest text-zinc-500 border-b border-zinc-200 sticky top-0">
+                  <tr>
+                    <th className="p-4">Kamar</th>
+                    <th className="p-4">Nama Tamu</th>
+                    <th className="p-4">Pakaian</th>
+                    <th className="p-4">Jumlah Pcs</th>
+                    <th className="p-4">Total Biaya</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 text-zinc-750">
+                  {laundries.map((item) => {
+                    let statusLabel = "";
+                    let statusColor = "";
+                    let nextAction = null;
+
+                    if (item.status === "received") {
+                      statusLabel = "Diajukan (Menunggu Pengambilan)";
+                      statusColor = "bg-amber-50 text-amber-700 border-amber-200";
+                      nextAction = { label: "Ambil dari Kamar", status: "processing" };
+                    } else if (item.status === "processing") {
+                      statusLabel = "Mengambil & Proses Cuci";
+                      statusColor = "bg-blue-50 text-blue-700 border-blue-200";
+                      nextAction = { label: "Selesai Laundry", status: "done" };
+                    } else if (item.status === "done") {
+                      statusLabel = "Selesai Cuci";
+                      statusColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                      nextAction = { label: "Kembalikan ke Kamar", status: "delivered" };
+                    } else if (item.status === "delivered") {
+                      statusLabel = "Sudah Dikembalikan (Selesai)";
+                      statusColor = "bg-zinc-50 text-zinc-500 border-zinc-200";
+                    }
+
+                    return (
+                      <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="p-4 font-bold text-zinc-900 text-sm">Kamar {item.room?.room_number || "—"}</td>
+                        <td className="p-4 font-medium text-zinc-800">{item.guest?.name || "—"}</td>
+                        <td className="p-4 text-zinc-650 italic">{item.items_description}</td>
+                        <td className="p-4 text-zinc-650 font-semibold">{item.item_count} pcs</td>
+                        <td className="p-4 text-zinc-800 font-bold">{item.total_charge ? `Rp ${Number(item.total_charge).toLocaleString("id-ID")}` : "—"}</td>
+                        <td className="p-4">
+                          <span className={`px-2.5 py-1 rounded-full border text-[10px] font-extrabold ${statusColor}`}>
+                            {statusLabel}
+                          </span>
+                        </td>
+                        <td className="p-4 text-right">
+                          {nextAction ? (
+                            <button
+                              onClick={() => handleUpdateLaundryStatus(item.id, nextAction.status)}
+                              className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] cursor-pointer shadow-sm border-0"
+                            >
+                              {nextAction.label}
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-zinc-450 font-bold">Layanan Selesai</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 

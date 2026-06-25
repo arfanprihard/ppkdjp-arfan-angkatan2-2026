@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { User, X, AlertCircle, Phone, Mail, MapPin, History, RefreshCw } from "lucide-react";
+import { User, X, AlertCircle, Phone, Mail, MapPin, History, RefreshCw, Briefcase, Building, Calendar } from "lucide-react";
 import api from "../../api/axios";
 import { getResStatusBadge, formatRupiah, getNights } from "./helpers";
 
@@ -83,6 +82,18 @@ const GuestDetailModal = ({ guestId, onClose }) => {
                     <div className="flex items-center gap-2.5">
                       <MapPin className="h-4 w-4 text-zinc-400 shrink-0" />
                       <span>{guest.nationality || "Indonesia"}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Calendar className="h-4 w-4 text-zinc-400 shrink-0" />
+                      <span>Tgl Lahir: {guest.birth_date || "—"}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Briefcase className="h-4 w-4 text-zinc-400 shrink-0" />
+                      <span>Pekerjaan: {guest.profesi || "—"}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Building className="h-4 w-4 text-zinc-400 shrink-0" />
+                      <span>Perusahaan: {guest.company || "—"}</span>
                     </div>
                     <div className="flex items-start gap-2.5 md:col-span-2">
                       <MapPin className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />

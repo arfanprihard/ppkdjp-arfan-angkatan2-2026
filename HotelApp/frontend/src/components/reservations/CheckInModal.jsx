@@ -5,12 +5,26 @@ import { formatRupiah, getNights } from "./helpers";
 
 const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
   const [roomId, setRoomId] = useState("");
-  const depositAmount = reservation.total_amount || 0;
   const [securityDeposit, setSecurityDeposit] = useState(300000);
   const [depositMethod, setDepositMethod] = useState("cash");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  // Extra bed states
+  const [extraBed, setExtraBed] = useState(false);
+  const [extraBedPrice, setExtraBedPrice] = useState(100000);
+
+  // Arrived time state
+  const getLocalDateTimeString = () => {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
+    return localISOTime;
+  };
+  const [checkInTime, setCheckInTime] = useState(getLocalDateTimeString());
+
+  const depositAmount = (reservation.total_amount || 0) + (extraBed ? Number(extraBedPrice || 0) : 0);
 
   const availableRooms = rooms.filter(
     (r) =>
@@ -35,6 +49,9 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
         security_deposit: Number(securityDeposit),
         deposit_method: depositMethod,
         notes: notes || null,
+        check_in_time: checkInTime,
+        extra_bed: extraBed,
+        extra_bed_price: extraBed ? Number(extraBedPrice) : 0,
       });
 
       if (res.data.success) {
@@ -57,7 +74,7 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <h3 className="text-base font-bold text-zinc-900">Proses Check-In Tamu</h3>
           </div>
-          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer border-0 bg-transparent">
+          <button type="button" onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-650 rounded-lg hover:bg-zinc-100 cursor-pointer border-0 bg-transparent">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -123,6 +140,46 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
                 <option value="transfer">Transfer Bank</option>
               </select>
             </div>
+          </div>
+
+          {/* Extra Bed Option */}
+          <div className="bg-zinc-50 border border-zinc-200 p-3 rounded-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="extraBedCheckbox"
+                checked={extraBed}
+                onChange={(e) => setExtraBed(e.target.checked)}
+                className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-zinc-300 cursor-pointer"
+              />
+              <label htmlFor="extraBedCheckbox" className="text-xs font-bold text-zinc-700 cursor-pointer select-none">
+                Tambah Extra Bed (Kasur Tambahan)?
+              </label>
+            </div>
+            {extraBed && (
+              <div className="space-y-1 animate-in slide-in-from-top-2 duration-150">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Harga Extra Bed *</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={extraBedPrice}
+                  onChange={(e) => setExtraBedPrice(Number(e.target.value))}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-850 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 font-semibold"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Arrived Time / Check-In Time */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">Waktu Kedatangan / Arrived Time *</label>
+            <input
+              type="datetime-local"
+              required
+              value={checkInTime}
+              onChange={(e) => setCheckInTime(e.target.value)}
+              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

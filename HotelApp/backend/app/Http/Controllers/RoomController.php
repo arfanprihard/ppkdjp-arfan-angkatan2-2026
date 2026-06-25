@@ -189,4 +189,26 @@ class RoomController extends Controller
             'data' => $types
         ], 200);
     }
+
+    /**
+     * Menyimpan tipe kamar baru (Hanya Admin).
+     */
+    public function storeRoomType(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:10|unique:room_types,code',
+            'name' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'default_capacity' => 'required|integer|min:1',
+            'base_price' => 'required|numeric|min:0',
+        ]);
+
+        $type = \App\Models\RoomType::create($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tipe kamar ' . $type->name . ' berhasil ditambahkan.',
+            'data' => $type
+        ], 201);
+    }
 }

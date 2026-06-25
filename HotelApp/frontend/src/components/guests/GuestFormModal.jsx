@@ -10,6 +10,9 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
   const [email, setEmail] = useState(guest ? guest.email ?? "" : "");
   const [address, setAddress] = useState(guest ? guest.address ?? "" : "");
   const [nationality, setNationality] = useState(guest ? guest.nationality ?? "Indonesia" : "Indonesia");
+  const [profesi, setProfesi] = useState(guest ? guest.profesi ?? "" : "");
+  const [company, setCompany] = useState(guest ? guest.company ?? "" : "");
+  const [birthDate, setBirthDate] = useState(guest ? guest.birth_date ?? "" : "");
   
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +35,9 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
         email: email || null,
         address: address || null,
         nationality: nationality || null,
+        profesi: profesi || null,
+        company: company || null,
+        birth_date: birthDate || null,
       };
 
       let res;
@@ -66,7 +72,7 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
               {guest ? "Ubah Data Tamu" : "Daftarkan Tamu Baru"}
             </h3>
           </div>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 cursor-pointer">
+          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-650 rounded-lg hover:bg-zinc-100 cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -144,16 +150,51 @@ const GuestFormModal = ({ guest, onClose, onSaved }) => {
             </div>
           </div>
 
-          {/* Nationality */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Kewarganegaraan</label>
-            <input
-              type="text"
-              value={nationality}
-              onChange={(e) => setNationality(e.target.value)}
-              placeholder="Contoh: Indonesia, Malaysia, Australia..."
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
-            />
+          {/* Nationality & Birth Date */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Kewarganegaraan</label>
+              <input
+                type="text"
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                placeholder="Contoh: Indonesia"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Tanggal Lahir</label>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-blue-600 outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Profession & Company */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Pekerjaan</label>
+              <input
+                type="text"
+                value={profesi}
+                onChange={(e) => setProfesi(e.target.value)}
+                placeholder="Contoh: Karyawan Swasta"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Perusahaan</label>
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="Contoh: PT. Maju Jaya"
+                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-600 outline-none"
+              />
+            </div>
           </div>
 
           {/* Address */}

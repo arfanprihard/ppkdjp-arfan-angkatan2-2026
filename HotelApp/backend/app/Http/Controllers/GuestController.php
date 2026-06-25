@@ -47,6 +47,9 @@ class GuestController extends Controller
             'email' => 'nullable|email|max:255|unique:guests,email',
             'address' => 'nullable|string',
             'nationality' => 'nullable|string|max:100',
+            'profesi' => 'nullable|string|max:255',
+            'company' => 'nullable|string|max:255',
+            'birth_date' => 'nullable|date',
         ]);
 
         $guest = Guest::create($validated);
@@ -100,6 +103,9 @@ class GuestController extends Controller
             'email' => 'nullable|email|max:255|unique:guests,email,' . $guest->id,
             'address' => 'nullable|string',
             'nationality' => 'nullable|string|max:100',
+            'profesi' => 'nullable|string|max:255',
+            'company' => 'nullable|string|max:255',
+            'birth_date' => 'nullable|date',
         ]);
 
         $guest->update($validated);

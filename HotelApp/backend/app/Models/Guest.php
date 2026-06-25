@@ -17,6 +17,9 @@ class Guest extends Model
         'email',
         'address',
         'nationality',
+        'profesi',
+        'company',
+        'birth_date',
     ];
 
     // Relasi: Satu tamu bisa memiliki banyak reservasi

@@ -185,6 +185,24 @@ const ReservationDetailModal = ({
     const depositAmount = reservation.check_in?.deposit_amount || reservation.checkIn?.deposit_amount || 0;
     const depositMethod = reservation.check_in?.deposit_method || reservation.checkIn?.deposit_method || "cash";
 
+    const checkInTimeVal = reservation.check_in?.check_in_time || reservation.checkIn?.check_in_time || "";
+    let arrivedTime = "";
+    if (checkInTimeVal) {
+      try {
+        const timePart = checkInTimeVal.split(" ")[1] || checkInTimeVal.split("T")[1];
+        if (timePart) {
+          arrivedTime = timePart.substring(0, 5); // HH:MM
+        } else {
+          const checkInDateObj = new Date(checkInTimeVal);
+          if (!isNaN(checkInDateObj.getTime())) {
+            arrivedTime = checkInDateObj.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+          }
+        }
+      } catch (e) {
+        console.error("Gagal format check-in time:", e);
+      }
+    }
+
     let contentHtml = "";
 
     if (isWalkIn) {
@@ -223,21 +241,21 @@ const ReservationDetailModal = ({
           </tr>
           <tr>
             <td class="label">Profession <span class="sub-label">Pekerjaan</span></td>
-            <td class="val">_______________________</td>
+            <td class="val">${reservation.guest?.profesi || "_______________________"}</td>
             <td class="label">Company <span class="sub-label">Perusahaan</span></td>
-            <td class="val">_______________________</td>
+            <td class="val">${reservation.guest?.company || "_______________________"}</td>
           </tr>
           <tr>
             <td class="label">Arrival Date <span class="sub-label">Tanggal Kedatangan</span></td>
             <td class="val">${reservation.check_in_date || "—"}</td>
             <td class="label">Arrival Time <span class="sub-label">Waktu Kedatangan</span></td>
-            <td class="val">_______________________</td>
+            <td class="val">${arrivedTime || "_______________________"}</td>
           </tr>
           <tr>
             <td class="label">Nationality <span class="sub-label">Kebangsaan</span></td>
             <td class="val">${guestNationality}</td>
             <td class="label">Birth Date <span class="sub-label">Tanggal Lahir</span></td>
-            <td class="val">_______________________</td>
+            <td class="val">${reservation.guest?.birth_date || "_______________________"}</td>
           </tr>
           <tr>
             <td class="label">ID Type & Number <span class="sub-label">No. Identitas (${idType})</span></td>
@@ -352,9 +370,15 @@ const ReservationDetailModal = ({
           </tr>
           <tr>
             <td class="label">Arrival Date</td>
-            <td class="val">${reservation.check_in_date || "—"}</td>
+            <td class="val">${reservation.check_in_date || "—"}${arrivedTime ? ` at ${arrivedTime}` : ""}</td>
             <td class="label">Departure Date</td>
             <td class="val">${reservation.check_out_date || "—"}</td>
+          </tr>
+          <tr>
+            <td class="label">Profession / Company</td>
+            <td class="val">${reservation.guest?.profesi || "—"} / ${reservation.guest?.company || "—"}</td>
+            <td class="label">Birth Date</td>
+            <td class="val">${reservation.guest?.birth_date || "—"}</td>
           </tr>
           <tr>
             <td class="label">Total Nights</td>
@@ -612,6 +636,83 @@ const ReservationDetailModal = ({
                 </div>
               )}
 
+              {/* Layanan Stay Tambahan */}
+              {reservation.status === "checked_in" && (
+                <div className="bg-blue-50/40 p-4 rounded-2xl border border-blue-100 space-y-4">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-blue-700">Layanan Stay Tambahan (Kamar #{reservation.room?.room_number || "—"})</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Extra Bed Order Form */}
+                    <form onSubmit={handleOrderExtrabed} className="bg-white p-3 rounded-xl border border-zinc-200 space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Pesan Extra Bed</p>
+                      <div className="space-y-1">
+                        <label className="text-[9px] text-zinc-500 font-bold">Harga Extra Bed</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={extrabedPriceStay}
+                          onChange={(e) => setExtrabedPriceStay(Number(e.target.value))}
+                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={submittingExtrabed}
+                        className="w-full py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs disabled:opacity-50 cursor-pointer border-0"
+                      >
+                        {submittingExtrabed ? "Memproses..." : "Pesan Extra Bed"}
+                      </button>
+                    </form>
+
+                    {/* Laundry Order Form */}
+                    <form onSubmit={handleOrderLaundry} className="bg-white p-3 rounded-xl border border-zinc-200 space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Pesan Laundry</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[9px] text-zinc-500 font-bold">Deskripsi Pakaian</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. 2 Kaos, 1 Jeans"
+                            value={laundryDesc}
+                            onChange={(e) => setLaundryDesc(e.target.value)}
+                            className="w-full px-2 py-1 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] text-zinc-500 font-bold">Jumlah Pcs</label>
+                          <input
+                            type="number"
+                            min="1"
+                            required
+                            value={laundryCount}
+                            onChange={(e) => setLaundryCount(Number(e.target.value))}
+                            className="w-full px-2 py-1 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] text-zinc-500 font-bold">Biaya Laundry</label>
+                        <input
+                          type="number"
+                          min="0"
+                          required
+                          value={laundryPrice}
+                          onChange={(e) => setLaundryPrice(Number(e.target.value))}
+                          className="w-full px-2 py-1 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={submittingLaundry}
+                        className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs disabled:opacity-50 cursor-pointer border-0"
+                      >
+                        {submittingLaundry ? "Memproses..." : "Pesan Laundry"}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              )}
+
               {/* Action Buttons */}
               <div className="pt-4 border-t border-zinc-200 flex flex-wrap gap-2 justify-end">
                 {/* Check-In Button */}
@@ -659,13 +760,15 @@ const ReservationDetailModal = ({
                   </button>
                 )}
 
-                <button
-                  type="button"
-                  onClick={handlePrint}
-                  className="py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-all duration-200 cursor-pointer border border-blue-200 flex items-center gap-1.5 shadow-xs"
-                >
-                  <Printer className="h-4 w-4" /> Cetak Dokumen
-                </button>
+                {reservation.status !== "cancelled" && (
+                  <button
+                    type="button"
+                    onClick={handlePrint}
+                    className="py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-all duration-200 cursor-pointer border border-blue-200 flex items-center gap-1.5 shadow-xs"
+                  >
+                    <Printer className="h-4 w-4" /> Cetak Dokumen
+                  </button>
+                )}
 
                 <button
                   type="button"

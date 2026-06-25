@@ -17,6 +17,7 @@ import RoomCard from "../components/rooms/RoomCard";
 import NewRoomModal from "../components/rooms/NewRoomModal";
 import RoomModal from "../components/rooms/RoomModal";
 import GridSkeleton from "../components/rooms/GridSkeleton";
+import NewRoomTypeModal from "../components/rooms/NewRoomTypeModal";
 
 // --- Halaman Utama ---
 const RoomsPage = () => {
@@ -27,6 +28,7 @@ const RoomsPage = () => {
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddTypeModal, setShowAddTypeModal] = useState(false);
 
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -105,18 +107,25 @@ const RoomsPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {isAdmin && (
-            <button onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm">
-              <Plus className="h-3.5 w-3.5" />
-              Tambah Kamar
-            </button>
-          )}
           <button onClick={fetchRooms} disabled={loading}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-zinc-200 text-zinc-600 hover:text-zinc-800 hover:bg-slate-200 transition-all duration-200 text-xs font-medium cursor-pointer disabled:opacity-50">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            Perbarui
+            Segarkan
           </button>
+          {isAdmin && (
+            <>
+              <button onClick={() => setShowAddTypeModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm">
+                <Plus className="h-3.5 w-3.5" />
+                Tambah Tipe Kamar
+              </button>
+              <button onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm">
+                <Plus className="h-3.5 w-3.5" />
+                Tambah Kamar
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -212,6 +221,12 @@ const RoomsPage = () => {
       {showAddModal && (
         <NewRoomModal roomTypes={roomTypes} onClose={() => setShowAddModal(false)}
           onSaved={() => { setShowAddModal(false); fetchRooms(); }} />
+      )}
+
+      {/* Modal Tambah Tipe Kamar */}
+      {showAddTypeModal && (
+        <NewRoomTypeModal onClose={() => setShowAddTypeModal(false)}
+          onSaved={() => { setShowAddTypeModal(false); fetchRoomTypes(); }} />
       )}
     </div>
   );
