@@ -44,6 +44,14 @@ const ReservationDetailModal = ({
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // Stay order states for extrabed & laundry
+  const [extrabedPriceStay, setExtrabedPriceStay] = useState(100000);
+  const [submittingExtrabed, setSubmittingExtrabed] = useState(false);
+  const [laundryDesc, setLaundryDesc] = useState("");
+  const [laundryCount, setLaundryCount] = useState(1);
+  const [laundryPrice, setLaundryPrice] = useState(0);
+  const [submittingLaundry, setSubmittingLaundry] = useState(false);
+
   const [allReservations, setAllReservations] = useState([]);
 
   useEffect(() => {
@@ -156,6 +164,71 @@ const ReservationDetailModal = ({
       setError(err.response?.data?.message ?? "Gagal membatalkan reservasi.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleOrderExtrabed = async (e) => {
+    e.preventDefault();
+    const checkInId = reservation.check_in?.id || reservation.checkIn?.id;
+    if (!checkInId) {
+      setError("Data check-in tidak ditemukan. Tidak dapat memesan extra bed.");
+      return;
+    }
+    setSubmittingExtrabed(true);
+    setError(null);
+    try {
+      const res = await api.post(`/api/checkins/${checkInId}/extra-bed`, {
+        amount: Number(extrabedPriceStay)
+      });
+      if (res.data.success) {
+        setSuccess(true);
+        setExtrabedPriceStay(100000);
+        setTimeout(() => {
+          setSuccess(false);
+          onUpdated();
+        }, 1000);
+      } else {
+        setError(res.data.message || "Gagal memesan extra bed.");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Gagal menghubungkan ke server.");
+    } finally {
+      setSubmittingExtrabed(false);
+    }
+  };
+
+  const handleOrderLaundry = async (e) => {
+    e.preventDefault();
+    if (!laundryDesc || !laundryCount || laundryPrice < 0) {
+      setError("Semua kolom laundry wajib diisi dengan benar.");
+      return;
+    }
+    setSubmittingLaundry(true);
+    setError(null);
+    try {
+      const res = await api.post("/api/laundry", {
+        guest_id: reservation.guest_id,
+        room_id: reservation.room_id,
+        items_description: laundryDesc,
+        item_count: Number(laundryCount),
+        total_charge: Number(laundryPrice)
+      });
+      if (res.data.success) {
+        setSuccess(true);
+        setLaundryDesc("");
+        setLaundryCount(1);
+        setLaundryPrice(0);
+        setTimeout(() => {
+          setSuccess(false);
+          onUpdated();
+        }, 1000);
+      } else {
+        setError(res.data.message || "Gagal memesan laundry.");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Gagal menghubungkan ke server.");
+    } finally {
+      setSubmittingLaundry(false);
     }
   };
 

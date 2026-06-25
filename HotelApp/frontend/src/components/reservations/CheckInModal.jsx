@@ -24,7 +24,7 @@ const CheckInModal = ({ reservation, rooms, onClose, onSaved }) => {
   };
   const [checkInTime, setCheckInTime] = useState(getLocalDateTimeString());
 
-  const depositAmount = (reservation.total_amount || 0) + (extraBed ? Number(extraBedPrice || 0) : 0);
+  const depositAmount = Number(reservation.total_amount || 0) + (extraBed ? Number(extraBedPrice || 0) : 0);
 
   const availableRooms = rooms.filter(
     (r) =>
