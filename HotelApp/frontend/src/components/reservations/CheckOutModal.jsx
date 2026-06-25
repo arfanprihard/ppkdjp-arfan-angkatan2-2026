@@ -118,8 +118,12 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
     ? folio.charges.filter(c => c.charge_type === "laundry").reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
     : 0;
 
+  const fnbCharges = folio?.charges
+    ? folio.charges.filter(c => c.charge_type === "fnb").reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+    : 0;
+
   const otherCharges = folio?.charges
-    ? folio.charges.filter(c => c.charge_type === "other" || (c.charge_type !== "room" && c.charge_type !== "extra_bed" && c.charge_type !== "laundry" && !c.description?.toLowerCase().includes("denda"))).reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+    ? folio.charges.filter(c => c.charge_type === "other" || (c.charge_type !== "room" && c.charge_type !== "extra_bed" && c.charge_type !== "laundry" && c.charge_type !== "fnb" && !c.description?.toLowerCase().includes("denda"))).reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
     : 0;
   
   // Hitung deposit refund & sisa yang harus dibayar tamu
@@ -364,6 +368,21 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
                           <span>+ {formatRupiah(laundryCharges)}</span>
                         </div>
                         {folio.charges?.filter(c => c.charge_type === "laundry").map(c => (
+                          <div key={c.id} className="flex justify-between text-[10px] text-zinc-500 pl-3 italic">
+                            <span>• {c.description}</span>
+                            <span>{formatRupiah(c.amount)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {fnbCharges > 0 && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-zinc-700 font-semibold">
+                          <span>Biaya Tambahan - Food & Beverage</span>
+                          <span>+ {formatRupiah(fnbCharges)}</span>
+                        </div>
+                        {folio.charges?.filter(c => c.charge_type === "fnb").map(c => (
                           <div key={c.id} className="flex justify-between text-[10px] text-zinc-500 pl-3 italic">
                             <span>• {c.description}</span>
                             <span>{formatRupiah(c.amount)}</span>

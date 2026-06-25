@@ -61,6 +61,7 @@ class HousekeepingController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
             'extra_bed_price' => 'nullable|numeric|min:0',
+            'extra_bed_qty' => 'nullable|integer|min:1',
             'laundry_desc' => 'nullable|string',
             'laundry_count' => 'nullable|integer|min:1',
             'laundry_price' => 'nullable|numeric|min:0',
@@ -90,14 +91,16 @@ class HousekeepingController extends Controller
                     ], 400);
                 }
 
-                $amount = floatval($request->extra_bed_price ?? 100000);
+                $qty = intval($request->extra_bed_qty ?? 1);
+                $unitPrice = floatval($request->extra_bed_price ?? 100000);
+                $amount = $unitPrice * $qty;
 
                 FolioCharge::create([
                     'folio_id' => $folio->id,
                     'charge_type' => 'extra_bed',
-                    'description' => 'Layanan Tambahan - Extra Bed Kamar #' . $room->room_number,
+                    'description' => 'Layanan Tambahan - ' . $qty . 'x Extra Bed Kamar #' . $room->room_number,
                     'amount' => $amount,
-                    'quantity' => 1,
+                    'quantity' => $qty,
                     'charge_date' => Carbon::today(),
                     'created_by' => $request->user()->id,
                 ]);
@@ -113,7 +116,7 @@ class HousekeepingController extends Controller
                     'task_type' => 'extra_bed',
                     'priority' => $request->priority,
                     'assigned_to' => $request->assigned_to,
-                    'notes' => $request->notes ?? ('Siapkan dan antarkan extra bed ke Kamar #' . $room->room_number),
+                    'notes' => $request->notes ?? ('Siapkan dan antarkan ' . $qty . 'x extra bed ke Kamar #' . $room->room_number),
                     'status' => 'pending'
                 ]);
 

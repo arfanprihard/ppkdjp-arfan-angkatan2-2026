@@ -12,6 +12,7 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
   const [error, setError] = useState(null);
 
   const [extraBedPrice, setExtraBedPrice] = useState(100000);
+  const [extraBedQty, setExtraBedQty] = useState(1);
   const [laundryDesc, setLaundryDesc] = useState("");
   const [laundryCount, setLaundryCount] = useState(1);
   const [laundryPrice, setLaundryPrice] = useState(0);
@@ -51,6 +52,7 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
 
       if (taskType === "extra_bed") {
         payload.extra_bed_price = Number(extraBedPrice);
+        payload.extra_bed_qty = Number(extraBedQty);
       } else if (taskType === "laundry") {
         payload.laundry_desc = laundryDesc;
         payload.laundry_count = Number(laundryCount);
@@ -93,6 +95,19 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
           )}
 
           <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Jenis Tugas *</label>
+            <select
+              value={taskType}
+              onChange={(e) => setTaskType(e.target.value)}
+              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
+            >
+              {Object.entries(TASK_TYPES).map(([key, val]) => (
+                <option key={key} value={key}>{val.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Pilih Kamar *</label>
             <select
               required
@@ -109,45 +124,48 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Jenis Tugas *</label>
-              <select
-                value={taskType}
-                onChange={(e) => setTaskType(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
-              >
-                {Object.entries(TASK_TYPES).map(([key, val]) => (
-                  <option key={key} value={key}>{val.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Prioritas *</label>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
-              >
-                {Object.entries(PRIORITIES).map(([key, val]) => (
-                  <option key={key} value={key}>{val.label}</option>
-                ))}
-              </select>
-            </div>
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Prioritas Tugas *</label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
+            >
+              {Object.entries(PRIORITIES).map(([key, val]) => (
+                <option key={key} value={key}>{val.label}</option>
+              ))}
+            </select>
           </div>
 
           {taskType === "extra_bed" && (
-            <div className="space-y-1 bg-amber-50/50 p-3 rounded-xl border border-amber-100 animate-in fade-in slide-in-from-top-1 duration-150">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Harga Extra Bed (Rp)</label>
-              <input
-                type="number"
-                min="0"
-                required
-                value={extraBedPrice}
-                onChange={(e) => setExtraBedPrice(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600"
-              />
-              <p className="text-[9px] text-amber-600 mt-1">Biaya akan otomatis ditambahkan ke folio checkout tamu yang menginap.</p>
+            <div className="space-y-3 bg-amber-50/50 p-3 rounded-xl border border-amber-100 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Harga Satuan (Rp)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    value={extraBedPrice}
+                    onChange={(e) => setExtraBedPrice(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Jumlah Extra Bed</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={extraBedQty}
+                    onChange={(e) => setExtraBedQty(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600"
+                  />
+                </div>
+              </div>
+              <p className="text-[9px] text-amber-600 mt-1">
+                Total biaya ({extraBedQty}x @ Rp{extraBedPrice.toLocaleString("id-ID")} = Rp{(extraBedPrice * extraBedQty).toLocaleString("id-ID")}) akan otomatis ditambahkan ke folio checkout tamu.
+              </p>
             </div>
           )}
 
