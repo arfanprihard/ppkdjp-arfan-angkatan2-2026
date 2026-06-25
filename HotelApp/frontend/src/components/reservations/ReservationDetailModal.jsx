@@ -720,7 +720,11 @@ const ReservationDetailModal = ({
                 {reservation.status === "checked_in" && (
                   <button
                     type="button"
-                    onClick={() => onCheckOutClick(reservation)}
+                    onClick={() => {
+                      if (window.confirm("Apakah Anda yakin ingin memulai proses Check-out & Settle untuk kamar ini?")) {
+                        onCheckOutClick(reservation);
+                      }
+                    }}
                     className="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer border-0 flex items-center gap-1.5 shadow-sm"
                   >
                     <X className="h-4 w-4" /> Check-Out & Settle

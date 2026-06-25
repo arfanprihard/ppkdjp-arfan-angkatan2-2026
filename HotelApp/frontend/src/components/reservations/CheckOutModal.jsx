@@ -49,30 +49,7 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
   const [inspectionTask, setInspectionTask] = useState(null);
   const [checkingInspection, setCheckingInspection] = useState(false);
 
-  const checkInspectionStatus = useCallback(async () => {
-    if (!checkInId) return;
-    setCheckingInspection(true);
-    try {
-      const res = await api.get(`/api/checkouts/${checkInId}/inspection-status`);
-      if (res.data.success) {
-        setInspectionStatus(res.data.status);
-        setInspectionTask(res.data.task);
-        if (res.data.status === "completed") {
-          fetchFolio();
-        }
-      }
-    } catch (err) {
-      console.error("Gagal mengecek status inspeksi", err);
-    } finally {
-      setCheckingInspection(false);
-    }
-  }, [checkInId, fetchFolio]);
-
-  useEffect(() => {
-    checkInspectionStatus();
-  }, [checkInspectionStatus]);
-
-  const handleRequestInspection = async () => {
+  const handleRequestInspection = useCallback(async () => {
     if (!checkInId) return;
     setError(null);
     try {
@@ -86,7 +63,38 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
       console.error(err);
       setError(err.response?.data?.message || "Gagal meminta inspeksi kamar.");
     }
-  };
+  }, [checkInId, toast]);
+
+  const checkInspectionStatus = useCallback(async () => {
+    if (!checkInId) return;
+    setCheckingInspection(true);
+    try {
+      const res = await api.get(`/api/checkouts/${checkInId}/inspection-status`);
+      if (res.data.success) {
+        setInspectionStatus(res.data.status);
+        setInspectionTask(res.data.task);
+        if (res.data.status === "completed") {
+          fetchFolio();
+        } else if (res.data.status === "none") {
+          // Otomatis minta inspeksi kamar jika statusnya masih "none"
+          const reqRes = await api.post(`/api/checkouts/${checkInId}/request-inspection`);
+          if (reqRes.data.success) {
+            setInspectionStatus("pending");
+            setInspectionTask(reqRes.data.task);
+            toast.info(reqRes.data.message);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Gagal mengecek status inspeksi", err);
+    } finally {
+      setCheckingInspection(false);
+    }
+  }, [checkInId, fetchFolio, toast]);
+
+  useEffect(() => {
+    checkInspectionStatus();
+  }, [checkInspectionStatus]);
 
   const securityDeposit = parseFloat(checkIn?.security_deposit || 300000);
   const remainingBalance = (folio?.total_charges || 0) - (folio?.total_payments || 0);

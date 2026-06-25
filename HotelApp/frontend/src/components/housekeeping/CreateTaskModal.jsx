@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, X, AlertTriangle, RefreshCw } from "lucide-react";
 import api from "../../api/axios";
 import { TASK_TYPES, PRIORITIES } from "./helpers";
@@ -15,6 +15,23 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
   const [laundryDesc, setLaundryDesc] = useState("");
   const [laundryCount, setLaundryCount] = useState(1);
   const [laundryPrice, setLaundryPrice] = useState(0);
+
+  // Reset roomId if selected room is not checked-in and task type is extra_bed or laundry
+  useEffect(() => {
+    if (taskType === "extra_bed" || taskType === "laundry") {
+      const selectedRoom = rooms.find((r) => String(r.id) === String(roomId));
+      if (selectedRoom && selectedRoom.status !== "oc" && selectedRoom.status !== "od") {
+        setRoomId("");
+      }
+    }
+  }, [taskType, roomId, rooms]);
+
+  const filteredRooms = rooms.filter((r) => {
+    if (taskType === "extra_bed" || taskType === "laundry") {
+      return r.status === "oc" || r.status === "od";
+    }
+    return true;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,9 +101,9 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
               className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-805 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
             >
               <option value="">-- Pilih Kamar --</option>
-              {rooms.map((r) => (
+              {filteredRooms.map((r) => (
                 <option key={r.id} value={r.id}>
-                  Kamar {r.room_number} (Lantai {r.floor} · {r.room_type?.name})
+                  Kamar {r.room_number} (Lantai {r.floor} · {r.room_type?.name} {r.status === "oc" || r.status === "od" ? "[Checked-In]" : ""})
                 </option>
               ))}
             </select>
