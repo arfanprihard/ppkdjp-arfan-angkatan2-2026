@@ -73,10 +73,7 @@ const HousekeepingPage = () => {
     setLoading(true);
     setError(null);
     try {
-      let url = "/api/housekeeping/tasks";
-      if (filterStatus !== "all") {
-        url += `?status=${filterStatus}`;
-      }
+      const url = "/api/housekeeping/tasks";
       const res = await api.get(url);
       if (res.data.success) {
         setTasks(res.data.data || []);
@@ -89,7 +86,7 @@ const HousekeepingPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [filterStatus]);
+  }, []);
 
   // Load Rooms for Selection / Room Board
   const fetchRoomsAndBoard = useCallback(async () => {
@@ -134,6 +131,14 @@ const HousekeepingPage = () => {
     }
   };
 
+  const activeTasksCount = tasks.filter(
+    (t) => t.status === "pending" || t.status === "in_progress"
+  ).length;
+
+  const filteredTasks = tasks.filter(
+    (t) => filterStatus === "all" || t.status === filterStatus
+  );
+
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -153,13 +158,18 @@ const HousekeepingPage = () => {
           <div className="flex bg-slate-100 border border-zinc-200 p-0.5 rounded-xl mr-2">
             <button
               onClick={() => setActiveTab("tasks")}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border border-transparent relative ${
                 activeTab === "tasks" ? "bg-white text-blue-600 shadow-xs border-zinc-200/50" : "text-zinc-550 hover:text-zinc-800"
               }`}
             >
               <span className="flex items-center gap-1.5">
                 <ClipboardList className="h-3.5 w-3.5" />
                 Daftar Tugas
+                {activeTasksCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-600 text-white animate-pulse">
+                    {activeTasksCount}
+                  </span>
+                )}
               </span>
             </button>
             <button
@@ -239,7 +249,7 @@ const HousekeepingPage = () => {
               <AlertTriangle className="h-4 w-4" />
               {error}
             </div>
-          ) : tasks.length === 0 ? (
+          ) : filteredTasks.length === 0 ? (
             <div className="text-center py-20 text-zinc-500 border border-zinc-200 bg-white rounded-2xl shadow-sm">
               <ClipboardList className="h-10 w-10 mx-auto mb-3 text-zinc-400" />
               <p className="font-semibold text-zinc-800">Tidak ada tugas kebersihan saat ini</p>
@@ -260,7 +270,7 @@ const HousekeepingPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-200 text-zinc-750">
-                  {tasks.map((task) => {
+                  {filteredTasks.map((task) => {
                     const taskInfo = TASK_TYPES[task.task_type] || { label: task.task_type, color: "bg-zinc-100 text-zinc-600 border-zinc-200" };
                     const priorityInfo = PRIORITIES[task.priority] || { label: task.priority, color: "bg-zinc-100 text-zinc-600 border-zinc-200" };
                     const statusInfo = STATUS_MAP[task.status] || { label: task.status, color: "bg-zinc-100 text-zinc-600 border-zinc-200" };

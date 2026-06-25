@@ -26,6 +26,7 @@ const Sidebar = () => {
 
   const userRole = user?.role || "staff";
   const [hkTaskCount, setHkTaskCount] = useState(0);
+  const [fnbOrderCount, setFnbOrderCount] = useState(0);
 
   useEffect(() => {
     if (userRole === "admin" || userRole === "housekeeping") {
@@ -48,6 +49,27 @@ const Sidebar = () => {
       return () => clearInterval(interval);
     } else {
       setHkTaskCount(0);
+    }
+  }, [userRole, location.pathname]);
+
+  useEffect(() => {
+    if (userRole === "admin" || userRole === "fnb" || userRole === "receptionist") {
+      const fetchFnbCount = async () => {
+        try {
+          const res = await api.get("/api/fnb/orders?status=proses");
+          if (res.data.success) {
+            setFnbOrderCount(res.data.data.length);
+          }
+        } catch (err) {
+          console.error("Gagal mengambil count order F&B", err);
+        }
+      };
+
+      fetchFnbCount();
+      const interval = setInterval(fetchFnbCount, 30000);
+      return () => clearInterval(interval);
+    } else {
+      setFnbOrderCount(0);
     }
   }, [userRole, location.pathname]);
 
@@ -167,6 +189,12 @@ const Sidebar = () => {
               {item.path === "/housekeeping" && hkTaskCount > 0 && (
                 <span className={`absolute ${isCollapsed ? "top-1.5 right-1.5" : "right-3 top-1/2 -translate-y-1/2"} flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-extrabold text-white ${isCollapsed ? "" : "animate-pulse"}`}>
                   {hkTaskCount}
+                </span>
+              )}
+
+              {item.path === "/fnb" && fnbOrderCount > 0 && (
+                <span className={`absolute ${isCollapsed ? "top-1.5 right-1.5" : "right-3 top-1/2 -translate-y-1/2"} flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-extrabold text-white ${isCollapsed ? "" : "animate-pulse"}`}>
+                  {fnbOrderCount}
                 </span>
               )}
             </Link>
