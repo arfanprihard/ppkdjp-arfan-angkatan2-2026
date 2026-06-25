@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import api from "../../api/axios";
 import {
   LayoutDashboard,
   CalendarRange,
@@ -24,6 +25,31 @@ const Sidebar = () => {
   const { user } = useAuth();
 
   const userRole = user?.role || "staff";
+  const [hkTaskCount, setHkTaskCount] = useState(0);
+
+  useEffect(() => {
+    if (userRole === "admin" || userRole === "housekeeping") {
+      const fetchHkCount = async () => {
+        try {
+          const res = await api.get("/api/housekeeping/tasks");
+          if (res.data.success) {
+            const activeTasksCount = res.data.data.filter(
+              (t) => t.status === "pending" || t.status === "in_progress"
+            ).length;
+            setHkTaskCount(activeTasksCount);
+          }
+        } catch (err) {
+          console.error("Gagal mengambil count tugas HK", err);
+        }
+      };
+
+      fetchHkCount();
+      const interval = setInterval(fetchHkCount, 30000);
+      return () => clearInterval(interval);
+    } else {
+      setHkTaskCount(0);
+    }
+  }, [userRole, location.pathname]);
 
   // Daftar menu lengkap dengan batasan role-nya (sesuai PRD)
   const menuItems = [
@@ -137,6 +163,12 @@ const Sidebar = () => {
               >
                 {item.label}
               </span>
+
+              {item.path === "/housekeeping" && hkTaskCount > 0 && (
+                <span className={`absolute ${isCollapsed ? "top-1.5 right-1.5" : "right-3 top-1/2 -translate-y-1/2"} flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-extrabold text-white ${isCollapsed ? "" : "animate-pulse"}`}>
+                  {hkTaskCount}
+                </span>
+              )}
             </Link>
           );
         })}
