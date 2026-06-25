@@ -29,3 +29,14 @@ Route::get('/run-migrations', function () {
     }
 });
 
+// Route untuk melihat log error Laravel pada server yang dideploy untuk diagnosis 500 error
+Route::get('/view-logs', function () {
+    $logPath = storage_path('logs/laravel.log');
+    if (!file_exists($logPath)) {
+        return 'Log file does not exist.';
+    }
+    $lines = file($logPath);
+    $lastLines = array_slice($lines, -100);
+    return '<pre>' . implode('', $lastLines) . '</pre>';
+});
+
