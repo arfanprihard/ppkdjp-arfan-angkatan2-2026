@@ -37,7 +37,9 @@ class AuthController extends Controller
         }
 
         // 2. Regenerate Session ID (Untuk mencegah serangan Session Fixation)
-        $request->session()->regenerate();
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
 
         // 3. Kembalikan data user TANPA teks token
         return response()->json([
@@ -60,9 +62,11 @@ class AuthController extends Controller
         // 1. Keluar dari autentikasi guard session Laravel
         Auth::logout();
         // 2. Hancurkan data session yang tersimpan di server
-        $request->session()->invalidate();
-        // 3. Buat ulang token CSRF baru demi keamanan
-        $request->session()->regenerateToken();
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            // 3. Buat ulang token CSRF baru demi keamanan
+            $request->session()->regenerateToken();
+        }
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil.'
