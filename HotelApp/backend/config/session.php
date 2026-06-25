@@ -156,7 +156,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => (env('APP_ENV') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_HOST'])) ? null : env('SESSION_DOMAIN'),
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +169,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => env('SESSION_SECURE_COOKIE') ?? (env('APP_ENV') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_HOST']) || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')),
 
     /*
     |--------------------------------------------------------------------------
