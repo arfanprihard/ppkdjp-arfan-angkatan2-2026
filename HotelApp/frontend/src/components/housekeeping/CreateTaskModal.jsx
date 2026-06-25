@@ -171,29 +171,16 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
 
           {taskType === "laundry" && (
             <div className="space-y-3 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 animate-in fade-in slide-in-from-top-1 duration-150">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Deskripsi Pakaian</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 2 Kaos, 1 Jeans"
-                    value={laundryDesc}
-                    onChange={(e) => setLaundryDesc(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Jumlah Pcs</label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={laundryCount}
-                    onChange={(e) => setLaundryCount(Number(e.target.value))}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
-                  />
-                </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Deskripsi Pakaian</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 2 Kaos, 1 Jeans"
+                  value={laundryDesc}
+                  onChange={(e) => setLaundryDesc(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Biaya Laundry (Rp)</label>

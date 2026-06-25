@@ -74,6 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    // Reservasi - Index (bisa diakses oleh F&B untuk mencari check-in kamar)
+    Route::get('/reservations', [ReservationController::class, 'index'])->middleware('role:admin,receptionist,fnb');
+
     // 3. RUTE FRONT OFFICE - Reservasi, Check-in/out, Tamu, Billing (Dapat diakses oleh Admin & Resepsionis)
     Route::middleware('role:admin,receptionist')->group(function () {
         // Tamu (Guests)
@@ -84,7 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/guests/{id}', [GuestController::class, 'destroy']);
 
         // Reservasi
-        Route::get('/reservations', [ReservationController::class, 'index']);
         Route::post('/reservations', [ReservationController::class, 'store']);
         Route::get('/reservations/{id}', [ReservationController::class, 'show']);
         Route::put('/reservations/{id}', [ReservationController::class, 'update']);

@@ -109,8 +109,8 @@ const TaskDetailModal = ({ task, onClose, onStatusUpdate }) => {
             {task.completed_at && <span>Selesai: {new Date(task.completed_at).toLocaleString("id-ID")}</span>}
           </div>
 
-          {/* Damage Charges Section (only for in_progress tasks) */}
-          {task.status === "in_progress" && (
+          {/* Damage Charges Section (only for in_progress tasks and NOT laundry/extra_bed) */}
+          {task.status === "in_progress" && task.task_type !== "laundry" && task.task_type !== "extra_bed" && (
             <div className="border border-zinc-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-zinc-805 text-amber-800">Denda Kerusakan / Kehilangan Barang</h4>
