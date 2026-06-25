@@ -73,10 +73,9 @@ class CheckOutController extends Controller
                 ], 400);
             }
 
-            // Enforce housekeeping inspection check
             $inspectionTask = HousekeepingTask::where('room_id', $checkIn->room_id)
                 ->where('task_type', 'room_inspection')
-                ->where('created_at', '>=', $checkIn->check_in_time)
+                ->where('created_at', '>=', $checkIn->created_at)
                 ->where('status', '!=', 'cancelled')
                 ->latest()
                 ->first();

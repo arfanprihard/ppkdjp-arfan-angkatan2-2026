@@ -75,6 +75,7 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
         setInspectionTask(res.data.task);
         if (res.data.status === "completed") {
           fetchFolio();
+          setStep(2);
         } else if (res.data.status === "none") {
           // Otomatis minta inspeksi kamar jika statusnya masih "none"
           const reqRes = await api.post(`/api/checkouts/${checkInId}/request-inspection`);

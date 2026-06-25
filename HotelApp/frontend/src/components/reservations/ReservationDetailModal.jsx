@@ -45,6 +45,8 @@ const ReservationDetailModal = ({
   const [success, setSuccess] = useState(false);
 
   const [allReservations, setAllReservations] = useState([]);
+  const [inspectionStatus, setInspectionStatus] = useState("none");
+  const [loadingInspection, setLoadingInspection] = useState(false);
 
   useEffect(() => {
     const fetchAllReservations = async () => {
@@ -59,6 +61,30 @@ const ReservationDetailModal = ({
     };
     fetchAllReservations();
   }, []);
+
+  useEffect(() => {
+    const fetchInspectionStatus = async () => {
+      const checkInId = reservation.check_in?.id || reservation.checkIn?.id;
+      if (!checkInId) return;
+      setLoadingInspection(true);
+      try {
+        const res = await api.get(`/api/checkouts/${checkInId}/inspection-status`);
+        if (res.data.success) {
+          setInspectionStatus(res.data.status);
+        }
+      } catch (err) {
+        console.error("Gagal mengambil status inspeksi", err);
+      } finally {
+        setLoadingInspection(false);
+      }
+    };
+
+    if (reservation.status === "checked_in") {
+      fetchInspectionStatus();
+    } else {
+      setInspectionStatus("none");
+    }
+  }, [reservation]);
 
   const s = getStatus(reservation.status);
 
@@ -721,13 +747,28 @@ const ReservationDetailModal = ({
                   <button
                     type="button"
                     onClick={() => {
-                      if (window.confirm("Apakah Anda yakin ingin memulai proses Check-out & Settle untuk kamar ini?")) {
+                      if (inspectionStatus === "none") {
+                        if (window.confirm("Apakah Anda yakin ingin memulai proses Check-out & Settle untuk kamar ini?")) {
+                          onCheckOutClick(reservation);
+                        }
+                      } else {
                         onCheckOutClick(reservation);
                       }
                     }}
-                    className="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer border-0 flex items-center gap-1.5 shadow-sm"
+                    className={`py-2.5 px-4 rounded-xl text-white text-xs font-bold transition-all duration-200 cursor-pointer border-0 flex items-center gap-1.5 shadow-sm ${
+                      inspectionStatus === "pending"
+                        ? "bg-blue-600 hover:bg-blue-700"
+                        : inspectionStatus === "completed"
+                        ? "bg-emerald-600 hover:bg-emerald-700"
+                        : "bg-rose-600 hover:bg-rose-700"
+                    }`}
                   >
-                    <X className="h-4 w-4" /> Check-Out & Settle
+                    <X className="h-4 w-4" />{" "}
+                    {inspectionStatus === "pending"
+                      ? "Kamar Sedang Diperiksa (Cek Status)"
+                      : inspectionStatus === "completed"
+                      ? "Inspeksi Selesai (Selesaikan Checkout)"
+                      : "Check-Out & Settle"}
                   </button>
                 )}
 
