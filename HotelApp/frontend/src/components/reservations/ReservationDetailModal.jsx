@@ -13,7 +13,8 @@ import {
   Trash2,
   Edit2,
   RefreshCw,
-  Printer
+  Printer,
+  ClipboardList
 } from "lucide-react";
 import {
   RESERVATION_STATUSES,
@@ -44,13 +45,17 @@ const ReservationDetailModal = ({
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Stay order states for extrabed & laundry
-  const [extrabedPriceStay, setExtrabedPriceStay] = useState(100000);
-  const [submittingExtrabed, setSubmittingExtrabed] = useState(false);
-  const [laundryDesc, setLaundryDesc] = useState("");
-  const [laundryCount, setLaundryCount] = useState(1);
-  const [laundryPrice, setLaundryPrice] = useState(0);
-  const [submittingLaundry, setSubmittingLaundry] = useState(false);
+  // Housekeeping task creation modal states
+  const [showHkTaskModal, setShowHkTaskModal] = useState(false);
+  const [hkTaskType, setHkTaskType] = useState("room_cleaning");
+  const [hkPriority, setHkPriority] = useState("medium");
+  const [hkNotes, setHkNotes] = useState("");
+  const [hkExtrabedPrice, setHkExtrabedPrice] = useState(100000);
+  const [hkLaundryDesc, setHkLaundryDesc] = useState("");
+  const [hkLaundryCount, setHkLaundryCount] = useState(1);
+  const [hkLaundryPrice, setHkLaundryPrice] = useState(0);
+
+
 
   const [allReservations, setAllReservations] = useState([]);
 
@@ -709,82 +714,7 @@ const ReservationDetailModal = ({
                 </div>
               )}
 
-              {/* Layanan Stay Tambahan */}
-              {reservation.status === "checked_in" && (
-                <div className="bg-blue-50/40 p-4 rounded-2xl border border-blue-100 space-y-4">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-blue-700">Layanan Stay Tambahan (Kamar #{reservation.room?.room_number || "—"})</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Extra Bed Order Form */}
-                    <form onSubmit={handleOrderExtrabed} className="bg-white p-3 rounded-xl border border-zinc-200 space-y-2">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Pesan Extra Bed</p>
-                      <div className="space-y-1">
-                        <label className="text-[9px] text-zinc-500 font-bold">Harga Extra Bed</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={extrabedPriceStay}
-                          onChange={(e) => setExtrabedPriceStay(Number(e.target.value))}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={submittingExtrabed}
-                        className="w-full py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs disabled:opacity-50 cursor-pointer border-0"
-                      >
-                        {submittingExtrabed ? "Memproses..." : "Pesan Extra Bed"}
-                      </button>
-                    </form>
 
-                    {/* Laundry Order Form */}
-                    <form onSubmit={handleOrderLaundry} className="bg-white p-3 rounded-xl border border-zinc-200 space-y-2">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Pesan Laundry</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="space-y-1">
-                          <label className="text-[9px] text-zinc-500 font-bold">Deskripsi Pakaian</label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="e.g. 2 Kaos, 1 Jeans"
-                            value={laundryDesc}
-                            onChange={(e) => setLaundryDesc(e.target.value)}
-                            className="w-full px-2 py-1 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[9px] text-zinc-500 font-bold">Jumlah Pcs</label>
-                          <input
-                            type="number"
-                            min="1"
-                            required
-                            value={laundryCount}
-                            onChange={(e) => setLaundryCount(Number(e.target.value))}
-                            className="w-full px-2 py-1 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] text-zinc-500 font-bold">Biaya Laundry</label>
-                        <input
-                          type="number"
-                          min="0"
-                          required
-                          value={laundryPrice}
-                          onChange={(e) => setLaundryPrice(Number(e.target.value))}
-                          className="w-full px-2 py-1 text-xs rounded-lg border border-zinc-300 bg-white outline-none focus:border-blue-600"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={submittingLaundry}
-                        className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs disabled:opacity-50 cursor-pointer border-0"
-                      >
-                        {submittingLaundry ? "Memproses..." : "Pesan Laundry"}
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              )}
 
               {/* Action Buttons */}
               <div className="pt-4 border-t border-zinc-200 flex flex-wrap gap-2 justify-end">
@@ -807,6 +737,17 @@ const ReservationDetailModal = ({
                     className="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer border-0 flex items-center gap-1.5 shadow-sm"
                   >
                     <X className="h-4 w-4" /> Check-Out & Settle
+                  </button>
+                )}
+
+                {/* Buat Tugas HK Button */}
+                {reservation.status === "checked_in" && (
+                  <button
+                    type="button"
+                    onClick={() => setShowHkTaskModal(true)}
+                    className="py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all duration-200 cursor-pointer border-0 flex items-center gap-1.5 shadow-sm"
+                  >
+                    <ClipboardList className="h-4 w-4" /> Buat Tugas HK
                   </button>
                 )}
 
@@ -978,6 +919,150 @@ const ReservationDetailModal = ({
           )}
         </div>
       </div>
+      {/* Modal Buat Tugas HK */}
+      {showHkTaskModal && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-zinc-900/50 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white border border-zinc-200 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-zinc-200 bg-slate-50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ClipboardList className="h-5 w-5 text-amber-600" />
+                <h3 className="text-base font-bold text-zinc-800">Buat Tugas Housekeeping</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowHkTaskModal(false)}
+                className="p-1 text-zinc-400 hover:text-zinc-700 rounded-lg hover:bg-slate-100 cursor-pointer border-0 bg-transparent"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateHkTaskSubmit} className="p-5 space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Pilih Jenis Tugas *</label>
+                <select
+                  required
+                  value={hkTaskType}
+                  onChange={(e) => setHkTaskType(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600 cursor-pointer"
+                >
+                  <option value="room_cleaning">Pembersihan Kamar (Gratis)</option>
+                  <option value="turndown">Turn Down / Rapikan Tempat Tidur (Gratis)</option>
+                  <option value="extra_bed">Pemesanan Extra Bed (Berbayar)</option>
+                  <option value="laundry">Pemesanan Laundry Tamu (Berbayar)</option>
+                  <option value="repair">Perbaikan / Maintenance (Gratis)</option>
+                  <option value="other">Lainnya (Gratis)</option>
+                </select>
+              </div>
+
+              {hkTaskType === "extra_bed" && (
+                <div className="space-y-1 bg-amber-50/50 p-3 rounded-xl border border-amber-100">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Harga Extra Bed (Rp)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    value={hkExtrabedPrice}
+                    onChange={(e) => setHkExtrabedPrice(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600"
+                  />
+                  <p className="text-[9px] text-amber-600 mt-1">Biaya akan otomatis ditambahkan ke folio checkout tamu.</p>
+                </div>
+              )}
+
+              {hkTaskType === "laundry" && (
+                <div className="space-y-3 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Deskripsi Pakaian</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. 2 Kaos, 1 Jeans"
+                        value={hkLaundryDesc}
+                        onChange={(e) => setHkLaundryDesc(e.target.value)}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Jumlah Pcs</label>
+                      <input
+                        type="number"
+                        min="1"
+                        required
+                        value={hkLaundryCount}
+                        onChange={(e) => setHkLaundryCount(Number(e.target.value))}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Biaya Laundry (Rp)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      required
+                      value={hkLaundryPrice}
+                      onChange={(e) => setHkLaundryPrice(Number(e.target.value))}
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                  <p className="text-[9px] text-emerald-600">Biaya laundry akan otomatis ditambahkan ke folio checkout tamu.</p>
+                </div>
+              )}
+
+              {hkTaskType !== "extra_bed" && hkTaskType !== "laundry" && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Prioritas Tugas</label>
+                  <select
+                    value={hkPriority}
+                    onChange={(e) => setHkPriority(e.target.value)}
+                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600 cursor-pointer"
+                  >
+                    <option value="low">Rendah / Low</option>
+                    <option value="medium">Sedang / Medium</option>
+                    <option value="high">Tinggi / High</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Catatan / Detail Tugas</label>
+                <textarea
+                  rows={2}
+                  value={hkNotes}
+                  onChange={(e) => setHkNotes(e.target.value)}
+                  placeholder="Keterangan tambahan..."
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600 resize-none"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-zinc-200 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowHkTaskModal(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-zinc-300 text-zinc-655 text-sm font-medium hover:bg-zinc-50 cursor-pointer bg-transparent"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5 border-0 shadow-sm"
+                >
+                  {saving ? (
+                    <>
+                      <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      Memproses...
+                    </>
+                  ) : (
+                    "Kirim Tugas"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
