@@ -5,6 +5,8 @@ export const TASK_TYPES = {
   pool: { label: "Area Kolam", color: "bg-sky-50 text-sky-700 border-sky-200" },
   public_area: { label: "Area Publik", color: "bg-teal-50 text-teal-700 border-teal-200" },
   room_inspection: { label: "Inspeksi Kamar (Checkout)", color: "bg-rose-50 text-rose-700 border-rose-200" },
+  extra_bed: { label: "Penyusunan Extra Bed", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  laundry: { label: "Layanan Laundry Tamu", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
 };
 
 export const PRIORITIES = {

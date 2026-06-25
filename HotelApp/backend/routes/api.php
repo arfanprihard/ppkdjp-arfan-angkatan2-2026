@@ -61,7 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Check-in & Check-out
         Route::get('/checkins/today', [CheckInController::class, 'expectedArrivals']);
         Route::post('/checkins', [CheckInController::class, 'store']);
-        Route::post('/checkins/{id}/extra-bed', [CheckInController::class, 'addExtraBed']);
         Route::get('/checkouts/today', [CheckOutController::class, 'expectedDepartures']);
         Route::post('/checkouts', [CheckOutController::class, 'store']);
         Route::get('/checkouts/{checkInId}/inspection-status', [CheckOutController::class, 'getInspectionStatus']);

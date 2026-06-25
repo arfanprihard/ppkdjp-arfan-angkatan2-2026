@@ -11,6 +11,11 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
+  const [extraBedPrice, setExtraBedPrice] = useState(100000);
+  const [laundryDesc, setLaundryDesc] = useState("");
+  const [laundryCount, setLaundryCount] = useState(1);
+  const [laundryPrice, setLaundryPrice] = useState(0);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!roomId) {
@@ -20,12 +25,22 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
     setSaving(true);
     setError(null);
     try {
-      const res = await api.post("/api/housekeeping/tasks", {
+      const payload = {
         room_id: Number(roomId),
         task_type: taskType,
         priority,
         notes: notes || null,
-      });
+      };
+
+      if (taskType === "extra_bed") {
+        payload.extra_bed_price = Number(extraBedPrice);
+      } else if (taskType === "laundry") {
+        payload.laundry_desc = laundryDesc;
+        payload.laundry_count = Number(laundryCount);
+        payload.laundry_price = Number(laundryPrice);
+      }
+
+      const res = await api.post("/api/housekeeping/tasks", payload);
 
       if (res.data.success) {
         onSaved();
@@ -103,6 +118,62 @@ const CreateTaskModal = ({ rooms, initialRoomId, onClose, onSaved }) => {
               </select>
             </div>
           </div>
+
+          {taskType === "extra_bed" && (
+            <div className="space-y-1 bg-amber-50/50 p-3 rounded-xl border border-amber-100 animate-in fade-in slide-in-from-top-1 duration-150">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Harga Extra Bed (Rp)</label>
+              <input
+                type="number"
+                min="0"
+                required
+                value={extraBedPrice}
+                onChange={(e) => setExtraBedPrice(Number(e.target.value))}
+                className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-amber-600"
+              />
+              <p className="text-[9px] text-amber-600 mt-1">Biaya akan otomatis ditambahkan ke folio checkout tamu yang menginap.</p>
+            </div>
+          )}
+
+          {taskType === "laundry" && (
+            <div className="space-y-3 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Deskripsi Pakaian</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 2 Kaos, 1 Jeans"
+                    value={laundryDesc}
+                    onChange={(e) => setLaundryDesc(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Jumlah Pcs</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={laundryCount}
+                    onChange={(e) => setLaundryCount(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-800">Biaya Laundry (Rp)</label>
+                <input
+                  type="number"
+                  min="0"
+                  required
+                  value={laundryPrice}
+                  onChange={(e) => setLaundryPrice(Number(e.target.value))}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-emerald-600"
+                />
+              </div>
+              <p className="text-[9px] text-emerald-600">Biaya laundry akan otomatis ditambahkan ke folio checkout tamu yang menginap.</p>
+            </div>
+          )}
 
           <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Catatan / Deskripsi Tugas</label>

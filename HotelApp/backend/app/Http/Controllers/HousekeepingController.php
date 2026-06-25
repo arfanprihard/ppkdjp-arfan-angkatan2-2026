@@ -54,21 +54,158 @@ class HousekeepingController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'room_id' => 'required|exists:rooms,id',
-            'task_type' => 'required|in:room_cleaning,turndown,deep_clean,pool,public_area,room_inspection',
+            'task_type' => 'required|in:room_cleaning,turndown,deep_clean,pool,public_area,room_inspection,extra_bed,laundry',
             'priority' => 'required|in:low,medium,high,urgent',
             'assigned_to' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
+            'extra_bed_price' => 'nullable|numeric|min:0',
+            'laundry_desc' => 'nullable|string',
+            'laundry_count' => 'nullable|integer|min:1',
+            'laundry_price' => 'nullable|numeric|min:0',
         ]);
 
-        $task = HousekeepingTask::create($validated);
+        $room = Room::find($request->room_id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tugas Housekeeping berhasil dibuat.',
-            'data' => $task
-        ], 201);
+        return \DB::transaction(function () use ($request, $room) {
+            if ($request->task_type === 'extra_bed') {
+                $checkIn = CheckIn::where('room_id', $room->id)
+                    ->whereHas('reservation', function($q) {
+                        $q->where('status', 'checked_in');
+                    })->first();
+
+                if (!$checkIn) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Kamar #' . $room->room_number . ' tidak memiliki check-in aktif untuk pembebanan biaya extra bed.'
+                    ], 400);
+                }
+
+                $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+                if (!$folio) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Guest Folio aktif tidak ditemukan untuk kamar ini.'
+                    ], 400);
+                }
+
+                $amount = floatval($request->extra_bed_price ?? 100000);
+
+                FolioCharge::create([
+                    'folio_id' => $folio->id,
+                    'charge_type' => 'extra_bed',
+                    'description' => 'Layanan Tambahan - Extra Bed Kamar #' . $room->room_number,
+                    'amount' => $amount,
+                    'quantity' => 1,
+                    'charge_date' => Carbon::today(),
+                    'created_by' => $request->user()->id,
+                ]);
+
+                $folio->increment('total_charges', $amount);
+                $folio->refresh();
+                $folio->update([
+                    'balance' => $folio->total_charges - $folio->total_payments
+                ]);
+
+                $task = HousekeepingTask::create([
+                    'room_id' => $room->id,
+                    'task_type' => 'extra_bed',
+                    'priority' => $request->priority,
+                    'assigned_to' => $request->assigned_to,
+                    'notes' => $request->notes ?? ('Siapkan dan antarkan extra bed ke Kamar #' . $room->room_number),
+                    'status' => 'pending'
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Tugas Extra Bed berhasil dibuat & dibebankan ke folio tamu.',
+                    'data' => $task
+                ], 201);
+
+            } elseif ($request->task_type === 'laundry') {
+                $checkIn = CheckIn::where('room_id', $room->id)
+                    ->whereHas('reservation', function($q) {
+                        $q->where('status', 'checked_in');
+                    })->first();
+
+                if (!$checkIn) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Kamar #' . $room->room_number . ' tidak memiliki check-in aktif untuk pembebanan biaya laundry.'
+                    ], 400);
+                }
+
+                $folio = GuestFolio::where('check_in_id', $checkIn->id)->where('status', 'open')->first();
+                if (!$folio) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Guest Folio aktif tidak ditemukan untuk kamar ini.'
+                    ], 400);
+                }
+
+                $itemsDesc = $request->laundry_desc ?? 'Laundry Service';
+                $itemCount = intval($request->laundry_count ?? 1);
+                $totalCharge = floatval($request->laundry_price ?? 0);
+
+                $laundry = \App\Models\LaundryRequest::create([
+                    'guest_id' => $checkIn->reservation->guest_id,
+                    'room_id' => $room->id,
+                    'items_description' => $itemsDesc,
+                    'item_count' => $itemCount,
+                    'total_charge' => $totalCharge,
+                    'status' => 'received',
+                    'received_at' => Carbon::now()
+                ]);
+
+                FolioCharge::create([
+                    'folio_id' => $folio->id,
+                    'charge_type' => 'laundry',
+                    'description' => 'Layanan Laundry - ' . $itemCount . ' Pcs (' . $itemsDesc . ')',
+                    'amount' => $totalCharge,
+                    'quantity' => 1,
+                    'charge_date' => Carbon::today(),
+                    'reference_id' => $laundry->id,
+                    'reference_type' => \App\Models\LaundryRequest::class,
+                    'created_by' => $request->user()->id,
+                ]);
+
+                $folio->increment('total_charges', $totalCharge);
+                $folio->refresh();
+                $folio->update([
+                    'balance' => $folio->total_charges - $folio->total_payments
+                ]);
+
+                $task = HousekeepingTask::create([
+                    'room_id' => $room->id,
+                    'task_type' => 'laundry',
+                    'priority' => $request->priority,
+                    'assigned_to' => $request->assigned_to,
+                    'notes' => $request->notes ?? ('Ambil laundry: ' . $itemsDesc),
+                    'status' => 'pending'
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Tugas Laundry berhasil dibuat & dibebankan ke folio tamu.',
+                    'data' => $task
+                ], 201);
+            } else {
+                $task = HousekeepingTask::create([
+                    'room_id' => $request->room_id,
+                    'task_type' => $request->task_type,
+                    'priority' => $request->priority,
+                    'assigned_to' => $request->assigned_to,
+                    'notes' => $request->notes,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Tugas Housekeeping berhasil dibuat.',
+                    'data' => $task
+                ], 201);
+            }
+        });
     }
 
     /**
