@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\CheckInController;
@@ -37,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/rooms', [RoomController::class, 'index']);
         Route::get('/rooms/{id}', [RoomController::class, 'show']);
         Route::put('/rooms/{id}/status', [RoomController::class, 'updateStatus']); // Untuk checkout (FO) & membersihkan kamar (HK)
-        Route::get('/room-types', [RoomController::class, 'getRoomTypes']);
+        Route::get('/room-types', [RoomTypeController::class, 'index']);
     });
 
 
@@ -124,5 +125,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/rooms', [RoomController::class, 'store']);
         Route::put('/rooms/{id}', [RoomController::class, 'update']);
         Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
+
+        // Manajemen Tipe Kamar (CRUD)
+        Route::post('/room-types', [RoomTypeController::class, 'store']);
+        Route::put('/room-types/{id}', [RoomTypeController::class, 'update']);
+        Route::delete('/room-types/{id}', [RoomTypeController::class, 'destroy']);
     });
 });
