@@ -27,6 +27,8 @@ return [
         array_filter([
             isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : null,
             isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null,
+            isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) : null,
+            isset($_SERVER['HTTP_ORIGIN']) ? parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST) : null,
         ])
     ))),
 

@@ -23,11 +23,24 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 Route::get('/test-session', function (\Illuminate\Http\Request $request) {
+    if (!$request->hasSession()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Session store not set on request. Request is not recognized as stateful.',
+            'headers' => collect($request->headers->all())->map(fn($item) => $item[0]),
+            'cookies' => $request->cookies->all(),
+            'stateful_domains' => config('sanctum.stateful'),
+            'request_host' => $request->getHost(),
+            'referer' => $request->headers->get('referer'),
+            'origin' => $request->headers->get('origin'),
+        ]);
+    }
     $hasTest = $request->session()->has('test_key');
     if (!$hasTest) {
         $request->session()->put('test_key', 'test_value');
     }
     return response()->json([
+        'success' => true,
         'session_id' => $request->session()->getId(),
         'session_has_test' => $hasTest,
         'session_all' => $request->session()->all(),
@@ -36,6 +49,8 @@ Route::get('/test-session', function (\Illuminate\Http\Request $request) {
         'has_session' => $request->hasSession(),
         'stateful_domains' => config('sanctum.stateful'),
         'request_host' => $request->getHost(),
+        'referer' => $request->headers->get('referer'),
+        'origin' => $request->headers->get('origin'),
     ]);
 });
 
