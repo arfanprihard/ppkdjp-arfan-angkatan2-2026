@@ -105,6 +105,22 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
         .filter(c => c.description && c.description.toLowerCase().includes("denda"))
         .reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
     : 0;
+
+  const roomCharges = folio?.charges
+    ? folio.charges.filter(c => c.charge_type === "room").reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+    : 0;
+
+  const extraBedCharges = folio?.charges
+    ? folio.charges.filter(c => c.charge_type === "extra_bed").reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+    : 0;
+
+  const laundryCharges = folio?.charges
+    ? folio.charges.filter(c => c.charge_type === "laundry").reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+    : 0;
+
+  const otherCharges = folio?.charges
+    ? folio.charges.filter(c => c.charge_type === "other" || (c.charge_type !== "room" && c.charge_type !== "extra_bed" && c.charge_type !== "laundry" && !c.description?.toLowerCase().includes("denda"))).reduce((sum, c) => sum + parseFloat(c.amount || 0), 0)
+    : 0;
   
   // Hitung deposit refund & sisa yang harus dibayar tamu
   // Jika tagihan > deposit, deposit habis (refund = 0), tamu bayar selisihnya
@@ -319,12 +335,49 @@ const CheckOutModal = ({ reservation, onClose, onSaved }) => {
               {/* === STEP 2: Settlement & Deposit Refund === */}
               {step === 2 && (
                 <>
-                  <div className="bg-slate-50 p-4 rounded-xl border border-zinc-200 space-y-3 text-xs text-zinc-650">
+                  <div className="bg-slate-50 p-4 rounded-xl border border-zinc-200 space-y-3 text-xs text-zinc-650 max-h-80 overflow-y-auto">
                     <h4 className="font-bold text-zinc-800 border-b border-zinc-200 pb-1.5">Rincian Finansial Akhir</h4>
-                    <div className="flex justify-between">
-                      <span>Tagihan Folio Kamar (Sebelum Denda)</span>
-                      <span>{formatRupiah(folio.total_charges - totalDamage)}</span>
+                    <div className="flex justify-between font-semibold">
+                      <span>Biaya Kamar (Room Charge)</span>
+                      <span>{formatRupiah(roomCharges)}</span>
                     </div>
+
+                    {extraBedCharges > 0 && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-zinc-700 font-semibold">
+                          <span>Biaya Tambahan - Extra Bed</span>
+                          <span>+ {formatRupiah(extraBedCharges)}</span>
+                        </div>
+                        {folio.charges?.filter(c => c.charge_type === "extra_bed").map(c => (
+                          <div key={c.id} className="flex justify-between text-[10px] text-zinc-500 pl-3 italic">
+                            <span>• {c.description}</span>
+                            <span>{formatRupiah(c.amount)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {laundryCharges > 0 && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-zinc-700 font-semibold">
+                          <span>Biaya Tambahan - Laundry</span>
+                          <span>+ {formatRupiah(laundryCharges)}</span>
+                        </div>
+                        {folio.charges?.filter(c => c.charge_type === "laundry").map(c => (
+                          <div key={c.id} className="flex justify-between text-[10px] text-zinc-500 pl-3 italic">
+                            <span>• {c.description}</span>
+                            <span>{formatRupiah(c.amount)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {otherCharges > 0 && (
+                      <div className="flex justify-between text-zinc-700 font-semibold">
+                        <span>Biaya Lain-lain</span>
+                        <span>+ {formatRupiah(otherCharges)}</span>
+                      </div>
+                    )}
                     {totalDamage > 0 && (
                       <div className="flex justify-between text-amber-700 font-medium">
                         <span>Denda Kerusakan Kamar</span>
