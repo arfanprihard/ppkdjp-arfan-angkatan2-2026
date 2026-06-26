@@ -239,8 +239,7 @@ const DailyReportSection = ({ endpoint, role, refreshTrigger }) => {
 
     printWindow.document.write(`
       <html>
-        <head>
-          <title>Laporan Harian Divisi — PPKD Hotel</title>
+                  <title>Laporan Harian Divisi — Hotel Syariah</title>
           <style>
             body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #333; line-height: 1.4; }
             .header { text-align: center; border-bottom: 3px double #2563eb; padding-bottom: 12px; margin-bottom: 25px; }
@@ -264,7 +263,7 @@ const DailyReportSection = ({ endpoint, role, refreshTrigger }) => {
         </head>
         <body>
           <div class="header">
-            <h1>PPKD Hotel</h1>
+            <h1>Hotel Syariah</h1>
             <p>Sistem Informasi Manajemen Hotel</p>
           </div>
           <div class="meta">
@@ -273,10 +272,10 @@ const DailyReportSection = ({ endpoint, role, refreshTrigger }) => {
           </div>
           
           ${contentHtml}
-
+ 
           <div class="footer">
-            PPKD Hotel &copy; 2026 · Dokumen Laporan Resmi Internal Hotel
-          </div>
+            Hotel Syariah &copy; 2026 · Dokumen Laporan Resmi Internal Hotel
+          </div>     </div>
         </body>
       </html>
     `);

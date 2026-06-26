@@ -138,7 +138,7 @@ const Sidebar = () => {
               }`}
           >
             <span className="font-bold text-lg tracking-tight text-zinc-900 whitespace-nowrap">
-              PPKD Hotel
+              Hotel Syariah
             </span>
           </div>
         </div>

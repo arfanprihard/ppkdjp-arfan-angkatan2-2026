@@ -61,7 +61,7 @@ const LoginPage = () => {
               <img src={ppkdLogo} alt="Logo" className="h-10 w-10 object-contain" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-zinc-900">
-              Login Staff PPKD Hotel
+              Login Staff Hotel Syariah
             </h2>
             <p className="text-[11px] text-zinc-400 mt-1.5 uppercase tracking-widest font-semibold">
               Sistem Manajemen Hotel
@@ -89,7 +89,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-800 placeholder-zinc-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 transition-all duration-200"
-                placeholder="nama@ppkdhotel.com"
+                placeholder="nama@hotelsyariah.com"
                 disabled={loading}
               />
             </div>
@@ -142,7 +142,7 @@ const LoginPage = () => {
           </form>
 
           <p className="text-center text-[10px] text-zinc-400 mt-6">
-            © 2026 PPKD Hotel • Internal Staff Portal
+            © 2026 Hotel Syariah • Internal Staff Portal
           </p>
         </div>
       </div>

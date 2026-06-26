@@ -34,6 +34,15 @@ import CheckInModal from "../components/reservations/CheckInModal";
 import CheckOutModal from "../components/reservations/CheckOutModal";
 import { useToast } from "../contexts/ToastContext";
 
+// Helper to get local today's date in YYYY-MM-DD format
+const getLocalTodayString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 // ─── SKELETON LOADER UNTUK TABEL ──────────────────────────────────────────────
 const TableSkeleton = () => (
   <div className="space-y-3 animate-pulse">
@@ -72,7 +81,7 @@ const ReservationsPage = () => {
 
   // Daily Availability Widget States
   const [allReservations, setAllReservations] = useState([]);
-  const [availabilityDate, setAvailabilityDate] = useState(new Date().toISOString().split("T")[0]);
+  const [availabilityDate, setAvailabilityDate] = useState(getLocalTodayString());
 
   // Debounce search input
   useEffect(() => {
@@ -226,6 +235,7 @@ const ReservationsPage = () => {
               type="date"
               value={availabilityDate}
               onChange={(e) => setAvailabilityDate(e.target.value)}
+              min={getLocalTodayString()}
               className="px-2.5 py-1.5 text-xs rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 cursor-pointer"
             />
           </div>

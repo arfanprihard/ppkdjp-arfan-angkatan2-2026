@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from "react";
 import { User, X, AlertCircle, Phone, Mail, MapPin, History, RefreshCw, Briefcase, Building, Calendar } from "lucide-react";
 import api from "../../api/axios";
 import { getResStatusBadge, formatRupiah, getNights } from "./helpers";
@@ -12,13 +13,14 @@ const GuestDetailModal = ({ guestId, onClose }) => {
     setError(null);
     try {
       const res = await api.get(`/api/guests/${guestId}`);
+      console.log("GuestDetailModal fetched guest:", res.data);
       if (res.data.success) {
         setGuest(res.data.data);
       } else {
         setError("Gagal memuat detail tamu.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching guest details:", err);
       setError("Gagal menghubungkan ke backend.");
     } finally {
       setLoading(false);
@@ -140,7 +142,7 @@ const GuestDetailModal = ({ guestId, onClose }) => {
                               <td className="p-3 font-semibold text-zinc-800">{formatRupiah(res.total_amount)}</td>
                               <td className="p-3">
                                 <span className={`inline-flex px-2 py-0.5 rounded border text-[9px] font-bold uppercase tracking-widest ${getResStatusBadge(res.status)}`}>
-                                  {res.status.replace("_", " ")}
+                                  {res.status ? res.status.replace("_", " ") : ""}
                                 </span>
                               </td>
                             </tr>
@@ -162,6 +164,16 @@ const GuestDetailModal = ({ guestId, onClose }) => {
                 </div>
               </>
             )
+          )}
+          {!loading && !guest && (
+            <div className="pt-2 border-t border-zinc-200 flex justify-end">
+              <button
+                onClick={onClose}
+                className="py-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
+              >
+                Tutup
+              </button>
+            </div>
           )}
         </div>
       </div>

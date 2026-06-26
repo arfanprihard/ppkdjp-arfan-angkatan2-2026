@@ -23,6 +23,18 @@ import {
   getNights
 } from "./helpers";
 
+// Helper to get next day's date in YYYY-MM-DD format
+const getNextDateString = (dateStr) => {
+  if (!dateStr) return "";
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const d = new Date(year, month - 1, day);
+  d.setDate(d.getDate() + 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const r = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${r}`;
+};
+
 const ReservationDetailModal = ({
   reservation,
   rooms,
@@ -85,6 +97,16 @@ const ReservationDetailModal = ({
       setInspectionStatus("none");
     }
   }, [reservation]);
+
+  // Adjust checkout date when checkin date changes
+  useEffect(() => {
+    if (checkInDate) {
+      const nextDate = getNextDateString(checkInDate);
+      if (!checkOutDate || checkOutDate <= checkInDate) {
+        setCheckOutDate(nextDate);
+      }
+    }
+  }, [checkInDate]);
 
   const s = getStatus(reservation.status);
 
@@ -299,7 +321,7 @@ const ReservationDetailModal = ({
     if (isWalkIn) {
       contentHtml = `
         <div class="header">
-          <h1>PPKD Hotel</h1>
+          <h1>Hotel Syariah</h1>
           <p>Formulir Pendaftaran / Registration Form</p>
         </div>
         
@@ -380,8 +402,8 @@ const ReservationDetailModal = ({
         </table>
 
         <div class="terms">
-          <p><strong>Kepada PPKD Hotel</strong>, Saya menyatakan bahwa saya baik sendiri ataupun bersama-sama dengan perusahaan, asosiasi, perorangan atau semuanya bertanggung jawab atas pembayaran semua tagihan yang terjadi sehubungan dengan seluruh pelayanan yang Anda berikan sesuai formulir pendaftaran ini.</p>
-          <p><strong>To PPKD Hotel</strong>: I acknowledge that I'm jointly and severally liable with the fore-going person, company or association (and if more than one all of them) for payment of the amount of any charges payable or incurred in connection with all services provided by you under registration.</p>
+          <p><strong>Kepada Hotel Syariah</strong>, Saya menyatakan bahwa saya baik sendiri ataupun bersama-sama dengan perusahaan, asosiasi, perorangan atau semuanya bertanggung jawab atas pembayaran semua tagihan yang terjadi sehubungan dengan seluruh pelayanan yang Anda berikan sesuai formulir pendaftaran ini.</p>
+          <p><strong>To Hotel Syariah</strong>: I acknowledge that I'm jointly and severally liable with the fore-going person, company or association (and if more than one all of them) for payment of the amount of any charges payable or incurred in connection with all services provided by you under registration.</p>
           <p style="margin-top: 6px;"><strong>Peraturan Hotel / Hotel Regulations:</strong></p>
           <ul style="margin: 0; padding-left: 15px;">
             <li>Untuk diketahui bahwa anda tidak diperkenankan untuk membawa durian ke area hotel. / <em>Please be informed that you are not allowed to bring Durian into the hotel premises.</em></li>
@@ -420,7 +442,7 @@ const ReservationDetailModal = ({
     } else {
       contentHtml = `
         <div class="header">
-          <h1>PPKD Hotel</h1>
+          <h1>Hotel Syariah</h1>
           <p>Sistem Informasi Manajemen Hotel / Hotel Confirmation</p>
         </div>
         
@@ -499,7 +521,7 @@ const ReservationDetailModal = ({
             <strong>Please settle your outstanding to our account:</strong><br/>
             Bank Transfer<br/>
             Mandiri Account: <strong>123-456-789-0</strong><br/>
-            Mandiri Name Account: <strong>PPKD Hotel</strong>
+            Mandiri Name Account: <strong>Hotel Syariah</strong>
           </div>
         </div>
 
@@ -556,7 +578,7 @@ const ReservationDetailModal = ({
     printWindow.document.write(`
       <html>
         <head>
-          <title>Cetak Reservasi ${reservation.reservation_code} — PPKD Hotel</title>
+          <title>Cetak Reservasi ${reservation.reservation_code} — Hotel Syariah</title>
           <style>
             body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #333; line-height: 1.4; font-size: 12px; }
             .header { text-align: center; border-bottom: 3px double #2563eb; padding-bottom: 10px; margin-bottom: 15px; }
@@ -614,6 +636,196 @@ const ReservationDetailModal = ({
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
+  };
+
+  const handlePrintPaymentHistory = async () => {
+    const checkInId = reservation.check_in?.id || reservation.checkIn?.id;
+    if (!checkInId) {
+      alert("Riwayat pembayaran belum tersedia karena tamu belum melakukan Check-in.");
+      return;
+    }
+
+    try {
+      const res = await api.get(`/api/folios/${checkInId}`);
+      if (!res.data.success || !res.data.data) {
+        alert("Gagal mengambil data billing folio.");
+        return;
+      }
+      
+      const folio = res.data.data;
+      const printWindow = window.open("", "_blank");
+      const todayStr = new Date().toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      const guestName = reservation.guest?.name ?? "—";
+      const roomNumber = reservation.room?.room_number ?? "—";
+      const checkInDate = reservation.check_in_date || "—";
+      const checkOutDate = reservation.check_out_date || "—";
+      const totalNights = getNights(checkInDate, checkOutDate);
+      const roomTypeName = reservation.room_type?.name || reservation.roomType?.name || "—";
+
+      const depositAmount = parseFloat(reservation.check_in?.deposit_amount || reservation.checkIn?.deposit_amount || 0);
+      const depositMethod = reservation.check_in?.deposit_method || reservation.checkIn?.deposit_method || "cash";
+      const totalPayments = parseFloat(folio.total_payments || 0);
+      const totalCharges = parseFloat(folio.total_charges || 0);
+      
+      const grandTotalPaid = depositAmount + totalPayments;
+      const finalBalance = totalCharges - grandTotalPaid;
+
+      const chargesListHtml = folio.charges && folio.charges.length > 0 
+        ? folio.charges.map((c) => `
+            <tr>
+              <td>${new Date(c.charge_date).toLocaleDateString("id-ID")}</td>
+              <td>${c.description}</td>
+              <td style="text-transform: capitalize;">${c.charge_type.replace("_", " ")}</td>
+              <td style="text-align: right;">${formatRupiah(c.amount)}</td>
+            </tr>
+          `).join("")
+        : `<tr><td colspan="4" style="text-align: center; color: #888;">Tidak ada rincian tagihan tambahan.</td></tr>`;
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Payment History & Invoice - ${reservation.reservation_code}</title>
+            <style>
+              body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #333; line-height: 1.4; font-size: 12px; }
+              .header { text-align: center; border-bottom: 3px double #15803d; padding-bottom: 12px; margin-bottom: 25px; }
+              .header h1 { margin: 0; font-size: 24px; color: #15803d; font-weight: bold; text-transform: uppercase; }
+              .header p { margin: 4px 0 0; font-size: 11px; color: #555; text-transform: uppercase; font-weight: bold; }
+              .form-title { text-align: center; font-size: 16px; font-weight: 800; text-transform: uppercase; color: #1e293b; margin: 15px 0; }
+              
+              table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+              table.info-table td { border: none; padding: 4px 8px; vertical-align: top; }
+              table.info-table td.label { font-weight: bold; width: 20%; color: #475569; }
+              table.info-table td.val { width: 30%; }
+              
+              table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+              table.data-table th, table.data-table td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+              table.data-table th { background-color: #f8fafc; font-weight: bold; color: #334155; }
+              
+              .summary-section { margin-top: 20px; display: flex; justify-content: flex-end; }
+              .summary-box { width: 45%; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; padding: 12px; }
+              .summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; }
+              .summary-row.total { border-top: 2px solid #cbd5e1; margin-top: 6px; padding-top: 8px; font-weight: bold; font-size: 12px; color: #15803d; }
+              .summary-row.balance { border-top: 1px solid #cbd5e1; padding-top: 6px; font-weight: bold; font-size: 12px; color: ${finalBalance > 0 ? "#b91c1c" : "#15803d"}; }
+              
+              .footer { margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+              @media print {
+                body { padding: 0; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Hotel Syariah</h1>
+              <p>Payment Receipt & Billing Statement</p>
+            </div>
+            
+            <div class="form-title">Kuitansi Pembayaran & Rincian Tagihan</div>
+            
+            <table class="info-table">
+              <tr>
+                <td class="label">No. Reservasi:</td>
+                <td class="val"><strong>${reservation.reservation_code}</strong></td>
+                <td class="label">Nama Tamu:</td>
+                <td class="val"><strong>${guestName}</strong></td>
+              </tr>
+              <tr>
+                <td class="label">Tipe Kamar:</td>
+                <td class="val">${roomTypeName}</td>
+                <td class="label">No. Kamar:</td>
+                <td class="val"><strong>${roomNumber}</strong></td>
+              </tr>
+              <tr>
+                <td class="label">Tanggal Stay:</td>
+                <td class="val">${checkInDate} s.d ${checkOutDate} (${totalNights} malam)</td>
+                <td class="label">Tanggal Cetak:</td>
+                <td class="val">${todayStr}</td>
+              </tr>
+            </table>
+
+            <div style="font-weight: bold; font-size: 12px; margin-top: 20px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
+              Rincian Tagihan (Charges)
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Keterangan</th>
+                  <th>Kategori</th>
+                  <th style="text-align: right;">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${chargesListHtml}
+              </tbody>
+            </table>
+
+            <div style="font-weight: bold; font-size: 12px; margin-top: 25px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
+              Riwayat Pembayaran (Payment History)
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Keterangan Pembayaran</th>
+                  <th>Metode</th>
+                  <th style="text-align: right;">Jumlah Terbayar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Uang Jaminan / Deposit saat Check-in</td>
+                  <td style="text-transform: uppercase;">${depositMethod}</td>
+                  <td style="text-align: right; font-weight: bold;">${formatRupiah(depositAmount)}</td>
+                </tr>
+                ${totalPayments > 0 ? `
+                  <tr>
+                    <td>Pembayaran Folio / Cicilan Mandiri</td>
+                    <td style="text-transform: uppercase;">Transfer / Debit / Cash</td>
+                    <td style="text-align: right; font-weight: bold;">${formatRupiah(totalPayments)}</td>
+                  </tr>
+                ` : ""}
+              </tbody>
+            </table>
+
+            <div class="summary-section">
+              <div class="summary-box">
+                <div class="summary-row">
+                  <span>Total Tagihan (Total Charges):</span>
+                  <span>${formatRupiah(totalCharges)}</span>
+                </div>
+                <div class="summary-row">
+                  <span>Total Pembayaran (Total Paid):</span>
+                  <span>${formatRupiah(grandTotalPaid)}</span>
+                </div>
+                <div class="summary-row total">
+                  <span>Grand Total Paid:</span>
+                  <span>${formatRupiah(grandTotalPaid)}</span>
+                </div>
+                <div class="summary-row balance">
+                  <span>${finalBalance > 0 ? "Sisa Tagihan (Balance Due):" : "Kelebihan Bayar / Refund:"}</span>
+                  <span>${formatRupiah(Math.abs(finalBalance))}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer">
+              Hotel Syariah &copy; 2026 · Dokumen Bukti Transaksi Resmi Internal Hotel
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    } catch (err) {
+      console.error(err);
+      alert("Gagal memuat rincian pembayaran.");
+    }
   };
 
   return (
@@ -796,13 +1008,25 @@ const ReservationDetailModal = ({
                 )}
 
                 {reservation.status !== "cancelled" && (
-                  <button
-                    type="button"
-                    onClick={handlePrint}
-                    className="py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-all duration-200 cursor-pointer border border-blue-200 flex items-center gap-1.5 shadow-xs"
-                  >
-                    <Printer className="h-4 w-4" /> Cetak Dokumen
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={handlePrint}
+                      className="py-2.5 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-all duration-200 cursor-pointer border border-blue-200 flex items-center gap-1.5 shadow-xs"
+                    >
+                      <Printer className="h-4 w-4" /> Cetak Dokumen
+                    </button>
+
+                    {(reservation.check_in || reservation.checkIn) && (
+                      <button
+                        type="button"
+                        onClick={handlePrintPaymentHistory}
+                        className="py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-all duration-200 cursor-pointer border border-emerald-200 flex items-center gap-1.5 shadow-xs"
+                      >
+                        <Printer className="h-4 w-4" /> Cetak Payment History
+                      </button>
+                    )}
+                  </>
                 )}
 
                 <button
@@ -834,7 +1058,7 @@ const ReservationDetailModal = ({
                   <input
                     type="date"
                     required
-                    min={checkInDate}
+                    min={getNextDateString(checkInDate)}
                     value={checkOutDate}
                     onChange={(e) => setCheckOutDate(e.target.value)}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-305 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10"

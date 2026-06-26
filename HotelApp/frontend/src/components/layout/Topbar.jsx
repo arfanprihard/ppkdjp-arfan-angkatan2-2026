@@ -83,7 +83,7 @@ const Topbar = () => {
       "/fnb": "Layanan Food & Beverage",
       "/users": "Manajemen Akun Staf",
     };
-    return pathMap[location.pathname] || "PPKD Hotel System";
+    return pathMap[location.pathname] || "Hotel Syariah System";
   };
 
   // Subtitle per halaman
