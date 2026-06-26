@@ -504,7 +504,7 @@ const CreateReservationModal = ({
               rows={2}
               value={specialRequest}
               onChange={(e) => setSpecialRequest(e.target.value)}
-              placeholder="Contoh: Kamar bebas  sex, extra bed, check-in larut..."
+              placeholder="Contoh: Kamar bebas rokok, extra bed, check-in larut..."
               className="w-full px-3 py-2 text-sm rounded-xl border border-zinc-300 bg-white text-zinc-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 resize-none"
             />
           </div>
